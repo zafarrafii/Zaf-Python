@@ -32,7 +32,7 @@ step_length: step length in samples
 audio_stft: audio STFT [window_length, number_frames]
 ```
 
-#### Example: Compute and display the spectrogram of an audio file
+#### Example: Compute and display the spectrogram from an audio file
 ```
 # Import modules
 import scipy.io.wavfile
