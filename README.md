@@ -20,7 +20,7 @@ Functions:
 
 `audio_stft = stft(audio_signal, window_function, step_length)`
     
-Inputs:
+#### Inputs:
 ```
 audio_signal: audio signal [number_samples, 0]
 window_function: window function [window_length, 0]
@@ -32,7 +32,7 @@ step_length: step length in samples
 audio_stft: audio STFT [window_length, number_frames]
 ```
 
-Example: Compute and display the spectrogram of an audio file
+#### Example: Compute and display the spectrogram of an audio file
 ```
 # Import modules
 import scipy.io.wavfile
