@@ -588,11 +588,13 @@ See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/b
 
 ## audio_file.wav
 
+
 ## Author
 
 - Zafar Rafii
 - zafarrafii@gmail.com
-- [http://zafarrafii.com/]
-- [https://www.linkedin.com/in/zafarrafii/]
+- http://zafarrafii.com/
 - [CV](http://zafarrafii.com/Zafar%20Rafii%20-%20C.V..pdf)
+- [GitHub](https://github.com/zafarrafii)
+- [LinkedIn](https://www.linkedin.com/in/zafarrafii/)
 - [Google Scholar](https://scholar.google.com/citations?user=8wbS2EsAAAAJ&hl=en)
