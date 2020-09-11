@@ -4,9 +4,9 @@ Zafar's audio functions in Python for audio signal processing.
 
 ## zaf.py
 
-z This module implements several functions for audio signal processing.
+This module implements several functions for audio signal processing.
 
-z Functions:
+Functions:
 - [stft - Short-time Fourier transform (STFT)](#stft-short-time-fourier-transform-stft-1)
 - [istft - Inverse STFT](#istft-inverse-short-time-fourier-transform-stft-1)
 - [cqtkernel - Constant-Q transform (CQT) kernel](#cqtkernel-constant-q-transform-cqt-kernel-1)
@@ -18,7 +18,7 @@ z Functions:
 - [mdct - Modified discrete cosine transform (MDCT) using the FFT](#mdct-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 - [imdct - Inverse MDCT using the FFT](#imdct-inverse-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 
-### stft Short-time Fourier transform (STFT)`
+### Short-time Fourier transform (STFT)`
 
 `audio_stft = z.stft(audio_signal, window_function, step_length)`
     
