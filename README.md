@@ -2,7 +2,7 @@
 
 ## zaf.py
 
-Zafar's Audio Functions: this Python module implements several functions for audio signal analysis.
+This Python module implements several functions for audio signal analysis.
 
 Functions:
 - [stft - Short-time Fourier transform (STFT)](#stft-short-time-fourier-transform-stft-1)
@@ -582,7 +582,9 @@ plt.show()
 
 ## examples.ipynb
 
-See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/blob/master/z.ipynb).
+This Jupyter notebook shows examples for the different functions of `zaf`.
+
+See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/blob/master/examples.ipynb).
 
 ## audio_file.wav
 
