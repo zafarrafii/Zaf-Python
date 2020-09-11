@@ -1,5 +1,5 @@
 """
-This module implements several functions for audio signal processing.
+This Python module implements several functions for audio signal analysis.
 
 Functions:
     stft - Short-time Fourier transform (STFT)
@@ -19,7 +19,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/09/20
+    09/11/20
 """
 
 import numpy as np
@@ -84,8 +84,13 @@ def stft(audio_signal, window_function, step_length):
     number_samples = len(audio_signal)
     window_length = len(window_function)
 
-    # Derive the number of time frames
-    number_times = int(np.ceil((window_length - step_length + number_samples) / step_length))
+    # Derive the zero-padding length at the start and the end of the signal to center the windows
+    padding_length = np.floor(window_length/2).astype(int)
+    
+    # Derive the number of time frames given the zero-padding at the start and the end of the signal
+    number_times = np.ceil(((number_samples + 2*padding_length) - window_length)/step_length).astype(int) + 1
+
+    # HERE!!!
 
     # Pad the start and the end of the signal with zeros to center the windows
     audio_signal = np.pad(audio_signal, (window_length - step_length, number_times * step_length - number_samples), 'constant', constant_values=0)
