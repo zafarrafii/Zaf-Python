@@ -594,7 +594,7 @@ See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/b
 
 ## audio_file.wav
 
-23 second excerpt from the song *Que Pena Tanto Faz* performed by *Tamy*.
+23 second audio excerpt from the song *Que Pena Tanto Faz* performed by *Tamy*.
 
 ## Author
 
