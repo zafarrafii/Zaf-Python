@@ -1,10 +1,8 @@
 # Zaf-Python
 
-Zafar's Audio Functions in Python.
-
 ## zaf.py
 
-This module implements several functions for audio signal analysis.
+Zafar's Audio Functions: this Python module implements several functions for audio signal analysis.
 
 Functions:
 - [stft - Short-time Fourier transform (STFT)](#stft-short-time-fourier-transform-stft-1)
