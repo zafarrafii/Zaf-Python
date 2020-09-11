@@ -18,7 +18,7 @@ Functions:
 - [mdct - Modified discrete cosine transform (MDCT) using the FFT](#mdct-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 - [imdct - Inverse MDCT using the FFT](#imdct-inverse-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 
-### Short-time Fourier transform (STFT)
+### stft Short-time Fourier transform (STFT)
 
 `audio_stft = z.stft(audio_signal, window_function, step_length)`
     
