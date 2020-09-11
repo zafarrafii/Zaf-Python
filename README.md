@@ -27,7 +27,7 @@ window_function: window function [window_length, 0]
 step_length: step length in samples
 ```
 
-Output:
+#### Output:
 ```
 audio_stft: audio STFT [window_length, number_frames]
 ```
