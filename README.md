@@ -20,7 +20,7 @@ Functions:
 
 ### stft Short-time Fourier transform (STFT)
 
-`audio_stft = z.stft(audio_signal, window_function, step_length)`
+`audio_stft = stft(audio_signal, window_function, step_length)`
     
 Arguments:
 ```
