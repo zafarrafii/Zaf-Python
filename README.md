@@ -584,13 +584,16 @@ plt.show()
 
 <img src="images/python/imdct.png" width="1000">
 
+
 ## examples.ipynb
 
 This Jupyter notebook shows examples for the different functions of `zaf`.
 
 See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/blob/master/examples.ipynb).
 
+
 ## audio_file.wav
+
 
 
 ## Author
