@@ -1,6 +1,6 @@
 # Zaf-Python
 
-Zafar's Audio Functions in Python for audio signal analysis.
+Zafar's Audio Functions in Python.
 
 ## zaf.py
 
