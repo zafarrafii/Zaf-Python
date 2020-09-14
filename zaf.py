@@ -19,13 +19,14 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/11/20
+    09/13/20
 """
 
 import numpy as np
 import scipy.sparse
 import scipy.signal
 import scipy.fftpack
+import scipy.io.wavfile
 
 def stft(audio_signal, window_function, step_length):
     """
@@ -983,3 +984,22 @@ def imdct(audio_mdct, window_function):
     audio_signal = audio_signal[number_frequencies:-number_frequencies - 1]
 
     return audio_signal
+
+def wavread(audio_file):
+    """
+    WAV reader using SciPy
+    
+    Inputs:
+        audio_file: path to an audio file
+    Output:
+        audio_signal: audio signal [number_samples, number_channels]
+        sampling_frequency: sampling frequency in Hz
+    """
+
+    # Read the sampling frequency in Hz and non-normalized signal using SciPy
+    sampling_frequency, audio_signal = scipy.io.wavfile.read(audio_file)
+
+    # Normalize the signal (in [-1,1])
+    audio_signal = audio_signal / np.power(2, audio_signal.itemsize*8 - 1)
+    
+    return audio_signal, sampling_frequency
