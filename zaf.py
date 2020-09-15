@@ -13,13 +13,16 @@ Functions:
     mdct - Modified discrete cosine transform (MDCT) using the FFT
     imdct - Inverse MDCT using the FFT
 
+Other:
+    wavread - WAVE reader (using SciPy)
+
 Author:
     Zafar Rafii
     zafarrafii@gmail.com
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/13/20
+    09/14/20
 """
 
 import numpy as np
@@ -85,16 +88,15 @@ def stft(audio_signal, window_function, step_length):
     number_samples = len(audio_signal)
     window_length = len(window_function)
 
-    # Derive the zero-padding length at the start and the end of the signal to center the windows
-    padding_length = np.floor(window_length/2).astype(int)
+    # Derive the zero-padding length at the start and at the end of the signal to center the windows
+    padding_length = int(np.floor(window_length/2))
     
-    # Derive the number of time frames given the zero-padding at the start and the end of the signal
-    number_times = np.ceil(((number_samples + 2*padding_length) - window_length)/step_length).astype(int) + 1
+    # Derive the number of time frames given the zero-padding at the start and at the end of the signal
+    number_times = int(np.ceil(((number_samples + 2*padding_length) - window_length)/step_length)) + 1
 
-    # HERE!!!
-
-    # Pad the start and the end of the signal with zeros to center the windows
-    audio_signal = np.pad(audio_signal, (window_length - step_length, number_times * step_length - number_samples), 'constant', constant_values=0)
+    # Zero-pad the start and the end of the signal to center the windows
+    audio_signal = np.pad(audio_signal, (padding_length, (number_times * step_length + (window_length - step_length) - padding_length) - number_samples), \
+        'constant', constant_values=0)
 
     # Initialize the STFT
     audio_stft = np.zeros((window_length, number_times))
@@ -102,10 +104,9 @@ def stft(audio_signal, window_function, step_length):
     # Loop over the time frames
     sample_index = 0
     for time_index in range(0, number_times):
-
+        
         # Window the signal
-        sample_index = time_index * step_length
-        audio_stft[:, time_index] = audio_signal[sample_index:window_length + sample_index] * window_function
+        audio_stft[:, time_index] = audio_signal[sample_index:sample_index + window_length] * window_function
         sample_index = sample_index + step_length
 
     # Compute the Fourier transform of the frames
@@ -116,13 +117,13 @@ def stft(audio_signal, window_function, step_length):
 
 def istft(audio_stft, window_function, step_length):
     """
-    istft Inverse short-time Fourier transform (STFT)
-        audio_signal = z.istft(audio_stft, window_function, step_length)
+    Inverse short-time Fourier transform (STFT)
 
-    Arguments:
+    Inputs:
         audio_stft: audio STFT [window_length, number_frames]
         window_function: window function [window_length, 0]
         step_length: step length in samples
+    Output:
         audio_signal: audio signal [number_samples, 0]
 
     Example: Estimate the center and sides signals of a stereo audio file
@@ -985,9 +986,10 @@ def imdct(audio_mdct, window_function):
 
     return audio_signal
 
+
 def wavread(audio_file):
     """
-    WAV reader using SciPy
+    WAVE reader (using SciPy)
     
     Inputs:
         audio_file: path to an audio file
