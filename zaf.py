@@ -15,6 +15,7 @@ Functions:
 
 Other:
     wavread - WAVE reader (using SciPy)
+    specshow - Display a magnitude spectrogram in dB, seconds, and Hz
 
 Author:
     Zafar Rafii
@@ -22,7 +23,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/14/20
+    09/17/20
 """
 
 import numpy as np
@@ -30,11 +31,13 @@ import scipy.sparse
 import scipy.signal
 import scipy.fftpack
 import scipy.io.wavfile
+import matplotlib.pyplot as plt
+
 
 def stft(audio_signal, window_function, step_length):
     """
     Short-time Fourier transform (STFT)
-    
+
     Inputs:
         audio_signal: audio signal [number_samples, 0]
         window_function: window function [window_length, 0]
@@ -89,25 +92,44 @@ def stft(audio_signal, window_function, step_length):
     window_length = len(window_function)
 
     # Derive the zero-padding length at the start and at the end of the signal to center the windows
-    padding_length = int(np.floor(window_length/2))
-    
+    padding_length = int(np.floor(window_length / 2))
+
     # Derive the number of time frames given the zero-padding at the start and at the end of the signal
-    number_times = int(np.ceil(((number_samples + 2*padding_length) - window_length)/step_length)) + 1
+    number_times = (
+        int(
+            np.ceil(
+                ((number_samples + 2 * padding_length) - window_length) / step_length
+            )
+        )
+        + 1
+    )
 
     # Zero-pad the start and the end of the signal to center the windows
-    audio_signal = np.pad(audio_signal, (padding_length, (number_times * step_length + (window_length - step_length) - padding_length) - number_samples), \
-        'constant', constant_values=0)
+    audio_signal = np.pad(
+        audio_signal,
+        (
+            padding_length,
+            (
+                number_times * step_length
+                + (window_length - step_length)
+                - padding_length
+            )
+            - number_samples,
+        ),
+        "constant",
+        constant_values=0,
+    )
 
     # Initialize the STFT
     audio_stft = np.zeros((window_length, number_times))
 
     # Loop over the time frames
-    sample_index = 0
-    for time_index in range(0, number_times):
-        
+    i = 0
+    for j in range(0, number_times):
+
         # Window the signal
-        audio_stft[:, time_index] = audio_signal[sample_index:sample_index + window_length] * window_function
-        sample_index = sample_index + step_length
+        audio_stft[:, j] = audio_signal[i : i + window_length] * window_function
+        i = i + step_length
 
     # Compute the Fourier transform of the frames
     audio_stft = np.fft.fft(audio_stft, axis=0)
@@ -209,11 +231,15 @@ def istft(audio_stft, window_function, step_length):
 
         # Constant overlap-add (if proper window and step)
         sample_index = time_index * step_length
-        audio_signal[sample_index:window_length + sample_index] \
-            = audio_signal[sample_index:window_length + sample_index] + audio_stft[:, time_index]
+        audio_signal[sample_index : window_length + sample_index] = (
+            audio_signal[sample_index : window_length + sample_index]
+            + audio_stft[:, time_index]
+        )
 
     # Remove the zero-padding at the start and end
-    audio_signal = audio_signal[window_length - step_length:number_samples - (window_length - step_length)]
+    audio_signal = audio_signal[
+        window_length - step_length : number_samples - (window_length - step_length)
+    ]
 
     # Un-apply window (just in case)
     audio_signal = audio_signal / sum(window_function[0:window_length:step_length])
@@ -264,10 +290,14 @@ def cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_freq
     quality_factor = 1 / (2 ** (1 / octave_resolution) - 1)
 
     # Number of frequency channels for the CQT
-    number_frequencies = int(round(octave_resolution * np.log2(maximum_frequency / minimum_frequency)))
+    number_frequencies = int(
+        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
+    )
 
     # Window length for the FFT (= window length of the minimum frequency = longest window)
-    fft_length = int(2 ** np.ceil(np.log2(quality_factor * sample_rate / minimum_frequency)))
+    fft_length = int(
+        2 ** np.ceil(np.log2(quality_factor * sample_rate / minimum_frequency))
+    )
 
     # Initialize the kernel
     cqt_kernel = np.zeros((number_frequencies, fft_length), dtype=complex)
@@ -279,16 +309,31 @@ def cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_freq
         frequency_value = minimum_frequency * 2 ** (frequency_index / octave_resolution)
 
         # Window length (nearest odd value because the complex exponential will have an odd length, in samples)
-        window_length = 2 * round(quality_factor * sample_rate / frequency_value / 2) + 1
+        window_length = (
+            2 * round(quality_factor * sample_rate / frequency_value / 2) + 1
+        )
 
         # Temporal kernel (without zero-padding, odd and symmetric)
-        temporal_kernel = np.hamming(window_length) \
-            * np.exp(2 * np.pi * 1j * quality_factor
-                     * np.arange(-(window_length - 1) / 2, (window_length - 1) / 2 + 1) / window_length) / window_length
+        temporal_kernel = (
+            np.hamming(window_length)
+            * np.exp(
+                2
+                * np.pi
+                * 1j
+                * quality_factor
+                * np.arange(-(window_length - 1) / 2, (window_length - 1) / 2 + 1)
+                / window_length
+            )
+            / window_length
+        )
 
         # Pre zero-padding to center FFTs (fft does post zero-padding; temporal kernel still odd but almost symmetric)
-        temporal_kernel = np.pad(temporal_kernel, (int((fft_length - window_length + 1) / 2), 0),
-                                 'constant', constant_values=0)
+        temporal_kernel = np.pad(
+            temporal_kernel,
+            (int((fft_length - window_length + 1) / 2), 0),
+            "constant",
+            constant_values=0,
+        )
 
         # Spectral kernel (mostly real because temporal kernel almost symmetric)
         spectral_kernel = np.fft.fft(temporal_kernel, fft_length)
@@ -368,9 +413,15 @@ def cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel):
     number_frequencies, fft_length = np.shape(cqt_kernel)
 
     # Zero-padding to center the CQT
-    audio_signal = np.pad(audio_signal, (int(np.ceil((fft_length - step_length) / 2)),
-                                         int(np.floor((fft_length - step_length) / 2))), 'constant',
-                          constant_values=(0, 0))
+    audio_signal = np.pad(
+        audio_signal,
+        (
+            int(np.ceil((fft_length - step_length) / 2)),
+            int(np.floor((fft_length - step_length) / 2)),
+        ),
+        "constant",
+        constant_values=(0, 0),
+    )
 
     # Initialize the spectrogram
     audio_spectrogram = np.zeros((number_frequencies, number_times))
@@ -380,13 +431,17 @@ def cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel):
 
         # Magnitude CQT using the kernel
         sample_index = time_index * step_length
-        audio_spectrogram[:, time_index] \
-            = abs(cqt_kernel * np.fft.fft(audio_signal[sample_index:sample_index + fft_length]))
+        audio_spectrogram[:, time_index] = abs(
+            cqt_kernel
+            * np.fft.fft(audio_signal[sample_index : sample_index + fft_length])
+        )
 
     return audio_spectrogram
 
 
-def cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resolution, cqt_kernel):
+def cqtchromagram(
+    audio_signal, sample_rate, time_resolution, frequency_resolution, cqt_kernel
+):
     """
     cqtchromagram Constant-Q transform (CQT) chromagram using a kernel
         audio_chromagram = z.cqtchromagram(audio_signal,sample_rate,time_resolution,frequency_resolution,cqt_kernel)
@@ -435,7 +490,9 @@ def cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resoluti
     """
 
     # CQT spectrogram
-    audio_spectrogram = cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+    audio_spectrogram = cqtspectrogram(
+        audio_signal, sample_rate, time_resolution, cqt_kernel
+    )
 
     # Number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
@@ -450,8 +507,9 @@ def cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resoluti
     for chroma_index in range(0, number_chromas):
 
         # Sum the energy of the frequency channels for every chroma
-        audio_chromagram[chroma_index, :] \
-            = np.sum(audio_spectrogram[chroma_index:number_frequencies:number_chromas, :], 0)
+        audio_chromagram[chroma_index, :] = np.sum(
+            audio_spectrogram[chroma_index:number_frequencies:number_chromas, :], 0
+        )
 
     return audio_chromagram
 
@@ -515,16 +573,22 @@ def mfcc(audio_signal, sample_rate, number_filters, number_coefficients):
 
     # Magnitude spectrogram (without the DC component and the mirrored frequencies)
     audio_stft = stft(audio_signal, window_function, step_length)
-    audio_spectrogram = abs(audio_stft[1:int(window_length / 2) + 1, :])
+    audio_spectrogram = abs(audio_stft[1 : int(window_length / 2) + 1, :])
 
     # Minimum and maximum mel frequencies
     mininum_melfrequency = 2595 * np.log10(1 + (sample_rate / window_length) / 700)
     maximum_melfrequency = 2595 * np.log10(1 + (sample_rate / 2) / 700)
 
     # Indices of the overlapping filters (linearly spaced in the mel scale and log spaced in the linear scale)
-    filter_width = 2 * (maximum_melfrequency - mininum_melfrequency) / (number_filters + 1)
-    filter_indices = np.arange(mininum_melfrequency, maximum_melfrequency + 1, filter_width / 2)
-    filter_indices = np.round(700 * (np.power(10, filter_indices / 2595) - 1) * window_length / sample_rate).astype(int)
+    filter_width = (
+        2 * (maximum_melfrequency - mininum_melfrequency) / (number_filters + 1)
+    )
+    filter_indices = np.arange(
+        mininum_melfrequency, maximum_melfrequency + 1, filter_width / 2
+    )
+    filter_indices = np.round(
+        700 * (np.power(10, filter_indices / 2595) - 1) * window_length / sample_rate
+    ).astype(int)
 
     # Initialize the filter bank
     filter_bank = np.zeros((number_filters, int(window_length / 2)))
@@ -533,16 +597,32 @@ def mfcc(audio_signal, sample_rate, number_filters, number_coefficients):
     for filter_index in range(0, number_filters):
 
         # Left and right sides of the triangular overlapping filters (linspace more accurate than triang or bartlett!)
-        filter_bank[filter_index, filter_indices[filter_index] - 1:filter_indices[filter_index + 1]] \
-            = np.linspace(0, 1, num=filter_indices[filter_index + 1] - filter_indices[filter_index] + 1)
-        filter_bank[filter_index, filter_indices[filter_index + 1] - 1:filter_indices[filter_index + 2]] \
-            = np.linspace(1, 0, num=filter_indices[filter_index + 2] - filter_indices[filter_index + 1] + 1)
+        filter_bank[
+            filter_index,
+            filter_indices[filter_index] - 1 : filter_indices[filter_index + 1],
+        ] = np.linspace(
+            0,
+            1,
+            num=filter_indices[filter_index + 1] - filter_indices[filter_index] + 1,
+        )
+        filter_bank[
+            filter_index,
+            filter_indices[filter_index + 1] - 1 : filter_indices[filter_index + 2],
+        ] = np.linspace(
+            1,
+            0,
+            num=filter_indices[filter_index + 2] - filter_indices[filter_index + 1] + 1,
+        )
 
     # Discrete cosine transform of the log of the magnitude spectrogram mapped onto the mel scale using the filter bank
-    audio_mfcc = scipy.fftpack.dct(np.log(np.dot(filter_bank, audio_spectrogram) + np.spacing(1)), axis=0, norm='ortho')
+    audio_mfcc = scipy.fftpack.dct(
+        np.log(np.dot(filter_bank, audio_spectrogram) + np.spacing(1)),
+        axis=0,
+        norm="ortho",
+    )
 
     # The first coefficients (without the 0th) represent the MFCCs
-    audio_mfcc = audio_mfcc[1:number_coefficients + 1, :]
+    audio_mfcc = audio_mfcc[1 : number_coefficients + 1, :]
 
     return audio_mfcc
 
@@ -611,16 +691,25 @@ def dct(audio_signal, dct_type):
         window_length = np.size(audio_signal, 0)
 
         # Pre-processing to make the DCT-I matrix orthogonal (concatenate to avoid the input to change!)
-        audio_signal = np.concatenate((audio_signal[0:1, :] * np.sqrt(2), audio_signal[1:window_length - 1, :],
-                                       audio_signal[window_length - 1:window_length, :] * np.sqrt(2)))
+        audio_signal = np.concatenate(
+            (
+                audio_signal[0:1, :] * np.sqrt(2),
+                audio_signal[1 : window_length - 1, :],
+                audio_signal[window_length - 1 : window_length, :] * np.sqrt(2),
+            )
+        )
 
         # Compute the DCT-I using the FFT
-        audio_dct = np.concatenate((audio_signal, audio_signal[window_length - 2:0:-1, :]))
+        audio_dct = np.concatenate(
+            (audio_signal, audio_signal[window_length - 2 : 0 : -1, :])
+        )
         audio_dct = np.fft.fft(audio_dct, axis=0)
         audio_dct = np.real(audio_dct[0:window_length, :]) / 2
 
         # Post-processing to make the DCT-I matrix orthogonal
-        audio_dct[[0, window_length - 1], :] = audio_dct[[0, window_length - 1], :] / np.sqrt(2)
+        audio_dct[[0, window_length - 1], :] = audio_dct[
+            [0, window_length - 1], :
+        ] / np.sqrt(2)
         audio_dct = audio_dct * np.sqrt(2 / (window_length - 1))
 
         return audio_dct
@@ -632,8 +721,10 @@ def dct(audio_signal, dct_type):
 
         # Compute the DCT-II using the FFT
         audio_dct = np.zeros((4 * window_length, number_frames))
-        audio_dct[1:2 * window_length:2, :] = audio_signal
-        audio_dct[2 * window_length + 1:4 * window_length:2, :] = audio_signal[window_length - 1::-1, :]
+        audio_dct[1 : 2 * window_length : 2, :] = audio_signal
+        audio_dct[2 * window_length + 1 : 4 * window_length : 2, :] = audio_signal[
+            window_length - 1 :: -1, :
+        ]
         audio_dct = np.fft.fft(audio_dct, axis=0)
         audio_dct = np.real(audio_dct[0:window_length, :]) / 2
 
@@ -649,16 +740,24 @@ def dct(audio_signal, dct_type):
         window_length, number_frames = np.shape(audio_signal)
 
         # Pre-processing to make the DCT-III matrix orthogonal (concatenate to avoid the input to change!)
-        audio_signal = np.concatenate((audio_signal[0:1, :] * np.sqrt(2), audio_signal[1:window_length, :]))
+        audio_signal = np.concatenate(
+            (audio_signal[0:1, :] * np.sqrt(2), audio_signal[1:window_length, :])
+        )
 
         # Compute the DCT-III using the FFT
         audio_dct = np.zeros((4 * window_length, number_frames))
         audio_dct[0:window_length, :] = audio_signal
-        audio_dct[window_length + 1:2 * window_length + 1, :] = -audio_signal[window_length - 1::-1, :]
-        audio_dct[2 * window_length + 1:3 * window_length, :] = -audio_signal[1:window_length, :]
-        audio_dct[3 * window_length + 1:4 * window_length, :] = audio_signal[window_length - 1:0:-1, :]
+        audio_dct[window_length + 1 : 2 * window_length + 1, :] = -audio_signal[
+            window_length - 1 :: -1, :
+        ]
+        audio_dct[2 * window_length + 1 : 3 * window_length, :] = -audio_signal[
+            1:window_length, :
+        ]
+        audio_dct[3 * window_length + 1 : 4 * window_length, :] = audio_signal[
+            window_length - 1 : 0 : -1, :
+        ]
         audio_dct = np.fft.fft(audio_dct, axis=0)
-        audio_dct = np.real(audio_dct[1:2 * window_length:2, :]) / 4
+        audio_dct = np.real(audio_dct[1 : 2 * window_length : 2, :]) / 4
 
         # Post-processing to make the DCT-III matrix orthogonal
         audio_dct = audio_dct * np.sqrt(2 / window_length)
@@ -672,12 +771,16 @@ def dct(audio_signal, dct_type):
 
         # Compute the DCT-IV using the FFT
         audio_dct = np.zeros((8 * window_length, number_frames))
-        audio_dct[1:2 * window_length:2, :] = audio_signal
-        audio_dct[2 * window_length + 1:4 * window_length:2, :] = -audio_signal[window_length - 1::-1, :]
-        audio_dct[4 * window_length + 1:6 * window_length:2, :] = -audio_signal
-        audio_dct[6 * window_length + 1:8 * window_length:2, :] = audio_signal[window_length - 1::-1, :]
+        audio_dct[1 : 2 * window_length : 2, :] = audio_signal
+        audio_dct[2 * window_length + 1 : 4 * window_length : 2, :] = -audio_signal[
+            window_length - 1 :: -1, :
+        ]
+        audio_dct[4 * window_length + 1 : 6 * window_length : 2, :] = -audio_signal
+        audio_dct[6 * window_length + 1 : 8 * window_length : 2, :] = audio_signal[
+            window_length - 1 :: -1, :
+        ]
         audio_dct = np.fft.fft(audio_dct, axis=0)
-        audio_dct = np.real(audio_dct[1:2 * window_length:2, :]) / 4
+        audio_dct = np.real(audio_dct[1 : 2 * window_length : 2, :]) / 4
 
         # Post-processing to make the DCT-IV matrix orthogonal
         audio_dct = np.sqrt(2 / window_length) * audio_dct
@@ -747,10 +850,16 @@ def dst(audio_signal, dst_type):
         window_length, number_frames = np.shape(audio_signal)
 
         # Compute the DST-I using the FFT
-        audio_dst = np.concatenate((np.zeros((1, number_frames)), audio_signal, np.zeros((1, number_frames)),
-                                    -audio_signal[window_length - 1::-1, :]))
+        audio_dst = np.concatenate(
+            (
+                np.zeros((1, number_frames)),
+                audio_signal,
+                np.zeros((1, number_frames)),
+                -audio_signal[window_length - 1 :: -1, :],
+            )
+        )
         audio_dst = np.fft.fft(audio_dst, axis=0)
-        audio_dst = -np.imag(audio_dst[1:window_length + 1, :]) / 2
+        audio_dst = -np.imag(audio_dst[1 : window_length + 1, :]) / 2
 
         # Post-processing to make the DST-I matrix orthogonal
         audio_dst = audio_dst * np.sqrt(2 / (window_length + 1))
@@ -764,10 +873,12 @@ def dst(audio_signal, dst_type):
 
         # Compute the DST-II using the FFT
         audio_dst = np.zeros((4 * window_length, number_frames))
-        audio_dst[1:2 * window_length:2, :] = audio_signal
-        audio_dst[2 * window_length + 1:4 * window_length:2, :] = -audio_signal[window_length - 1::-1, :]
+        audio_dst[1 : 2 * window_length : 2, :] = audio_signal
+        audio_dst[2 * window_length + 1 : 4 * window_length : 2, :] = -audio_signal[
+            window_length - 1 :: -1, :
+        ]
         audio_dst = np.fft.fft(audio_dst, axis=0)
-        audio_dst = -np.imag(audio_dst[1:window_length + 1, :]) / 2
+        audio_dst = -np.imag(audio_dst[1 : window_length + 1, :]) / 2
 
         # Post-processing to make the DST-II matrix orthogonal
         audio_dst[window_length - 1, :] = audio_dst[window_length - 1, :] / np.sqrt(2)
@@ -781,17 +892,25 @@ def dst(audio_signal, dst_type):
         window_length, number_frames = np.shape(audio_signal)
 
         # Pre-processing to make the DST-III matrix orthogonal (concatenate to avoid the input to change!)
-        audio_signal = np.concatenate((audio_signal[0:window_length - 1, :],
-                                       audio_signal[window_length - 1:window_length, :] * np.sqrt(2)))
+        audio_signal = np.concatenate(
+            (
+                audio_signal[0 : window_length - 1, :],
+                audio_signal[window_length - 1 : window_length, :] * np.sqrt(2),
+            )
+        )
 
         # Compute the DST-III using the FFT
         audio_dst = np.zeros((4 * window_length, number_frames))
-        audio_dst[1:window_length + 1, :] = audio_signal
-        audio_dst[window_length + 1:2 * window_length, :] = audio_signal[window_length - 2::-1, :]
-        audio_dst[2 * window_length + 1:3 * window_length + 1, :] = -audio_signal
-        audio_dst[3 * window_length + 1:4 * window_length, :] = -audio_signal[window_length - 2::-1, :]
+        audio_dst[1 : window_length + 1, :] = audio_signal
+        audio_dst[window_length + 1 : 2 * window_length, :] = audio_signal[
+            window_length - 2 :: -1, :
+        ]
+        audio_dst[2 * window_length + 1 : 3 * window_length + 1, :] = -audio_signal
+        audio_dst[3 * window_length + 1 : 4 * window_length, :] = -audio_signal[
+            window_length - 2 :: -1, :
+        ]
         audio_dst = np.fft.fft(audio_dst, axis=0)
-        audio_dst = -np.imag(audio_dst[1:2 * window_length:2, :]) / 4
+        audio_dst = -np.imag(audio_dst[1 : 2 * window_length : 2, :]) / 4
 
         # Post-processing to make the DST-III matrix orthogonal
         audio_dst = audio_dst * np.sqrt(2 / window_length)
@@ -805,12 +924,16 @@ def dst(audio_signal, dst_type):
 
         # Compute the DST-IV using the FFT
         audio_dst = np.zeros((8 * window_length, number_frames))
-        audio_dst[1:2 * window_length:2, :] = audio_signal
-        audio_dst[2 * window_length + 1:4 * window_length:2, :] = audio_signal[window_length - 1::-1, :]
-        audio_dst[4 * window_length + 1:6 * window_length:2, :] = -audio_signal
-        audio_dst[6 * window_length + 1:8 * window_length:2, :] = -audio_signal[window_length - 1::-1, :]
+        audio_dst[1 : 2 * window_length : 2, :] = audio_signal
+        audio_dst[2 * window_length + 1 : 4 * window_length : 2, :] = audio_signal[
+            window_length - 1 :: -1, :
+        ]
+        audio_dst[4 * window_length + 1 : 6 * window_length : 2, :] = -audio_signal
+        audio_dst[6 * window_length + 1 : 8 * window_length : 2, :] = -audio_signal[
+            window_length - 1 :: -1, :
+        ]
         audio_dst = np.fft.fft(audio_dst, axis=0)
-        audio_dst = -np.imag(audio_dst[1:2 * window_length:2, :]) / 4
+        audio_dst = -np.imag(audio_dst[1 : 2 * window_length : 2, :]) / 4
 
         # Post-processing to make the DST-IV matrix orthogonal
         audio_dst = audio_dst * np.sqrt(2 / window_length)
@@ -821,7 +944,6 @@ def dst(audio_signal, dst_type):
 def mdct(audio_signal, window_function):
     """
     mdct Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
-        audio_mdct = z.mdct(audio_signal,window_function)
 
     Arguments:
         audio_signal: audio signal [number_samples, 0]
@@ -872,30 +994,47 @@ def mdct(audio_signal, window_function):
     number_times = int(np.ceil(2 * number_samples / window_length) + 1)
 
     # Pre and post zero-padding of the signal
-    audio_signal = np.pad(audio_signal,
-                          (int(window_length / 2), int((number_times + 1) * window_length / 2 - number_samples)),
-                          'constant', constant_values=0)
+    audio_signal = np.pad(
+        audio_signal,
+        (
+            int(window_length / 2),
+            int((number_times + 1) * window_length / 2 - number_samples),
+        ),
+        "constant",
+        constant_values=0,
+    )
 
     # Initialize the MDCT
     audio_mdct = np.zeros((int(window_length / 2), number_times))
 
     # Pre and post-processing arrays
-    preprocessing_array = np.exp(-1j * np.pi / window_length * np.arange(0, window_length))
-    postprocessing_array = np.exp(-1j * np.pi / window_length * (window_length / 2 + 1)
-                                  * np.arange(0.5, window_length / 2 + 0.5))
+    preprocessing_array = np.exp(
+        -1j * np.pi / window_length * np.arange(0, window_length)
+    )
+    postprocessing_array = np.exp(
+        -1j
+        * np.pi
+        / window_length
+        * (window_length / 2 + 1)
+        * np.arange(0.5, window_length / 2 + 0.5)
+    )
 
     # Loop over the time frames
     for time_index in range(0, number_times):
 
         # Window the signal
         sample_index = time_index * int(window_length / 2)
-        audio_segment = audio_signal[sample_index:sample_index + window_length] * window_function
+        audio_segment = (
+            audio_signal[sample_index : sample_index + window_length] * window_function
+        )
 
         # FFT of the audio segment after pre-processing
         audio_segment = np.fft.fft(audio_segment * preprocessing_array)
 
         # Truncate to the first half before post-processing
-        audio_mdct[:, time_index] = np.real(audio_segment[0:int(window_length / 2)] * postprocessing_array)
+        audio_mdct[:, time_index] = np.real(
+            audio_segment[0 : int(window_length / 2)] * postprocessing_array
+        )
 
     return audio_mdct
 
@@ -903,7 +1042,6 @@ def mdct(audio_signal, window_function):
 def imdct(audio_mdct, window_function):
     """
     imdct Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
-        audio_signal = z.imdct(audio_mdct,window_function)
 
     Arguments:
         audio_mdct: audio MDCT [number_frequencies, number_times]
@@ -960,15 +1098,30 @@ def imdct(audio_mdct, window_function):
     audio_signal = np.zeros(number_samples)
 
     # Pre and post-processing arrays
-    preprocessing_array = np.exp(-1j * np.pi / (2 * number_frequencies)
-                                 * (number_frequencies + 1) * np.arange(0, number_frequencies))
-    postprocessing_array = np.exp(-1j * np.pi / (2 * number_frequencies)
-                                  * np.arange(0.5 + number_frequencies / 2,
-                                              2 * number_frequencies + number_frequencies / 2 + 0.5)) \
+    preprocessing_array = np.exp(
+        -1j
+        * np.pi
+        / (2 * number_frequencies)
+        * (number_frequencies + 1)
+        * np.arange(0, number_frequencies)
+    )
+    postprocessing_array = (
+        np.exp(
+            -1j
+            * np.pi
+            / (2 * number_frequencies)
+            * np.arange(
+                0.5 + number_frequencies / 2,
+                2 * number_frequencies + number_frequencies / 2 + 0.5,
+            )
+        )
         / number_frequencies
+    )
 
     # FFT of the frames after pre-processing
-    audio_mdct = np.fft.fft(audio_mdct.T * preprocessing_array, n=2 * number_frequencies, axis=1)
+    audio_mdct = np.fft.fft(
+        audio_mdct.T * preprocessing_array, n=2 * number_frequencies, axis=1
+    )
 
     # Apply the window to the frames after post-processing
     audio_mdct = 2 * (np.real(audio_mdct * postprocessing_array) * window_function).T
@@ -978,11 +1131,13 @@ def imdct(audio_mdct, window_function):
 
         # Recover the signal thanks to the time-domain aliasing cancellation (TDAC) principle
         sample_index = time_index * number_frequencies
-        audio_signal[sample_index:sample_index + 2 * number_frequencies] \
-            = audio_signal[sample_index:sample_index + 2 * number_frequencies] + audio_mdct[:, time_index]
+        audio_signal[sample_index : sample_index + 2 * number_frequencies] = (
+            audio_signal[sample_index : sample_index + 2 * number_frequencies]
+            + audio_mdct[:, time_index]
+        )
 
     # Remove the pre and post zero-padding
-    audio_signal = audio_signal[number_frequencies:-number_frequencies - 1]
+    audio_signal = audio_signal[number_frequencies : -number_frequencies - 1]
 
     return audio_signal
 
@@ -990,7 +1145,7 @@ def imdct(audio_mdct, window_function):
 def wavread(audio_file):
     """
     WAVE reader (using SciPy)
-    
+
     Inputs:
         audio_file: path to an audio file
     Output:
@@ -998,10 +1153,70 @@ def wavread(audio_file):
         sampling_frequency: sampling frequency in Hz
     """
 
-    # Read the sampling frequency in Hz and non-normalized signal using SciPy
+    # Read the audio file and return the sampling frequency in Hz and the non-normalized signal using SciPy
     sampling_frequency, audio_signal = scipy.io.wavfile.read(audio_file)
 
-    # Normalize the signal (in [-1,1])
-    audio_signal = audio_signal / np.power(2, audio_signal.itemsize*8 - 1)
-    
+    # Normalize the signal by the data range given the size of an item in bytes
+    audio_signal = audio_signal / np.power(2, audio_signal.itemsize * 8 - 1)
+
     return audio_signal, sampling_frequency
+
+
+def specshow(
+    audio_spectrogram,
+    number_samples,
+    sampling_frequency,
+    xtick_resolution=1,
+    ytick_resolution=1000,
+):
+    """
+    Display a magnitude spectrogram in dB, seconds, and Hz
+
+    Inputs:
+        audio_spectrogram: magnitude spectrogram (without DC and mirrored frequencies) [number_frequencies, number_times]
+        number_samples: number of samples from the original signal
+        sampling_frequency: sampling frequency from the original signal in Hz
+        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
+        ytick_resolution: resolution for the y-axis ticks in Hz (default: 1000 Hz)
+    """
+
+    # Get the number of frequency channels and time frames
+    number_frequencies, number_times = np.shape(audio_spectrogram)
+
+    # Derive the number of Hertz and seconds
+    number_hertz = sampling_frequency / 2
+    number_seconds = number_samples / sampling_frequency
+
+    # Derive the frequency and time resolutions (i.e., the size of one time-frequency bin in Hz and second)
+    frequency_resolution = number_hertz / number_frequencies
+    time_resolution = number_seconds / number_times
+
+    # Prepare the tick locations and labels for the x-axis
+    x_ticks = np.arange(
+        xtick_resolution / time_resolution,
+        number_times,
+        xtick_resolution / time_resolution,
+    )
+    x_labels = np.arange(xtick_resolution, number_seconds + 1, xtick_resolution).astype(
+        int
+    )
+
+    # Prepare the tick locations and labels for the y-axis
+    y_ticks = np.arange(
+        ytick_resolution / frequency_resolution,
+        number_frequencies,
+        ytick_resolution / frequency_resolution,
+    )
+    y_labels = np.arange(ytick_resolution, number_hertz + 1, ytick_resolution).astype(
+        int
+    )
+
+    # Display the spectrogram in dB, second, and Hz
+    plt.imshow(
+        20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
+    )
+    plt.xticks(ticks=x_ticks, labels=x_labels)
+    plt.yticks(ticks=y_ticks, labels=y_labels)
+    plt.title("Spectrogram (dB)")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Frequency (Hz)")
