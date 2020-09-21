@@ -16,6 +16,7 @@ Functions:
 - [mdct - Modified discrete cosine transform (MDCT) using the FFT](#mdct-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 - [imdct - Inverse MDCT using the FFT](#imdct-inverse-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
 
+
 ### stft Short-time Fourier transform (STFT)
 
 `audio_stft = stft(audio_signal, window_function, step_length)`
@@ -69,7 +70,7 @@ plt.title("Spectrogram (dB)")
 plt.show()
 ```
 
-<img src="images/python/stft.png" width="1000">
+<img src="images/stft.png" width="1000">
 
 
 ### istft Inverse short-time Fourier transform (STFT)
@@ -140,7 +141,8 @@ zaf.sigplot(sides_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 
 plt.show()
 ```
 
-<img src="images/python/istft.png" width="1000">
+<img src="images/istft.png" width="1000">
+
 
 ### cqtkernel Constant-Q transform (CQT) kernel
 
