@@ -77,11 +77,15 @@ plt.show()
 
 `audio_signal = istft(audio_stft, window_function, step_length)`
 
-Arguments:
+### Inputs
 ```
 audio_stft: audio STFT [window_length, number_frames]
 window_function: window function [window_length]
 step_length: step length in samples
+```
+
+### Output
+```
 audio_signal: audio signal [number_samples]
 ```
 
@@ -130,7 +134,7 @@ sides_signal = audio_signal-center_signal
 zaf.wavwrite(center_signal, sampling_frequency, 'center_file.wav')
 zaf.wavwrite(sides_signal, sampling_frequency, 'sides_file.wav')
 
-# Original, center, and sides signals displayed in s
+# Display the original, center, and sides signals in seconds
 plt.figure(figsize=(17, 10))
 plt.subplot(311),
 zaf.sigplot(audio_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Original Signal")
