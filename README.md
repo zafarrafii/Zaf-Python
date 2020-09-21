@@ -77,11 +77,15 @@ plt.show()
 
 `audio_signal = istft(audio_stft, window_function, step_length)`
 
-Arguments:
+### Inputs
 ```
 audio_stft: audio STFT [window_length, number_frames]
 window_function: window function [window_length]
 step_length: step length in samples
+```
+
+### Output
+```
 audio_signal: audio signal [number_samples]
 ```
 
