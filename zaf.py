@@ -14,7 +14,9 @@ Functions:
     imdct - Inverse MDCT using the FFT
 
 Other:
-    wavread - WAVE reader (using SciPy)
+    wavread - Read a WAVE file (using Scipy)
+    wavwrite - Write a WAVE file (using Scipy)
+    sigplot - Plot an audio signal in seconds
     specshow - Display a magnitude spectrogram in dB, seconds, and Hz
 
 Author:
@@ -23,7 +25,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/17/20
+    09/21/20
 """
 
 import numpy as np
@@ -40,50 +42,43 @@ def stft(audio_signal, window_function, step_length):
 
     Inputs:
         audio_signal: audio signal [number_samples, 0]
-        window_function: window function [window_length, 0]
+        window_function: window function [window_length]
         step_length: step length in samples
     Output:
         audio_stft: audio STFT [window_length, number_frames]
 
     Example: Compute and display the spectrogram from an audio file
         # Import modules
-        import scipy.io.wavfile
         import numpy as np
         import scipy.signal
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Audio signal (normalized) averaged over its channels and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
         audio_signal = np.mean(audio_signal, 1)
 
-        # Window duration in seconds (audio is stationary around 40 milliseconds)
+        # Set the window duration in seconds (audio is stationary around 40 milliseconds)
         window_duration = 0.04
 
-        # Window length in samples (power of 2 for fast FFT and constant overlap-add (COLA))
-        window_length = int(2**np.ceil(np.log2(window_duration*sample_rate)))
+        # Derive the window length in samples (use powers of 2 for faster FFT and constant overlap-add (COLA))
+        window_length = int(np.power(2, np.ceil(np.log2(window_duration * sampling_frequency))))
 
-        # Window function (periodic Hamming window for COLA)
+        # Compute the window function (use SciPy's periodic Hamming window for COLA as NumPy's Hamming window is symmetric)
         window_function = scipy.signal.hamming(window_length, False)
 
-        # Step length in samples (half the window length for COLA)
+        # Set the step length in samples (half of the window length for COLA)
         step_length = int(window_length/2)
 
-        # Magnitude spectrogram (without the DC component and the mirrored frequencies)
-        audio_stft = z.stft(audio_signal, window_function, step_length)
-        audio_spectrogram = abs(audio_stft[1:int(window_length/2+1), :])
+        # Compute the STFT
+        audio_stft = zaf.stft(audio_signal, window_function, step_length)
 
-        # Spectrogram displayed in dB, s, and kHz
-        plt.rc('font', size=30)
-        plt.imshow(20*np.log10(audio_spectrogram), aspect='auto', cmap='jet', origin='lower')
-        plt.title('Spectrogram (dB)')
-        plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/step_length),
-                   np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-        plt.xlabel('Time (s)')
-        plt.yticks(np.round(np.arange(1e3, sample_rate/2+1, 1e3)/sample_rate*window_length),
-                   np.arange(1, int(sample_rate/2*1e3)+1))
-        plt.ylabel('Frequency (kHz)')
+        # Derive the magnitude spectrogram without the DC component and the mirrored frequencies
+        audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
+
+        # Display the spectrogram in dB, second, and Hz (with a resolution of 1 second and 1 kHz)
+        plt.figure(figsize=(17, 10))
+        zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_resolution=1, ytick_resolution=1000)
         plt.show()
     """
 
@@ -143,105 +138,94 @@ def istft(audio_stft, window_function, step_length):
 
     Inputs:
         audio_stft: audio STFT [window_length, number_frames]
-        window_function: window function [window_length, 0]
+        window_function: window function [window_length]
         step_length: step length in samples
     Output:
-        audio_signal: audio signal [number_samples, 0]
+        audio_signal: audio signal [number_samples]
 
-    Example: Estimate the center and sides signals of a stereo audio file
+    Example: Estimate the center and the sides from a stereo audio file
         # Import modules
-        import scipy.io.wavfile
         import numpy as np
         import scipy.signal
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Stereo audio signal (normalized) and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+        # Read the (stereo) audio signal with its sampling frequency in Hz
+        audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 
-        # Parameters for the STFT
-        window_duration = 0.04
-        window_length = int(2**np.ceil(np.log2(window_duration*sample_rate)))
+        # Set the parameters for the STFT
+        window_length = int(np.power(2, np.ceil(np.log2(0.04 * sampling_frequency))))
         window_function = scipy.signal.hamming(window_length, False)
         step_length = int(window_length/2)
 
-        # STFT of the left and right channels
-        audio_stft1 = z.stft(audio_signal[:, 0], window_function, step_length)
-        audio_stft2 = z.stft(audio_signal[:, 1], window_function, step_length)
+        # Compute the STFTs for the left and right channels
+        audio_stft1 = zaf.stft(audio_signal[:, 0], window_function, step_length)
+        audio_stft2 = zaf.stft(audio_signal[:, 1], window_function, step_length)
 
-        # Magnitude spectrogram (with DC component) of the left and right channels
+        # Derive the magnitude spectrograms (with DC component) for the left and right channels
         audio_spectrogram1 = abs(audio_stft1[0:int(window_length/2)+1, :])
         audio_spectrogram2 = abs(audio_stft2[0:int(window_length/2)+1, :])
 
-        # Time-frequency masks of the left and right channels for the center signal
+        # Estimate the time-frequency masks for the left and right channels for the center
         center_mask1 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram1
         center_mask2 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram2
 
-        # STFT of the left and right channels for the center signal (with extension to mirrored frequencies)
-        center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[int(window_length/2)-1:0:-1, :])),
-                                   audio_stft1)
-        center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[int(window_length/2)-1:0:-1, :])),
-                                   audio_stft2)
+        # Derive the STFTs for the left and right channels for the center (with mirrored frequencies)
+        center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[int(window_length/2)-1:0:-1, :])), audio_stft1)
+        center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[int(window_length/2)-1:0:-1, :])), audio_stft2)
 
-        # Synthesized signals of the left and right channels for the center signal
-        center_signal1 = z.istft(center_stft1, window_function, step_length)
-        center_signal2 = z.istft(center_stft2, window_function, step_length)
+        # Synthesize the signals for the left and right channels for the center
+        center_signal1 = zaf.istft(center_stft1, window_function, step_length)
+        center_signal2 = zaf.istft(center_stft2, window_function, step_length)
 
-        # Final stereo center and sides signals
-        center_signal = np.stack((center_signal1, center_signal2), 1)
+        # Derive the final stereo center and sides signals
+        center_signal = np.stack((center_signal1, center_signal2), axis=1)
         center_signal = center_signal[0:len(audio_signal), :]
         sides_signal = audio_signal-center_signal
 
-        # Synthesized center and side signals (un-normalized)
-        scipy.io.wavfile.write('center_signal.wav', sample_rate, center_signal)
-        scipy.io.wavfile.write('sides_signal.wav', sample_rate, sides_signal)
+        # Write the center and sides signals
+        zaf.wavwrite(center_signal, sampling_frequency, 'center_file.wav')
+        zaf.wavwrite(sides_signal, sampling_frequency, 'sides_file.wav')
 
         # Original, center, and sides signals displayed in s
-        plt.rc('font', size=30)
-        plt.subplot(3, 1, 1), plt.plot(audio_signal), plt.autoscale(tight=True), plt.title("Original Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
-        plt.subplot(3, 1, 2), plt.plot(center_signal), plt.autoscale(tight=True), plt.title("Center Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
-        plt.subplot(3, 1, 3), plt.plot(sides_signal), plt.autoscale(tight=True), plt.title("Sides Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
+        plt.figure(figsize=(17, 10))
+        plt.subplot(311),
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Original Signal")
+        plt.subplot(312)
+        zaf.sigplot(center_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Center Signal")
+        plt.subplot(313)
+        zaf.sigplot(sides_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Sides Signal")
         plt.show()
     """
 
-    # Window length in samples and number of time frames
+    # Get the window length in samples and the number of time frames
     window_length, number_times = np.shape(audio_stft)
 
-    # Number of samples for the signal
-    number_samples = (number_times - 1) * step_length + window_length
+    # Derive the number of samples for the signal
+    number_samples = number_times * step_length + (window_length - step_length)
 
     # Initialize the signal
     audio_signal = np.zeros(number_samples)
 
-    # Inverse Fourier transform of the frames and real part to ensure real values
+    # Compute the inverse Fourier transform of the frames and take the real part to ensure real values
     audio_stft = np.real(np.fft.ifft(audio_stft, axis=0))
 
     # Loop over the time frames
-    for time_index in range(0, number_times):
+    i = 0
+    for j in range(0, number_times):
 
-        # Constant overlap-add (if proper window and step)
-        sample_index = time_index * step_length
-        audio_signal[sample_index : window_length + sample_index] = (
-            audio_signal[sample_index : window_length + sample_index]
-            + audio_stft[:, time_index]
+        # Perform a constant overlap-add (COLA) of the signal (with proper window function and step length)
+        audio_signal[i : i + window_length] = (
+            audio_signal[i : i + window_length] + audio_stft[:, j]
         )
+        i = i + step_length
 
-    # Remove the zero-padding at the start and end
+    # Remove the zero-padding at the start and at the end of the signal
     audio_signal = audio_signal[
         window_length - step_length : number_samples - (window_length - step_length)
     ]
 
-    # Un-apply window (just in case)
+    # Normalize the signal by the gain introduced by the COLA (if any)
     audio_signal = audio_signal / sum(window_function[0:window_length:step_length])
 
     return audio_signal
@@ -1144,7 +1128,7 @@ def imdct(audio_mdct, window_function):
 
 def wavread(audio_file):
     """
-    WAVE reader (using SciPy)
+    Read a WAVE file (using SciPy)
 
     Inputs:
         audio_file: path to an audio file
@@ -1160,6 +1144,55 @@ def wavread(audio_file):
     audio_signal = audio_signal / np.power(2, audio_signal.itemsize * 8 - 1)
 
     return audio_signal, sampling_frequency
+
+
+def wavwrite(audio_signal, sampling_frequency, audio_file):
+    """
+    Write a WAVE file (using Scipy)
+
+    Inputs:
+        audio_signal: audio signal [number_samples, number_channels]
+        sampling_frequency: sampling frequency in Hz
+    Output:
+        audio_file: path to an audio file
+    """
+
+    # Write the audio signal using SciPy
+    scipy.io.wavfile.write(audio_file, sampling_frequency, audio_signal)
+
+
+def sigplot(
+    audio_signal,
+    sampling_frequency,
+    xtick_resolution=1,
+):
+    """
+    Plot an audio signal in seconds
+
+    Inputs:
+        audio_signal: audio signal (without DC and mirrored frequencies) [number_samples, number_channels]
+        sampling_frequency: sampling frequency in Hz
+        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
+    """
+
+    # Get the number of samples
+    number_samples = np.shape(audio_signal)[0]
+
+    # Prepare the tick locations and labels for the x-axis
+    x_ticks = np.arange(
+        xtick_resolution * sampling_frequency,
+        number_samples,
+        xtick_resolution * sampling_frequency,
+    )
+    x_labels = np.arange(
+        xtick_resolution, number_samples / sampling_frequency + 1, xtick_resolution
+    ).astype(int)
+
+    # Plot the signal in seconds
+    plt.plot(audio_signal)
+    plt.autoscale(tight=True)
+    plt.xticks(ticks=x_ticks, labels=x_labels)
+    plt.xlabel("Time (s)")
 
 
 def specshow(
@@ -1211,12 +1244,11 @@ def specshow(
         int
     )
 
-    # Display the spectrogram in dB, second, and Hz
+    # Display the spectrogram in dB, seconds, and Hz
     plt.imshow(
         20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
     plt.xticks(ticks=x_ticks, labels=x_labels)
     plt.yticks(ticks=y_ticks, labels=y_labels)
-    plt.title("Spectrogram (dB)")
     plt.xlabel("Time (s)")
     plt.ylabel("Frequency (Hz)")
