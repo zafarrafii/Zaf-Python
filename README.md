@@ -75,7 +75,7 @@ plt.show()
 
 ### istft Inverse short-time Fourier transform (STFT)
 
-`audio_signal = z.istft(audio_stft, window_function, step_length)`
+`audio_signal = istft(audio_stft, window_function, step_length)`
 
 Arguments:
 ```
