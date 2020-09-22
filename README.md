@@ -5,7 +5,7 @@
 This Python module implements several functions for audio signal analysis.
 
 Functions:
-- [stft - Short-time Fourier transform (STFT)](#stft-short-time-fourier-transform-stft-1)
+- `stft` - [Short-time Fourier transform (STFT)](#stft-short-time-fourier-transform-stft-1)
 - [istft - Inverse STFT](#istft-inverse-short-time-fourier-transform-stft-1)
 - [cqtkernel - Constant-Q transform (CQT) kernel](#cqtkernel-constant-q-transform-cqt-kernel-1)
 - [cqtspectrogram - CQT spectrogram using a CQT kernel](#cqtspectrogram-constant-q-transform-cqt-spectrogram-using-a-cqt-kernel-1)
