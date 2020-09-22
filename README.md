@@ -20,7 +20,7 @@ Other:
 - `wavread` - Read a WAVE file (using Scipy)
 - `wavwrite` - Write a WAVE file (using SciPy)
 - `sigplot` - Plot an audio signal in seconds
-- `specshow` - Display a magnitude spectrogram in dB, seconds, and Hz
+- `specshow` - Display an audio spectrogram in dB, seconds, and Hz
 
 ### Short-time Fourier transform (STFT)
 
