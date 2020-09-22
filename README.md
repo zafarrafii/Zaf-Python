@@ -19,18 +19,15 @@ Functions:
 
 ### stft Short-time Fourier transform (STFT)
 
-`audio_stft = stft(audio_signal, window_function, step_length)`
+```
+stft(audio_signal, window_function, step_length)
     
-#### Inputs:
-```
-audio_signal: audio signal [number_samples]
-window_function: window function [window_length]
-step_length: step length in samples
-```
-
-#### Output:
-```
-audio_stft: audio STFT [window_length, number_frames]
+Inputs:
+    audio_signal: audio signal [number_samples]
+    window_function: window function [window_length]
+    step_length: step length in samples
+Output:
+    audio_stft: audio STFT [window_length, number_frames]
 ```
 
 #### Example: Compute and display the spectrogram from an audio file
