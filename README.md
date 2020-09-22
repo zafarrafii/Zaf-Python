@@ -70,20 +70,17 @@ plt.show()
 <img src="images/stft.png" width="1000">
 
 
-### istft Inverse short-time Fourier transform (STFT)
+### Inverse short-time Fourier transform (STFT)
 
-`audio_signal = istft(audio_stft, window_function, step_length)`
+```
+istft(audio_stft, window_function, step_length)`
 
-### Inputs
-```
-audio_stft: audio STFT [window_length, number_frames]
-window_function: window function [window_length]
-step_length: step length in samples
-```
-
-### Output
-```
-audio_signal: audio signal [number_samples]
+Inputs:
+    audio_stft: audio STFT [window_length, number_frames]
+    window_function: window function [window_length]
+    step_length: step length in samples
+Output:
+    audio_signal: audio signal [number_samples]
 ```
 
 Example: Estimate the center and the sides from a stereo audio file
