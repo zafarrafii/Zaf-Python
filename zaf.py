@@ -41,7 +41,7 @@ def stft(audio_signal, window_function, step_length):
     Short-time Fourier transform (STFT)
 
     Inputs:
-        audio_signal: audio signal [number_samples, 0]
+        audio_signal: audio signal [number_samples]
         window_function: window function [window_length]
         step_length: step length in samples
     Output:
@@ -62,7 +62,7 @@ def stft(audio_signal, window_function, step_length):
         window_duration = 0.04
 
         # Derive the window length in samples (use powers of 2 for faster FFT and constant overlap-add (COLA))
-        window_length = int(np.power(2, np.ceil(np.log2(window_duration * sampling_frequency))))
+        window_length = pow(2, int(np.ceil(np.log2(window_duration * sampling_frequency))))
 
         # Compute the window function (use SciPy's periodic Hamming window for COLA as NumPy's Hamming window is symmetric)
         window_function = scipy.signal.hamming(window_length, False)
@@ -154,7 +154,7 @@ def istft(audio_stft, window_function, step_length):
         audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 
         # Set the parameters for the STFT
-        window_length = int(np.power(2, np.ceil(np.log2(0.04 * sampling_frequency))))
+        window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
         window_function = scipy.signal.hamming(window_length, False)
         step_length = int(window_length/2)
 
@@ -233,33 +233,33 @@ def istft(audio_stft, window_function, step_length):
 
 def cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency):
     """
-    cqtkernel Constant-Q transform (CQT) kernel
-        cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+    Constant-Q transform (CQT) kernel
 
-    Arguments:
-        sample_rate: sample rate in Hz
+    Inputs:
+        sampling_frequency: sampling frequency in Hz
         frequency_resolution: frequency resolution in number of frequency channels per semitone
         minimum_frequency: minimum frequency in Hz
         maximum_frequency: maximum frequency in Hz
+    Output:
         cqt_kernel: CQT kernel [number_frequencies, fft_length]
 
-    Example: Compute and display the CQT kernel
+    Example: Compute and display a CQT kernel
         # Import modules
-        import z
         import numpy as np
+        import zaf
         import matplotlib.pyplot as plt
 
-        # CQT kernel parameters
-        sample_rate = 44100
+        # Set the parameters for the CQT kernel
+        sampling_frequency = 44100
         frequency_resolution = 2
         minimum_frequency = 55
-        maximum_frequency = sample_rate/2
+        maximum_frequency = sampling_frequency/2
 
-        # CQT kernel
-        cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+        # Compute the CQT kernel
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-        # Magnitude CQT kernel displayed
-        plt.rc('font', size=30)
+        # Display the magnitude CQT kernel
+        plt.figure(figsize=(17,10))
         plt.imshow(np.absolute(cqt_kernel).toarray(), aspect='auto', cmap='jet', origin='lower')
         plt.title('Magnitude CQT kernel')
         plt.xlabel('FFT length')
@@ -267,20 +267,20 @@ def cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_freq
         plt.show()
     """
 
-    # Number of frequency channels per octave
+    # Derive th number of frequency channels per octave
     octave_resolution = 12 * frequency_resolution
 
-    # Constant ratio of frequency to resolution (= fk/(fk+1-fk))
-    quality_factor = 1 / (2 ** (1 / octave_resolution) - 1)
+    # Derive the constant ratio of frequency to resolution (= fk/(fk+1-fk))
+    quality_factor = 1 / pow(2, (1 / octave_resolution) - 1)
 
-    # Number of frequency channels for the CQT
+    # Compute the number of frequency channels for the CQT
     number_frequencies = int(
         round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
     )
 
-    # Window length for the FFT (= window length of the minimum frequency = longest window)
+    # Compute the window length for the FFT (= window length of the minimum frequency = longest window)
     fft_length = int(
-        2 ** np.ceil(np.log2(quality_factor * sample_rate / minimum_frequency))
+        pow(2, np.ceil(np.log2(quality_factor * sample_rate / minimum_frequency)))
     )
 
     # Initialize the kernel
