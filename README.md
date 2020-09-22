@@ -35,7 +35,7 @@ Output:
     audio_stft: audio STFT [window_length, number_frames]
 ```
 
-#### Example: Compute and display the spectrogram from an audio file
+#### Example: compute and display the spectrogram from an audio file
 ```
 # Import modules
 import numpy as np
