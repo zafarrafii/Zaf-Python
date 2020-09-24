@@ -27,11 +27,11 @@ Other:
 ```
 stft(audio_signal, window_function, step_length)
     
-Inputs:
+Parameters:
     audio_signal: audio signal [number_samples]
     window_function: window function [window_length]
     step_length: step length in samples
-Output:
+Returns:
     audio_stft: audio STFT [window_length, number_frames]
 ```
 
@@ -78,17 +78,17 @@ plt.show()
 ### Inverse short-time Fourier transform (STFT)
 
 ```
-istft(audio_stft, window_function, step_length)`
+istft(audio_stft, window_function, step_length)
 
-Inputs:
+Parameters:
     audio_stft: audio STFT [window_length, number_frames]
     window_function: window function [window_length]
     step_length: step length in samples
-Output:
+Returns:
     audio_signal: audio signal [number_samples]
 ```
 
-Example: Estimate the center and the sides from a stereo audio file
+#### Example: estimate the center and the sides from a stereo audio file
 ```
 # Import modules
 import numpy as np
@@ -147,21 +147,22 @@ plt.show()
 <img src="images/istft.png" width="1000">
 
 
-### cqtkernel Constant-Q transform (CQT) kernel
+### Constant-Q transform (CQT) kernel
 
-`cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)`
+```
+cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-Arguments:
-```
-sample_rate: sample rate in Hz
-frequency_resolution: frequency resolution in number of frequency channels per semitone
-minimum_frequency: minimum frequency in Hz
-maximum_frequency: maximum frequency in Hz
-CQT kernel [number_frequencies, fft_length]
+Parameters:
+    sampling_frequency: sampling frequency in Hz
+    frequency_resolution: frequency resolution in number of frequency channels per semitone
+    minimum_frequency: minimum frequency in Hz
+    maximum_frequency: maximum frequency in Hz
+Returns:
+    cqt_kernel: CQT kernel [number_frequencies, fft_length]
 ```
 
-Example: Compute and display the CQT kernel
-```
+#### Example: compute and display the CQT kernel
+
 # Import modules
 import z
 import numpy as np
