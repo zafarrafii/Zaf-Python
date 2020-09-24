@@ -25,7 +25,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/22/20
+    09/24/20
 """
 
 import numpy as np
@@ -41,8 +41,8 @@ def stft(audio_signal, window_function, step_length):
     Short-time Fourier transform (STFT)
 
     Parameters:
-        audio_signal: audio signal [number_samples]
-        window_function: window function [window_length]
+        audio_signal: audio signal [number_samples,]
+        window_function: window function [window_length,]
         step_length: step length in samples
     Returns:
         audio_stft: audio STFT [window_length, number_frames]
@@ -138,10 +138,10 @@ def istft(audio_stft, window_function, step_length):
 
     Parameters:
         audio_stft: audio STFT [window_length, number_frames]
-        window_function: window function [window_length]
+        window_function: window function [window_length,]
         step_length: step length in samples
     Returns:
-        audio_signal: audio signal [number_samples]
+        audio_signal: audio signal [number_samples,]
 
     Example: estimate the center and the sides from a stereo audio file
         # Import modules
@@ -349,7 +349,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     Constant-Q transform (CQT) spectrogram using a kernel
 
     Parameters:
-        audio_signal: audio signal [number_samples]
+        audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         time_resolution: time resolution in number of time frames per second
         cqt_kernel: CQT kernel [number_frequencies, fft_length]
@@ -434,7 +434,7 @@ def cqtchromagram(
     Constant-Q transform (CQT) chromagram using a kernel
 
     Parameters:
-        audio_signal: audio signal [number_samples]
+        audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitones
@@ -507,7 +507,7 @@ def mfcc(audio_signal, sample_rate, number_filters, number_coefficients):
     Mel frequency cepstrum coefficients (MFFCs)
 
     Parameters:
-        audio_signal: audio signal [number_samples]
+        audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         number_filters: number of filters
         number_coefficients: number of coefficients (without the 0th coefficient)
@@ -934,8 +934,8 @@ def mdct(audio_signal, window_function):
     Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
 
     Parameters:
-        audio_signal: audio signal [number_samples]
-        window_function: window function [window_length]
+        audio_signal: audio signal [number_samples,]
+        window_function: window function [window_length,]
     Returns:
         audio_mdct: audio MDCT [number_frequencies, number_times]
 
@@ -1034,9 +1034,9 @@ def imdct(audio_mdct, window_function):
 
     Parameters:
         audio_mdct: audio MDCT [number_frequencies, number_times]
-        window_function: window function [window_length]
+        window_function: window function [window_length,]
     Returns:
-        audio_signal: audio signal [number_samples]
+        audio_signal: audio signal [number_samples,]
 
     Example: verify that the MDCT is perfectly invertible
         # Import modules
