@@ -22,6 +22,7 @@ Other:
 - `sigplot` - Plot an audio signal in seconds
 - `specshow` - Display an audio spectrogram in dB, seconds, and Hz
 
+
 ### Short-time Fourier transform (STFT)
 
 ```
@@ -36,6 +37,7 @@ Returns:
 ```
 
 #### Example: compute and display the spectrogram from an audio file
+
 ```
 # Import modules
 import numpy as np
@@ -89,6 +91,7 @@ Returns:
 ```
 
 #### Example: estimate the center and the sides from a stereo audio file
+
 ```
 # Import modules
 import numpy as np
@@ -163,6 +166,7 @@ Returns:
 
 #### Example: compute and display the CQT kernel
 
+```
 # Import modules
 import z
 import numpy as np
@@ -188,20 +192,23 @@ plt.show()
 
 <img src="images/python/cqtkernel.png" width="1000">
 
-### cqtspectrogram Constant-Q transform (CQT) spectrogram using a CQT kernel
 
-`audio_spectrogram = z.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)`
+### Constant-Q transform (CQT) spectrogram using a CQT kernel
 
-Arguments:
 ```
-audio_signal: audio signal [number_samples, 0]
-sample_rate: sample rate in Hz
-time_resolution: time resolution in number of time frames per second
-cqt_kernel: CQT kernel [number_frequencies, fft_length]
-audio_spectrogram: audio spectrogram in magnitude [number_frequencies, number_times]
+cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+
+Parameters:
+    audio_signal: audio signal [number_samples]
+    sampling_frequency: sampling frequency in Hz
+    time_resolution: time resolution in number of time frames per second
+    cqt_kernel: CQT kernel [number_frequencies, fft_length]
+Returns
+    audio_spectrogram: audio spectrogram in magnitude [number_frequencies, number_times]
 ```
 
-Example: Compute and display the CQT spectrogram
+#### Example: compute and display the CQT spectrogram
+
 ```
 # Import modules
 import scipy.io.wavfile
@@ -239,21 +246,23 @@ plt.show()
 
 <img src="images/python/cqtspectrogram.png" width="1000">
 
-### cqtchromagram Constant-Q transform (CQT) chromagram using a CQT kernel
 
-`audio_chromagram = z.cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resolution, cqt_kernel)`
+### Constant-Q transform (CQT) chromagram using a CQT kernel
 
-Arguments:
 ```
-audio_signal: audio signal [number_samples, 0]
-sample_rate: sample rate in Hz
-time_resolution: time resolution in number of time frames per second
-frequency_resolution: frequency resolution in number of frequency channels per semitones
-cqt_kernel: CQT kernel [number_frequencies, fft_length]
-audio_chromagram: audio chromagram [number_chromas, number_times]
+cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+
+Parameters:
+    audio_signal: audio signal [number_samples, 0]
+    sampling_frequency: sampling frequency in Hz
+    time_resolution: time resolution in number of time frames per second
+    frequency_resolution: frequency resolution in number of frequency channels per semitones
+    cqt_kernel: CQT kernel [number_frequencies, fft_length]
+Returns:
+    audio_chromagram: audio chromagram [number_chromas, number_times]
 ```
 
-Example: Compute and display the CQT chromagram
+#### Example: compute and display the CQT chromagram
 ```
 # Import modules
 import scipy.io.wavfile
