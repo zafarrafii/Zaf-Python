@@ -168,21 +168,21 @@ Output:
 
 ```
 # Import modules
-import z
 import numpy as np
+import zaf
 import matplotlib.pyplot as plt
 
-# CQT kernel parameters
-sample_rate = 44100
+# Set the parameters for the CQT kernel
+sampling_frequency = 44100
 frequency_resolution = 2
 minimum_frequency = 55
-maximum_frequency = sample_rate/2
+maximum_frequency = sampling_frequency/2
 
-# CQT kernel
-cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+# Compute the CQT kernel
+cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-# Magnitude CQT kernel displayed
-plt.rc('font', size=30)
+# Display the magnitude CQT kernel
+plt.figure(figsize=(17,10))
 plt.imshow(np.absolute(cqt_kernel).toarray(), aspect='auto', cmap='jet', origin='lower')
 plt.title('Magnitude CQT kernel')
 plt.xlabel('FFT length')
@@ -190,7 +190,7 @@ plt.ylabel('CQT frequency')
 plt.show()
 ```
 
-<img src="images/python/cqtkernel.png" width="1000">
+<img src="images/cqtkernel.png" width="1000">
 
 
 ### Constant-Q transform (CQT) spectrogram using a CQT kernel
