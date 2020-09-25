@@ -26,7 +26,6 @@ Other:
 ### Short-time Fourier transform (STFT)
 
 ```
-import zaf
 audio_stft = zaf.stft(audio_signal, window_function, step_length)
     
 Inputs:
@@ -81,7 +80,6 @@ plt.show()
 ### Inverse short-time Fourier transform (STFT)
 
 ```
-import zaf
 audio_signal = zaf.istft(audio_stft, window_function, step_length)
 
 Inputs:
@@ -155,14 +153,14 @@ plt.show()
 ### Constant-Q transform (CQT) kernel
 
 ```
-cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-Parameters:
+Inputs:
     sampling_frequency: sampling frequency in Hz
     frequency_resolution: frequency resolution in number of frequency channels per semitone
     minimum_frequency: minimum frequency in Hz
     maximum_frequency: maximum frequency in Hz
-Returns:
+Output:
     cqt_kernel: CQT kernel [number_frequencies, fft_length]
 ```
 
@@ -198,14 +196,14 @@ plt.show()
 ### Constant-Q transform (CQT) spectrogram using a CQT kernel
 
 ```
-cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+audio_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples,]
     sampling_frequency: sampling frequency in Hz
     time_resolution: time resolution in number of time frames per second
     cqt_kernel: CQT kernel [number_frequencies, fft_length]
-Returns
+Output:
     audio_spectrogram: audio spectrogram in magnitude [number_frequencies, number_times]
 ```
 
@@ -252,15 +250,15 @@ plt.show()
 ### Constant-Q transform (CQT) chromagram using a CQT kernel
 
 ```
-cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+audio_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples,]
     sampling_frequency: sampling frequency in Hz
     time_resolution: time resolution in number of time frames per second
     frequency_resolution: frequency resolution in number of frequency channels per semitones
     cqt_kernel: CQT kernel [number_frequencies, fft_length]
-Returns:
+Output:
     audio_chromagram: audio chromagram [number_chromas, number_times]
 ```
 
@@ -306,14 +304,14 @@ plt.show()
 ### Mel frequency cepstrum coefficients (MFCCs)
 
 ```
-mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
+audio_mfcc = zaf.mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples,]
     sampling_frequency: sampling frequency in Hz
     number_filters: number of filters
     number_coefficients: number of coefficients (without the 0th coefficient)
-Returns:
+Output:
     audio_mfcc: audio MFCCs [number_times, number_coefficients]
 ```
 
@@ -364,12 +362,12 @@ plt.show()
 ### Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
 
 ```
-dct(audio_signal, dct_type)
+audio_dct = zaf.dct(audio_signal, dct_type)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples, number_frames] (number_frames>0)
     dct_type: dct type (1, 2, 3, or 4)
-Returns:
+Output:
     audio_dct: audio DCT [number_frequencies, number_frames]
 ```
 
@@ -429,12 +427,12 @@ plt.show()
 ### Discrete sine transform (DST) using the fast Fourier transform (FFT)
 
 ```
-dst(audio_signal, dst_type)
+audio_dst = zaf.dst(audio_signal, dst_type)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples, number_frames] (number_frames>0)
     dst_type: DST type (1, 2, 3, or 4)
-Returns:
+Output:
     audio_dst: audio DST [number_frequencies, number_frames]
 ```
 
@@ -493,12 +491,12 @@ plt.show()
 ### Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
 
 ```
-mdct(audio_signal, window_function)
+audio_mdct = zaf.mdct(audio_signal, window_function)
 
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples,]
     window_function: window function [window_length,]
-Returns:
+Output:
     audio_mdct: audio MDCT [number_frequencies, number_times]
 ```
 
@@ -546,12 +544,12 @@ plt.show()
 ### Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
 
 ```
-imdct(audio_mdct, window_function)
+audio_signal = zaf.imdct(audio_mdct, window_function)
 
-Parameters:
+Inputs:
     audio_mdct: audio MDCT [number_frequencies, number_times]
     window_function: window function [window_length,]
-Returns:
+Output:
     audio_signal: audio signal [number_samples,]
 ```
 
