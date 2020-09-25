@@ -269,39 +269,39 @@ def cqtkernel(
         plt.show()
     """
 
-    # Derive th number of frequency channels per octave
+    # Derive the number of frequency channels per octave
     octave_resolution = 12 * frequency_resolution
 
-    # Derive the constant ratio of frequency to resolution (= fk/(fk+1-fk))
-    quality_factor = 1 / pow(2, (1 / octave_resolution) - 1)
+    # Compute the constant ratio of frequency to resolution (= fk/(fk+1-fk))
+    quality_factor = 1 / (pow(2, 1 / octave_resolution) - 1)
 
     # Compute the number of frequency channels for the CQT
     number_frequencies = int(
         round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
     )
 
-    # Compute the window length for the FFT (= window length of the minimum frequency = longest window)
+    # Compute the window length for the FFT (= longest window for the minimum frequency)
     fft_length = int(
         pow(
             2, np.ceil(np.log2(quality_factor * sampling_frequency / minimum_frequency))
         )
     )
 
-    # Initialize the kernel
+    # Initialize the (complex) CQT kernel
     cqt_kernel = np.zeros((number_frequencies, fft_length), dtype=complex)
 
     # Loop over the frequency channels
-    for frequency_index in range(0, number_frequencies):
+    for i in range(0, number_frequencies):
 
-        # Frequency value (in Hz)
-        frequency_value = minimum_frequency * 2 ** (frequency_index / octave_resolution)
+        # Derive the frequency value in Hz
+        frequency_value = minimum_frequency * pow(2, i / octave_resolution)
 
-        # Window length (nearest odd value because the complex exponential will have an odd length, in samples)
+        # Compute the window length in samples (nearest odd value to center the temporal kernel on 0)
         window_length = (
-            2 * round(quality_factor * sample_rate / frequency_value / 2) + 1
+            2 * round(quality_factor * sampling_frequency / frequency_value / 2) + 1
         )
 
-        # Temporal kernel (without zero-padding, odd and symmetric)
+        # Compute the temporal kernel for the current frequency (odd and symmetric)
         temporal_kernel = (
             np.hamming(window_length)
             * np.exp(
@@ -315,30 +315,24 @@ def cqtkernel(
             / window_length
         )
 
-        # Pre zero-padding to center FFTs (fft does post zero-padding; temporal kernel still odd but almost symmetric)
-        temporal_kernel = np.pad(
-            temporal_kernel,
-            (int((fft_length - window_length + 1) / 2), 0),
-            "constant",
-            constant_values=0,
-        )
+        # Derive the pad width to center the temporal kernels
+        pad_width = int((fft_length - window_length + 1) / 2)
 
-        # Spectral kernel (mostly real because temporal kernel almost symmetric)
-        spectral_kernel = np.fft.fft(temporal_kernel, fft_length)
+        # Save the current temporal kernel at the center
+        # (the zero-padded temporal kernels are not perfectly symmetric anymore because of the even length here)
+        cqt_kernel[i, pad_width : pad_width + window_length] = temporal_kernel
 
-        # Save the spectral kernels
-        cqt_kernel[frequency_index, :] = spectral_kernel
+    # Derive the spectral kernels by taking the FFT of the temporal kernels
+    # (the spectral kernels are almost real because the temporal kernels are almost symmetric)
+    cqt_kernel = np.fft.fft(cqt_kernel, axis=1)
 
-    # Energy threshold for making the kernel sparse
-    energy_threshold = 0.01
+    # Make the CQT kernel sparser by zeroing magnitudes below a threshold
+    cqt_kernel[np.absolute(cqt_kernel) < 0.01] = 0
 
-    # Make the CQT kernel sparser
-    cqt_kernel[np.absolute(cqt_kernel) < energy_threshold] = 0
+    # Make the CQT kernel sparse by saving it as a compressed sparse row matrix
+    cqt_kernel = scipy.sparse.csr_matrix(cqt_kernel)
 
-    # Make the CQT kernel sparse
-    cqt_kernel = scipy.sparse.csc_matrix(cqt_kernel)
-
-    # From Parseval's theorem
+    # Get the final CQT kernel by using Parseval's theorem
     cqt_kernel = np.conjugate(cqt_kernel) / fft_length
 
     return cqt_kernel
