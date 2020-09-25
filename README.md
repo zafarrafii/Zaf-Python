@@ -26,13 +26,14 @@ Other:
 ### Short-time Fourier transform (STFT)
 
 ```
+import zaf
 audio_stft = zaf.stft(audio_signal, window_function, step_length)
     
-Parameters:
+Inputs:
     audio_signal: audio signal [number_samples,]
     window_function: window function [window_length,]
     step_length: step length in samples
-Returns:
+Output:
     audio_stft: audio STFT [window_length, number_frames]
 ```
 
@@ -80,13 +81,14 @@ plt.show()
 ### Inverse short-time Fourier transform (STFT)
 
 ```
-istft(audio_stft, window_function, step_length)
+import zaf
+audio_signal = zaf.istft(audio_stft, window_function, step_length)
 
-Parameters:
+Inputs:
     audio_stft: audio STFT [window_length, number_frames]
     window_function: window function [window_length,]
     step_length: step length in samples
-Returns:
+Output:
     audio_signal: audio signal [number_samples,]
 ```
 
