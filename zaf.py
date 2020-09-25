@@ -25,7 +25,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/24/20
+    09/25/20
 """
 
 import numpy as np
@@ -40,11 +40,11 @@ def stft(audio_signal, window_function, step_length):
     """
     Short-time Fourier transform (STFT)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples,]
         window_function: window function [window_length,]
         step_length: step length in samples
-    Returns:
+    Output:
         audio_stft: audio STFT [window_length, number_frames]
 
     Example: compute and display the spectrogram from an audio file
@@ -136,11 +136,11 @@ def istft(audio_stft, window_function, step_length):
     """
     Inverse short-time Fourier transform (STFT)
 
-    Parameters:
+    Inputs:
         audio_stft: audio STFT [window_length, number_frames]
         window_function: window function [window_length,]
         step_length: step length in samples
-    Returns:
+    Output:
         audio_signal: audio signal [number_samples,]
 
     Example: estimate the center and the sides from a stereo audio file
@@ -237,12 +237,12 @@ def cqtkernel(
     """
     Constant-Q transform (CQT) kernel
 
-    Parameters:
+    Inputs:
         sampling_frequency: sampling frequency in Hz
         frequency_resolution: frequency resolution in number of frequency channels per semitone
         minimum_frequency: minimum frequency in Hz
         maximum_frequency: maximum frequency in Hz
-    Returns:
+    Output:
         cqt_kernel: CQT kernel [number_frequencies, fft_length]
 
     Example: compute and display a CQT kernel
@@ -348,12 +348,12 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     """
     Constant-Q transform (CQT) spectrogram using a kernel
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         time_resolution: time resolution in number of time frames per second
         cqt_kernel: CQT kernel [number_frequencies, fft_length]
-    Returns:
+    Output:
         audio_spectrogram: audio spectrogram in magnitude [number_frequencies, number_times]
 
     Example: compute and display the CQT spectrogram
@@ -433,13 +433,13 @@ def cqtchromagram(
     """
     Constant-Q transform (CQT) chromagram using a kernel
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitones
         cqt_kernel: CQT kernel [number_frequencies, fft_length]
-    Returns
+    Output:
         audio_chromagram: audio chromagram [number_chromas, number_times]
 
     Example: compute and display the CQT chromagram
@@ -506,12 +506,12 @@ def mfcc(audio_signal, sample_rate, number_filters, number_coefficients):
     """
     Mel frequency cepstrum coefficients (MFFCs)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples,]
         sampling_frequency: sampling frequency in Hz
         number_filters: number of filters
         number_coefficients: number of coefficients (without the 0th coefficient)
-    Returns:
+    Output:
         audio_mfcc: audio MFCCs [number_times, number_coefficients]
 
     Example: compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs
@@ -619,10 +619,10 @@ def dct(audio_signal, dct_type):
     """
     Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples, number_frames] (number_frames > 0)
         dct_type: DCT type (1, 2, 3, or 4)
-    Returns:
+    Output:
         audio_dct: audio DCT [number_frequencies, number_frames]
 
     Example: compute the 4 different DCTs and compare them to SciPy's DCTs
@@ -780,10 +780,10 @@ def dst(audio_signal, dst_type):
     """
     Discrete sine transform (DST) using the fast Fourier transform (FFT)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples, number_frames] (number_frames > 0)
         dst_type: DST type (1, 2, 3, or 4)
-    Returns:
+    Output:
         audio_dst: audio DST [number_frequencies, number_frames]
 
     Example: compute the 4 different DSTs and compare them to their respective inverses
@@ -933,10 +933,10 @@ def mdct(audio_signal, window_function):
     """
     Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples,]
         window_function: window function [window_length,]
-    Returns:
+    Output:
         audio_mdct: audio MDCT [number_frequencies, number_times]
 
     Example: compute and display the MDCT as in the AC-3 audio coding format
@@ -1032,10 +1032,10 @@ def imdct(audio_mdct, window_function):
     """
     Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
 
-    Parameters:
+    Inputs:
         audio_mdct: audio MDCT [number_frequencies, number_times]
         window_function: window function [window_length,]
-    Returns:
+    Output:
         audio_signal: audio signal [number_samples,]
 
     Example: verify that the MDCT is perfectly invertible
@@ -1136,9 +1136,9 @@ def wavread(audio_file):
     """
     Read a WAVE file (using SciPy)
 
-    Parameters:
+    Input:
         audio_file: path to an audio file
-    Returns:
+    Outputs:
         audio_signal: audio signal [number_samples, number_channels]
         sampling_frequency: sampling frequency in Hz
     """
@@ -1156,10 +1156,10 @@ def wavwrite(audio_signal, sampling_frequency, audio_file):
     """
     Write a WAVE file (using Scipy)
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal [number_samples, number_channels]
         sampling_frequency: sampling frequency in Hz
-    Returns:
+    Output:
         audio_file: path to an audio file
     """
 
@@ -1175,7 +1175,7 @@ def sigplot(
     """
     Plot an audio signal in seconds
 
-    Parameters:
+    Inputs:
         audio_signal: audio signal (without DC and mirrored frequencies) [number_samples, number_channels]
         sampling_frequency: sampling frequency in Hz
         xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
@@ -1211,7 +1211,7 @@ def specshow(
     """
     Display an audio spectrogram in dB, seconds, and Hz
 
-    Parameters:
+    Inputs:
         audio_spectrogram: magnitude spectrogram (without DC and mirrored frequencies) [number_frequencies, number_times]
         number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
