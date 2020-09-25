@@ -26,7 +26,7 @@ Other:
 ### Short-time Fourier transform (STFT)
 
 ```
-stft(audio_signal, window_function, step_length)
+audio_stft = zaf.stft(audio_signal, window_function, step_length)
     
 Parameters:
     audio_signal: audio signal [number_samples,]
