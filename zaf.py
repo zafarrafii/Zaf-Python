@@ -18,6 +18,7 @@ Other:
     wavwrite - Write a WAVE file (using Scipy)
     sigplot - Plot an audio signal in seconds
     specshow - Display an audio spectrogram in dB, seconds, and Hz
+    cqtspecshow - Display a CQT audio spectrogram in dB, seconds, and Hz
 
 Author:
     Zafar Rafii
@@ -25,7 +26,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/25/20
+    09/26/20
 """
 
 import numpy as np
@@ -89,7 +90,7 @@ def stft(audio_signal, window_function, step_length):
     # Derive the zero-padding length at the start and at the end of the signal to center the windows
     padding_length = int(np.floor(window_length / 2))
 
-    # Derive the number of time frames given the zero-padding at the start and at the end of the signal
+    # Compute the number of time frames given the zero-padding at the start and at the end of the signal
     number_times = (
         int(
             np.ceil(
@@ -201,7 +202,7 @@ def istft(audio_stft, window_function, step_length):
     # Get the window length in samples and the number of time frames
     window_length, number_times = np.shape(audio_stft)
 
-    # Derive the number of samples for the signal
+    # Compute the number of samples for the signal
     number_samples = number_times * step_length + (window_length - step_length)
 
     # Initialize the signal
@@ -385,16 +386,16 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         plt.show()
     """
 
-    # Number of time samples per time frame
+    # Derive the number of time samples per time frame
     step_length = round(sampling_frequency / time_resolution)
 
-    # Number of time frames
+    # Compute the number of time frames
     number_times = int(np.floor(len(audio_signal) / step_length))
 
-    # Number of frequency channels and FFT length
+    # Get th number of frequency channels and the FFT length
     number_frequencies, fft_length = np.shape(cqt_kernel)
 
-    # Zero-padding to center the CQT
+    # Zero-pad the signal to center the CQT
     audio_signal = np.pad(
         audio_signal,
         (
@@ -409,14 +410,14 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     audio_spectrogram = np.zeros((number_frequencies, number_times))
 
     # Loop over the time frames
-    for time_index in range(0, number_times):
+    i = 0
+    for j in range(0, number_times):
 
-        # Magnitude CQT using the kernel
-        sample_index = time_index * step_length
-        audio_spectrogram[:, time_index] = abs(
-            cqt_kernel
-            * np.fft.fft(audio_signal[sample_index : sample_index + fft_length])
+        # Compute the magnitude CQT using the kernel
+        audio_spectrogram[:, j] = np.absolute(
+            cqt_kernel * np.fft.fft(audio_signal[i : i + fft_length])
         )
+        i = i + step_length
 
     return audio_spectrogram
 
@@ -1252,3 +1253,82 @@ def specshow(
     plt.yticks(ticks=y_ticks, labels=y_labels)
     plt.xlabel("Time (s)")
     plt.ylabel("Frequency (Hz)")
+
+
+def cqtspecshow(
+    audio_spectrogram,
+    number_samples,
+    sampling_frequency,
+    xtick_resolution=1,
+    ytick_resolution=1000,
+):
+    """
+    Display a CQT audio spectrogram in dB, seconds, and Hz
+
+    Inputs:
+        audio_spectrogram: magnitude CQT spectrogram [number_frequencies, number_times]
+        time_resolution: time resolution in number of time frames per second
+        frequency_resolution: frequency resolution in number of frequency channels per semitone
+        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
+        ytick_resolution: resolution for the y-axis ticks in Hz (default: 1000 Hz)
+    """
+
+    # Get the number of frequency channels and time frames
+    number_frequencies, number_times = np.shape(audio_spectrogram)
+
+    # Derive the number of Hertz and seconds
+    number_hertz = sampling_frequency / 2
+    number_seconds = number_samples / sampling_frequency
+
+    # Derive the frequency and time resolutions (i.e., the size of one time-frequency bin in Hz and second)
+    frequency_resolution = number_hertz / number_frequencies
+    time_resolution = number_seconds / number_times
+
+    # Prepare the tick locations and labels for the x-axis
+    x_ticks = np.arange(
+        xtick_resolution / time_resolution,
+        number_times,
+        xtick_resolution / time_resolution,
+    )
+    x_labels = np.arange(xtick_resolution, number_seconds + 1, xtick_resolution).astype(
+        int
+    )
+
+    # Prepare the tick locations and labels for the y-axis
+    y_ticks = np.arange(
+        ytick_resolution / frequency_resolution,
+        number_frequencies,
+        ytick_resolution / frequency_resolution,
+    )
+    y_labels = np.arange(ytick_resolution, number_hertz + 1, ytick_resolution).astype(
+        int
+    )
+
+    # Display the spectrogram in dB, seconds, and Hz
+    plt.imshow(
+        20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
+    )
+    plt.xticks(ticks=x_ticks, labels=x_labels)
+    plt.yticks(ticks=y_ticks, labels=y_labels)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Frequency (Hz)")
+
+
+plt.xticks(
+    np.round(
+        np.arange(1, np.floor(len(audio_signal) / sample_rate) + 1) * time_resolution
+    ),
+    np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1),
+)
+plt.xlabel("Time (s)")
+plt.yticks(
+    np.arange(1, 6 * 12 * frequency_resolution + 1, 12 * frequency_resolution),
+    (
+        "A1 (55 Hz)",
+        "A2 (110 Hz)",
+        "A3 (220 Hz)",
+        "A4 (440 Hz)",
+        "A5 (880 Hz)",
+        "A6 (1760 Hz)",
+    ),
+)
