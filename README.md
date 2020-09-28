@@ -21,6 +21,9 @@ Other:
 - `wavwrite` - Write a WAVE file (using SciPy)
 - `sigplot` - Plot an audio signal in seconds
 - `specshow` - Display an audio spectrogram in dB, seconds, and Hz
+- `cqtspecshow` - Display a CQT audio spectrogram in dB, seconds, and Hz
+- `cqtchromshow` - Display a CQT audio chromagram in seconds
+
 
 
 ### Short-time Fourier transform (STFT)
