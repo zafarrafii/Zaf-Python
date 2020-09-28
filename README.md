@@ -69,7 +69,7 @@ audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
 
 # Display the spectrogram in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
-zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_width=1, ytick_width=1000)
+zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("Spectrogram (dB)")
 plt.show()
 ```
@@ -139,11 +139,11 @@ zaf.wavwrite(sides_signal, sampling_frequency, 'sides_file.wav')
 # Display the original, center, and sides signals in seconds
 plt.figure(figsize=(17, 10))
 plt.subplot(311),
-zaf.sigplot(audio_signal, sampling_frequency, xtick_width=1), plt.ylim(-1, 1), plt.title("Original Signal")
+zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
 plt.subplot(312)
-zaf.sigplot(center_signal, sampling_frequency, xtick_width=1), plt.ylim(-1, 1), plt.title("Center Signal")
+zaf.sigplot(center_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Center Signal")
 plt.subplot(313)
-zaf.sigplot(sides_signal, sampling_frequency, xtick_width=1), plt.ylim(-1, 1), plt.title("Sides Signal")
+zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Sides Signal")
 plt.show()
 ```
 
