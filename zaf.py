@@ -26,7 +26,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/26/20
+    09/27/20
 """
 
 import numpy as np
@@ -77,9 +77,9 @@ def stft(audio_signal, window_function, step_length):
         # Derive the magnitude spectrogram without the DC component and the mirrored frequencies
         audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
 
-        # Display the spectrogram in dB, second, and Hz (with a resolution of 1 second and 1 kHz)
+        # Display the spectrogram in dB, seconds, and Hz
         plt.figure(figsize=(17, 10))
-        zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_resolution=1, ytick_resolution=1000)
+        zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
         plt.show()
     """
 
@@ -188,14 +188,14 @@ def istft(audio_stft, window_function, step_length):
         zaf.wavwrite(center_signal, sampling_frequency, 'center_file.wav')
         zaf.wavwrite(sides_signal, sampling_frequency, 'sides_file.wav')
 
-        # Original, center, and sides signals displayed in s
+        # Original, center, and sides signals displayed in seconds
         plt.figure(figsize=(17, 10))
         plt.subplot(311),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Original Signal")
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
         plt.subplot(312)
-        zaf.sigplot(center_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Center Signal")
+        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Center Signal")
         plt.subplot(313)
-        zaf.sigplot(sides_signal, sampling_frequency, xtick_resolution=1), plt.ylim(-1, 1), plt.title("Sides Signal")
+        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Sides Signal")
         plt.show()
     """
 
@@ -353,36 +353,28 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
     Example: compute and display the CQT spectrogram
         # Import modules
-        import scipy.io.wavfile
         import numpy as np
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Audio file (normalized) averaged over the channels and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / ( 2.0**(audio_signal.itemsize*8-1))
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
         audio_signal = np.mean(audio_signal, 1)
 
-        # CQT kernel
+        # Compute the CQT kernel using some parameters
         frequency_resolution = 2
         minimum_frequency = 55
         maximum_frequency = 3520
-        cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-        # CQT spectrogram
+        # Compute the (magnitude) CQT spectrogram using the kernel
         time_resolution = 25
-        audio_spectrogram = z.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+        audio_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
-        # CQT spectrogram displayed in dB, s, and semitones
-        plt.rc('font', size=30)
-        plt.imshow(20*np.log10(audio_spectrogram), aspect='auto', cmap='jet', origin='lower')
-        plt.title('CQT spectrogram (dB)')
-        plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*time_resolution),
-                   np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-        plt.xlabel('Time (s)')
-        plt.yticks(np.arange(1, 6*12*frequency_resolution+1, 12*frequency_resolution),
-                   ('A1 (55 Hz)','A2 (110 Hz)','A3 (220 Hz)','A4 (440 Hz)','A5 (880 Hz)','A6 (1760 Hz)'))
-        plt.ylabel('Frequency (semitones)')
+        # Display the CQT spectrogram in dB, seconds, and Hz
+        plt.figure(figsize=(17, 10))
+        zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, maximum_frequency, xtick_step=1)
+        plt.title("CQT spectrogram (dB)")
         plt.show()
     """
 
@@ -1165,7 +1157,7 @@ def wavwrite(audio_signal, sampling_frequency, audio_file):
 def sigplot(
     audio_signal,
     sampling_frequency,
-    xtick_resolution=1,
+    xtick_step=1,
 ):
     """
     Plot an audio signal in seconds
@@ -1173,26 +1165,26 @@ def sigplot(
     Inputs:
         audio_signal: audio signal (without DC and mirrored frequencies) [number_samples, number_channels]
         sampling_frequency: sampling frequency in Hz
-        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of samples
     number_samples = np.shape(audio_signal)[0]
 
     # Prepare the tick locations and labels for the x-axis
-    x_ticks = np.arange(
-        xtick_resolution * sampling_frequency,
+    xtick_locations = np.arange(
+        xtick_step * sampling_frequency,
         number_samples,
-        xtick_resolution * sampling_frequency,
+        xtick_step * sampling_frequency,
     )
-    x_labels = np.arange(
-        xtick_resolution, number_samples / sampling_frequency + 1, xtick_resolution
+    xtick_labels = np.arange(
+        xtick_step, number_samples / sampling_frequency + 1, xtick_step
     ).astype(int)
 
     # Plot the signal in seconds
     plt.plot(audio_signal)
     plt.autoscale(tight=True)
-    plt.xticks(ticks=x_ticks, labels=x_labels)
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.xlabel("Time (s)")
 
 
@@ -1200,8 +1192,8 @@ def specshow(
     audio_spectrogram,
     number_samples,
     sampling_frequency,
-    xtick_resolution=1,
-    ytick_resolution=1000,
+    xtick_step=1,
+    ytick_step=1000,
 ):
     """
     Display an audio spectrogram in dB, seconds, and Hz
@@ -1210,8 +1202,8 @@ def specshow(
         audio_spectrogram: magnitude spectrogram (without DC and mirrored frequencies) [number_frequencies, number_times]
         number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
-        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
-        ytick_resolution: resolution for the y-axis ticks in Hz (default: 1000 Hz)
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
+        ytick_step: resolution for the y-axis ticks in Hz (default: 1000 Hz)
     """
 
     # Get the number of frequency channels and time frames
@@ -1221,46 +1213,43 @@ def specshow(
     number_hertz = sampling_frequency / 2
     number_seconds = number_samples / sampling_frequency
 
-    # Derive the frequency and time resolutions (i.e., the size of one time-frequency bin in Hz and second)
-    frequency_resolution = number_hertz / number_frequencies
-    time_resolution = number_seconds / number_times
+    # Derive the number of time frames per second and the number of frequency channels per Hz
+    time_resolution = number_times / number_seconds
+    frequency_resolution = number_frequencies / number_hertz
 
     # Prepare the tick locations and labels for the x-axis
-    x_ticks = np.arange(
-        xtick_resolution / time_resolution,
+    xtick_locations = np.arange(
+        xtick_step * time_resolution,
         number_times,
-        xtick_resolution / time_resolution,
+        xtick_step * time_resolution,
     )
-    x_labels = np.arange(xtick_resolution, number_seconds + 1, xtick_resolution).astype(
-        int
-    )
+    xtick_labels = np.arange(xtick_step, number_seconds + 1, xtick_step).astype(int)
 
     # Prepare the tick locations and labels for the y-axis
-    y_ticks = np.arange(
-        ytick_resolution / frequency_resolution,
+    ytick_locations = np.arange(
+        ytick_step * frequency_resolution,
         number_frequencies,
-        ytick_resolution / frequency_resolution,
+        ytick_step * frequency_resolution,
     )
-    y_labels = np.arange(ytick_resolution, number_hertz + 1, ytick_resolution).astype(
-        int
-    )
+    ytick_labels = np.arange(ytick_step, number_hertz + 1, ytick_step).astype(int)
 
     # Display the spectrogram in dB, seconds, and Hz
     plt.imshow(
         20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
-    plt.xticks(ticks=x_ticks, labels=x_labels)
-    plt.yticks(ticks=y_ticks, labels=y_labels)
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
+    plt.yticks(ticks=ytick_locations, labels=ytick_labels)
     plt.xlabel("Time (s)")
     plt.ylabel("Frequency (Hz)")
 
 
 def cqtspecshow(
     audio_spectrogram,
-    number_samples,
-    sampling_frequency,
-    xtick_resolution=1,
-    ytick_resolution=1000,
+    time_resolution,
+    frequency_resolution,
+    minimum_frequency,
+    maximum_frequency,
+    xtick_step=1,
 ):
     """
     Display a CQT audio spectrogram in dB, seconds, and Hz
@@ -1269,66 +1258,44 @@ def cqtspecshow(
         audio_spectrogram: magnitude CQT spectrogram [number_frequencies, number_times]
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitone
-        xtick_resolution: resolution for the x-axis ticks in seconds (default: 1 second)
-        ytick_resolution: resolution for the y-axis ticks in Hz (default: 1000 Hz)
+        minimum_frequency: minimum frequency in Hz
+        maximum_frequency: maximum frequency in Hz
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
 
-    # Derive the number of Hertz and seconds
-    number_hertz = sampling_frequency / 2
-    number_seconds = number_samples / sampling_frequency
-
-    # Derive the frequency and time resolutions (i.e., the size of one time-frequency bin in Hz and second)
-    frequency_resolution = number_hertz / number_frequencies
-    time_resolution = number_seconds / number_times
-
     # Prepare the tick locations and labels for the x-axis
-    x_ticks = np.arange(
-        xtick_resolution / time_resolution,
+    xtick_locations = np.arange(
+        xtick_step * time_resolution,
         number_times,
-        xtick_resolution / time_resolution,
+        xtick_step * time_resolution,
     )
-    x_labels = np.arange(xtick_resolution, number_seconds + 1, xtick_resolution).astype(
-        int
+    xtick_labels = np.arange(
+        xtick_step, number_times / time_resolution + 1, xtick_step
+    ).astype(int)
+
+    # Compute the octave resolution and number of frequencies
+    octave_resolution = 12 * frequency_resolution
+    number_frequencies = int(
+        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
     )
 
     # Prepare the tick locations and labels for the y-axis
-    y_ticks = np.arange(
-        ytick_resolution / frequency_resolution,
-        number_frequencies,
-        ytick_resolution / frequency_resolution,
-    )
-    y_labels = np.arange(ytick_resolution, number_hertz + 1, ytick_resolution).astype(
-        int
-    )
+    ytick_locations = np.arange(0, number_frequencies, octave_resolution)
+    ytick_labels = (
+        minimum_frequency
+        * pow(
+            2, np.arange(0, number_frequencies, octave_resolution) / octave_resolution
+        )
+    ).astype(int)
 
     # Display the spectrogram in dB, seconds, and Hz
     plt.imshow(
         20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
-    plt.xticks(ticks=x_ticks, labels=x_labels)
-    plt.yticks(ticks=y_ticks, labels=y_labels)
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
+    plt.yticks(ticks=ytick_locations, labels=ytick_labels)
     plt.xlabel("Time (s)")
     plt.ylabel("Frequency (Hz)")
-
-
-plt.xticks(
-    np.round(
-        np.arange(1, np.floor(len(audio_signal) / sample_rate) + 1) * time_resolution
-    ),
-    np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1),
-)
-plt.xlabel("Time (s)")
-plt.yticks(
-    np.arange(1, 6 * 12 * frequency_resolution + 1, 12 * frequency_resolution),
-    (
-        "A1 (55 Hz)",
-        "A2 (110 Hz)",
-        "A3 (220 Hz)",
-        "A4 (440 Hz)",
-        "A5 (880 Hz)",
-        "A6 (1760 Hz)",
-    ),
-)
