@@ -19,6 +19,7 @@ Other:
     sigplot - Plot an audio signal in seconds
     specshow - Display an audio spectrogram in dB, seconds, and Hz
     cqtspecshow - Display a CQT audio spectrogram in dB, seconds, and Hz
+    cqtchromshow - Display a CQT audio chromagram in seconds
 
 Author:
     Zafar Rafii
@@ -26,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    09/27/20
+    09/28/20
 """
 
 import numpy as np
@@ -433,57 +434,50 @@ def cqtchromagram(
         # Import modules
         import scipy.io.wavfile
         import numpy as np
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Audio signal (normalized) averaged over its channels and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
         audio_signal = np.mean(audio_signal, 1)
 
-        # CQT kernel
+        # Compute the CQT kernel using some parameters
         frequency_resolution = 2
         minimum_frequency = 55
         maximum_frequency = 3520
-        cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-        # CQT chromagram
+        # Compute the CQT chromagram
         time_resolution = 25
-        audio_chromagram = z.cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resolution, cqt_kernel)
+        audio_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
 
-        # CQT chromagram displayed in dB, s, and chromas
-        plt.rc('font', size=30)
-        plt.imshow(20*np.log10(audio_chromagram), aspect='auto', cmap='jet', origin='lower')
-        plt.title('CQT chromagram (dB)')
-        plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*time_resolution),
-                   np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-        plt.xlabel('Time (s)')
-        plt.yticks(np.arange(1, 12*frequency_resolution+1, frequency_resolution),
-                   ('A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'))
-        plt.ylabel('Chroma')
+        # Display the CQT chromagram in seconds
+        plt.figure(figsize=(17, 5))
+        zaf.cqtchromshow(audio_chromagram, time_resolution, xtick_step=1)
+        plt.title("CQT chromagram")
         plt.show()
     """
 
-    # CQT spectrogram
+    # Compute the CQT spectrogram
     audio_spectrogram = cqtspectrogram(
         audio_signal, sampling_frequency, time_resolution, cqt_kernel
     )
 
-    # Number of frequency channels and time frames
+    # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
 
-    # Number of chroma bins
+    # Derive the number of chroma channels
     number_chromas = 12 * frequency_resolution
 
     # Initialize the chromagram
     audio_chromagram = np.zeros((number_chromas, number_times))
 
-    # Loop over the chroma bins
-    for chroma_index in range(0, number_chromas):
+    # Loop over the chroma channels
+    for i in range(0, number_chromas):
 
         # Sum the energy of the frequency channels for every chroma
-        audio_chromagram[chroma_index, :] = np.sum(
-            audio_spectrogram[chroma_index:number_frequencies:number_chromas, :], 0
+        audio_chromagram[i, :] = np.sum(
+            audio_spectrogram[i:number_frequencies:number_chromas, :], axis=0
         )
 
     return audio_chromagram
@@ -1199,7 +1193,7 @@ def specshow(
     Display an audio spectrogram in dB, seconds, and Hz
 
     Inputs:
-        audio_spectrogram: magnitude spectrogram (without DC and mirrored frequencies) [number_frequencies, number_times]
+        audio_spectrogram: audio spectrogram (without DC and mirrored frequencies) [number_frequencies, number_times]
         number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
@@ -1255,7 +1249,7 @@ def cqtspecshow(
     Display a CQT audio spectrogram in dB, seconds, and Hz
 
     Inputs:
-        audio_spectrogram: magnitude CQT spectrogram [number_frequencies, number_times]
+        audio_spectrogram: CQT audio spectrogram [number_frequencies, number_times]
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitone
         minimum_frequency: minimum frequency in Hz
@@ -1299,3 +1293,37 @@ def cqtspecshow(
     plt.yticks(ticks=ytick_locations, labels=ytick_labels)
     plt.xlabel("Time (s)")
     plt.ylabel("Frequency (Hz)")
+
+
+def cqtchromshow(
+    audio_chromagram,
+    time_resolution,
+    xtick_step=1,
+):
+    """
+    Display a CQT audio chromagram seconds
+
+    Inputs:
+        audio_chromagram: CQT audio chromagram [number_chromas, number_times]
+        time_resolution: time resolution in number of time frames per second
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
+    """
+
+    # Get the number of time frames
+    number_times = np.shape(audio_chromagram)[1]
+
+    # Prepare the tick locations and labels for the x-axis
+    xtick_locations = np.arange(
+        xtick_step * time_resolution,
+        number_times,
+        xtick_step * time_resolution,
+    )
+    xtick_labels = np.arange(
+        xtick_step, number_times / time_resolution + 1, xtick_step
+    ).astype(int)
+
+    # Display the spectrogram in dB, seconds, and Hz
+    plt.imshow(audio_chromagram, aspect="auto", cmap="jet", origin="lower")
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Chroma")
