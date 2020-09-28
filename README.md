@@ -259,38 +259,31 @@ Output:
 # Import modules
 import scipy.io.wavfile
 import numpy as np
-import z
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 audio_signal = np.mean(audio_signal, 1)
 
-# CQT kernel
+# Compute the CQT kernel using some parameters
 frequency_resolution = 2
 minimum_frequency = 55
 maximum_frequency = 3520
-cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-# CQT chromagram
+# Compute the CQT chromagram
 time_resolution = 25
-audio_chromagram = z.cqtchromagram(audio_signal, sample_rate, time_resolution, frequency_resolution, cqt_kernel)
+audio_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
 
-# CQT chromagram displayed in dB, s, and chromas
-plt.rc('font', size=30)
-plt.imshow(20*np.log10(audio_chromagram), aspect='auto', cmap='jet', origin='lower')
-plt.title('CQT chromagram (dB)')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*time_resolution),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
-plt.yticks(np.arange(1, 12*frequency_resolution+1, frequency_resolution),
-           ('A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#'))
-plt.ylabel('Chroma')
+# Display the CQT chromagram in seconds
+plt.figure(figsize=(17, 5))
+zaf.cqtchromshow(audio_chromagram, time_resolution, xtick_step=1)
+plt.title("CQT chromagram")
 plt.show()
 ```
 
-<img src="images/python/cqtchromagram.png" width="1000">
+<img src="images/cqtchromagram.png" width="1000">
 
 
 ### Mel frequency cepstrum coefficients (MFCCs)
