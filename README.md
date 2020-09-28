@@ -211,40 +211,32 @@ Output:
 
 ```
 # Import modules
-import scipy.io.wavfile
 import numpy as np
-import z
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio file (normalized) averaged over the channels and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / ( 2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 audio_signal = np.mean(audio_signal, 1)
 
-# CQT kernel
+# Compute the CQT kernel using some parameters
 frequency_resolution = 2
 minimum_frequency = 55
 maximum_frequency = 3520
-cqt_kernel = z.cqtkernel(sample_rate, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-# CQT spectrogram
+# Compute the (magnitude) CQT spectrogram using the kernel
 time_resolution = 25
-audio_spectrogram = z.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+audio_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
-# CQT spectrogram displayed in dB, s, and semitones
-plt.rc('font', size=30)
-plt.imshow(20*np.log10(audio_spectrogram), aspect='auto', cmap='jet', origin='lower')
-plt.title('CQT spectrogram (dB)')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*time_resolution),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
-plt.yticks(np.arange(1, 6*12*frequency_resolution+1, 12*frequency_resolution),
-           ('A1 (55 Hz)','A2 (110 Hz)','A3 (220 Hz)','A4 (440 Hz)','A5 (880 Hz)','A6 (1760 Hz)'))
-plt.ylabel('Frequency (semitones)')
+# Display the CQT spectrogram in dB, seconds, and Hz
+plt.figure(figsize=(17, 10))
+zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, maximum_frequency, xtick_step=1)
+plt.title("CQT spectrogram (dB)")
 plt.show()
 ```
 
-<img src="images/python/cqtspectrogram.png" width="1000">
+<img src="images/cqtspectrogram.png" width="1000">
 
 
 ### Constant-Q transform (CQT) chromagram using a CQT kernel
