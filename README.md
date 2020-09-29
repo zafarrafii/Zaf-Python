@@ -258,6 +258,7 @@ Output:
 ```
 
 #### Example: compute and display the CQT chromagram
+
 ```
 # Import modules
 import scipy.io.wavfile
@@ -307,44 +308,38 @@ Output:
 
 ```
 # Import modules
-import scipy.io.wavfile
 import numpy as np
-import z
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 audio_signal = np.mean(audio_signal, 1)
 
-# MFCCs for a given number of filters and coefficients
+# Compute the MFCCs with a given number of filters and coefficients
 number_filters = 40
 number_coefficients = 20
-audio_mfcc = z.mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
+audio_mfcc = zaf.mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients)
 
-# Delta and delta-delta MFCCs
-audio_deltamfcc = np.diff(audio_mfcc, n=1, axis=1)
-audio_deltadeltamfcc = np.diff(audio_deltamfcc, n=1, axis=1)
+# Compute the delta and delta-delta MFCCs
+audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
+audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
-# MFCCs, delta MFCCs, and delta-delta MFCCs displayed in s
-step_length = 2**np.ceil(np.log2(0.04*sample_rate)) / 2
-plt.rc('font', size=30)
-plt.subplot(3, 1, 1), plt.plot(np.transpose(audio_mfcc)), plt.autoscale(tight=True), plt.title('MFCCs')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/step_length),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
-plt.subplot(3, 1, 2), plt.plot(np.transpose(audio_deltamfcc)), plt.autoscale(tight=True), plt.title('Delta MFCCs')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/step_length),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
-plt.subplot(3, 1, 3), plt.plot(np.transpose(audio_deltadeltamfcc)), plt.autoscale(tight=True), plt.title('Delta-delta MFCCs')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/step_length),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
+# Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
+time_resolution = sampling_frequency * np.shape(audio_mfcc)[1] / len(audio_signal)
+
+# Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
+plt.figure(figsize=(17, 10))
+plt.subplot(311),
+zaf.sigplot(np.transpose(audio_mfcc), time_resolution, xtick_step=1), plt.title("MFCCs")
+plt.subplot(312)
+zaf.sigplot(np.transpose(audio_dmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+plt.subplot(313)
+zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
 plt.show()
 ```
 
-<img src="images/python/mfcc.png" width="1000">
+<img src="images/mfcc.png" width="1000">
 
 
 ### Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
