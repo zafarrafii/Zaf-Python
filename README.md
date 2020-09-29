@@ -67,7 +67,7 @@ step_length = int(window_length/2)
 # Compute the STFT
 audio_stft = zaf.stft(audio_signal, window_function, step_length)
 
-# Derive the magnitude spectrogram without the DC component and the mirrored frequencies
+# Derive the magnitude spectrogram (without the DC component and the mirrored frequencies)
 audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
 
 # Display the spectrogram in dB, seconds, and Hz
