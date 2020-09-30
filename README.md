@@ -56,7 +56,7 @@ audio_signal = np.mean(audio_signal, 1)
 window_duration = 0.04
 
 # Derive the window length in samples (use powers of 2 for faster FFT and constant overlap-add (COLA))
-window_length = int(np.power(2, np.ceil(np.log2(window_duration * sampling_frequency))))
+window_length = pow(2, int(np.ceil(np.log2(window_duration * sampling_frequency))))
 
 # Compute the window function (use SciPy's periodic Hamming window for COLA as NumPy's Hamming window is symmetric)
 window_function = scipy.signal.hamming(window_length, False)
@@ -106,7 +106,7 @@ import matplotlib.pyplot as plt
 audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 
 # Set the parameters for the STFT
-window_length = int(np.power(2, np.ceil(np.log2(0.04 * sampling_frequency))))
+window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
 window_function = scipy.signal.hamming(window_length, False)
 step_length = int(window_length/2)
 
