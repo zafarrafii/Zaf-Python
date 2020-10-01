@@ -404,7 +404,7 @@ plt.subplot(4, 3, 10), plt.plot(audio_dct4), plt.autoscale(tight=True), plt.titl
 plt.show()
 ```
 
-<img src="images/python/dct.png" width="1000">
+<img src="images/dct.png" width="1000">
 
 
 ### Discrete sine transform (DST) using the fast Fourier transform (FFT)
@@ -468,7 +468,7 @@ plt.subplot(4, 3, 12), plt.plot(audio_signal-audio_idst4), plt.autoscale(tight=T
 plt.show()
 ```
 
-<img src="images/python/dst.png" width="1000">
+<img src="images/dst.png" width="1000">
 
 
 ### Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
@@ -521,7 +521,7 @@ plt.ylabel('Frequency (kHz)')
 plt.show()
 ```
 
-<img src="images/python/mdct.png" width="1000">
+<img src="images/mdct.png" width="1000">
 
 
 ### Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
@@ -577,7 +577,7 @@ plt.xlabel('Time (s)')
 plt.show()
 ```
 
-<img src="images/python/imdct.png" width="1000">
+<img src="images/imdct.png" width="1000">
 
 
 ## examples.ipynb
