@@ -2,7 +2,7 @@
 
 ## zaf.py
 
-This Python module implements several functions for audio signal analysis.
+This Python module implements several functions for audio signal analysis. Simply copy the file `zaf.py` in our working directory. Make sure you have Python 3, NumPy, and SciPy installed.
 
 Functions:
 - `stft` - [Short-time Fourier transform (STFT)](#short-time-fourier-transform-stft)
