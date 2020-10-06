@@ -358,49 +358,46 @@ Output:
 
 ```
 # Import the modules
-import scipy.io.wavfile
 import numpy as np
-import z
+import zaf
 import scipy.fftpack
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
 audio_signal = np.mean(audio_signal, 1)
-audio_signal = np.expand_dims(audio_signal, axis=1)
 
-# Audio signal for a given window length, and one frame
+# Get an audio segment for a given window length
 window_length = 1024
-audio_signal = audio_signal[0:window_length, :]
+audio_segment = audio_signal[0:window_length]
 
-# DCT-I, II, III, and IV
-audio_dct1 = z.dct(audio_signal, 1)
-audio_dct2 = z.dct(audio_signal, 2)
-audio_dct3 = z.dct(audio_signal, 3)
-audio_dct4 = z.dct(audio_signal, 4)
+# Compute the DCT-I, II, III, and IV
+audio_dct1 = zaf.dct(audio_segment, 1)
+audio_dct2 = zaf.dct(audio_segment, 2)
+audio_dct3 = zaf.dct(audio_segment, 3)
+audio_dct4 = zaf.dct(audio_segment, 4)
 
-# SciPy's DCT-I (orthogonalized), II, and III (SciPy does not have a DCT-IV!)
-audio_signal1 = np.concatenate((audio_signal[0:1, :]*np.sqrt(2), audio_signal[1:window_length-1, :],
-                               audio_signal[window_length-1:window_length, :]*np.sqrt(2)))
-scipy_dct1 = scipy.fftpack.dct(audio_signal1, axis=0, type=1)
-scipy_dct1[[0, window_length-1], :] = scipy_dct1[[0, window_length-1], :]/np.sqrt(2)
+# Comput SciPy's DCT-I (orthogonalized), II, and III (SciPy does not have a DCT-IV!)
+audio_segment1 = np.concatenate((audio_segment[0:1]*np.sqrt(2), audio_segment[1:window_length-1],
+                               audio_segment[window_length-1:window_length]*np.sqrt(2)), axis=0)
+scipy_dct1 = scipy.fftpack.dct(audio_segment1, axis=0, type=1)
+scipy_dct1[[0, window_length-1]] = scipy_dct1[[0, window_length-1]]/np.sqrt(2)
 scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
-scipy_dct2 = scipy.fftpack.dct(audio_signal, axis=0, type=2, norm='ortho')
-scipy_dct3 = scipy.fftpack.dct(audio_signal, axis=0, type=3, norm='ortho')
+scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm='ortho')
+scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm='ortho')
 
-# DCT-I, II, III, and IV, SciPy's versions, and errors displayed
-plt.rc('font', size=30)
-plt.subplot(4, 3, 1), plt.plot(audio_dct1), plt.autoscale(tight=True), plt.title("DCT-I")
-plt.subplot(4, 3, 2), plt.plot(scipy_dct1), plt.autoscale(tight=True), plt.title("SciPy's DCT-I")
-plt.subplot(4, 3, 3), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 4), plt.plot(audio_dct2), plt.autoscale(tight=True), plt.title("DCT-II")
-plt.subplot(4, 3, 5), plt.plot(scipy_dct2), plt.autoscale(tight=True), plt.title("SciPy's DCT-II")
-plt.subplot(4, 3, 6), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 7), plt.plot(audio_dct3), plt.autoscale(tight=True), plt.title("DCT-III")
-plt.subplot(4, 3, 8), plt.plot(scipy_dct3), plt.autoscale(tight=True), plt.title("SciPy's DCT-III")
-plt.subplot(4, 3, 9), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 10), plt.plot(audio_dct4), plt.autoscale(tight=True), plt.title("DCT-IV")
+# Plot the DCT-I, II, III, and IV, SciPy's versions, and the errors
+plt.figure(figsize=(17,10))
+plt.subplot(3, 4, 1), plt.plot(audio_dct1), plt.autoscale(tight=True), plt.title("DCT-I")
+plt.subplot(3, 4, 2), plt.plot(audio_dct2), plt.autoscale(tight=True), plt.title("DCT-II")
+plt.subplot(3, 4, 3), plt.plot(audio_dct3), plt.autoscale(tight=True), plt.title("DCT-III")
+plt.subplot(3, 4, 4), plt.plot(audio_dct4), plt.autoscale(tight=True), plt.title("DCT-IV")
+plt.subplot(3, 4, 5), plt.plot(scipy_dct1), plt.autoscale(tight=True), plt.title("SciPy's DCT-I")
+plt.subplot(3, 4, 6), plt.plot(scipy_dct2), plt.autoscale(tight=True), plt.title("SciPy's DCT-II")
+plt.subplot(3, 4, 7), plt.plot(scipy_dct3), plt.autoscale(tight=True), plt.title("SciPy's DCT-III")
+plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("Error")
+plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("Error")
+plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("Error")
 plt.show()
 ```
 
