@@ -42,7 +42,7 @@ Output:
 #### Example: compute and display the spectrogram from an audio file
 
 ```
-# Import modules
+# Import the modules
 import numpy as np
 import scipy.signal
 import zaf
@@ -96,7 +96,7 @@ Output:
 #### Example: estimate the center and the sides from a stereo audio file
 
 ```
-# Import modules
+# Import the modules
 import numpy as np
 import scipy.signal
 import zaf
@@ -170,7 +170,7 @@ Output:
 #### Example: compute and display the CQT kernel
 
 ```
-# Import modules
+# Import the modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -213,7 +213,7 @@ Output:
 #### Example: compute and display the CQT spectrogram
 
 ```
-# Import modules
+# Import the modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -260,7 +260,7 @@ Output:
 #### Example: compute and display the CQT chromagram
 
 ```
-# Import modules
+# Import the modules
 import scipy.io.wavfile
 import numpy as np
 import zaf
@@ -307,7 +307,7 @@ Output:
 #### Example: compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs
 
 ```
-# Import modules
+# Import the modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -357,7 +357,7 @@ Output:
 #### Example: compute the 4 different DCTs and compare them to SciPy's DCTs
 
 ```
-# Import modules
+# Import the modules
 import scipy.io.wavfile
 import numpy as np
 import z
