@@ -348,7 +348,7 @@ plt.show()
 audio_dct = zaf.dct(audio_signal, dct_type)
 
 Inputs:
-    audio_signal: audio signal [number_samples, number_frames] (number_frames>0)
+    audio_signal: audio signal [number_samples, number_frames] (number_frames >= 0)
     dct_type: dct type (1, 2, 3, or 4)
 Output:
     audio_dct: audio DCT [number_frequencies, number_frames]
@@ -410,7 +410,7 @@ plt.show()
 audio_dst = zaf.dst(audio_signal, dst_type)
 
 Inputs:
-    audio_signal: audio signal [number_samples, number_frames] (number_frames>0)
+    audio_signal: audio signal [number_samples, number_frames] (number_frames >= 0)
     dst_type: DST type (1, 2, 3, or 4)
 Output:
     audio_dst: audio DST [number_frequencies, number_frames]
