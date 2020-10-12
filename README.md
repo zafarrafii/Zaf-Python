@@ -185,11 +185,11 @@ maximum_frequency = sampling_frequency/2
 cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
 # Display the magnitude CQT kernel
-plt.figure(figsize=(17,10))
-plt.imshow(np.absolute(cqt_kernel).toarray(), aspect='auto', cmap='jet', origin='lower')
-plt.title('Magnitude CQT kernel')
-plt.xlabel('FFT length')
-plt.ylabel('CQT frequency')
+plt.figure(figsize=(17, 5))
+plt.imshow(np.absolute(cqt_kernel).toarray(), aspect="auto", cmap="jet", origin="lower")
+plt.title("Magnitude CQT kernel")
+plt.xlabel("FFT length")
+plt.ylabel("CQT frequency")
 plt.show()
 ```
 
@@ -219,7 +219,7 @@ import zaf
 import matplotlib.pyplot as plt
 
 # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Compute the CQT kernel using some parameters
@@ -261,13 +261,13 @@ Output:
 
 ```
 # Import the modules
-import scipy.io.wavfile
+# Import the modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
 
 # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Compute the CQT kernel using some parameters
@@ -313,7 +313,7 @@ import zaf
 import matplotlib.pyplot as plt
 
 # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Compute the MFCCs with a given number of filters and coefficients
@@ -364,7 +364,7 @@ import scipy.fftpack
 import matplotlib.pyplot as plt
 
 # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Get an audio segment for a given window length
@@ -377,14 +377,14 @@ audio_dct2 = zaf.dct(audio_segment, 2)
 audio_dct3 = zaf.dct(audio_segment, 3)
 audio_dct4 = zaf.dct(audio_segment, 4)
 
-# Comput SciPy's DCT-I (orthogonalized), II, and III (SciPy does not have a DCT-IV!)
-audio_segment1 = np.concatenate((audio_segment[0:1]*np.sqrt(2), audio_segment[1:window_length-1],
-                               audio_segment[window_length-1:window_length]*np.sqrt(2)), axis=0)
-scipy_dct1 = scipy.fftpack.dct(audio_segment1, axis=0, type=1)
-scipy_dct1[[0, window_length-1]] = scipy_dct1[[0, window_length-1]]/np.sqrt(2)
+# Comput SciPy's DCT-I (properly orthogonalized), II, and III (SciPy does not have a DCT-IV!)
+audio_segment1 = audio_segment.copy()
+audio_segment1[[0, -1]] = audio_segment1[[0, -1]]*np.sqrt(2)
+scipy_dct1 = scipy.fftpack.dct(audio_segment1, axis=0, type=1, norm=None)
+scipy_dct1[[0, -1]] = scipy_dct1[[0, -1]]/np.sqrt(2)
 scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
-scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm='ortho')
-scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm='ortho')
+scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm="ortho")
+scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm="ortho")
 
 # Plot the DCT-I, II, III, and IV, SciPy's versions, and the errors
 plt.figure(figsize=(17,10))
