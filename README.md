@@ -49,7 +49,7 @@ import zaf
 import matplotlib.pyplot as plt
 
 # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Set the window duration in seconds (audio is stationary around 40 milliseconds)
