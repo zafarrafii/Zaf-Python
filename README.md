@@ -103,7 +103,7 @@ import zaf
 import matplotlib.pyplot as plt
 
 # Read the (stereo) audio signal with its sampling frequency in Hz
-audio_signal, sampling_frequency = zaf.wavread('audio_file.wav')
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 
 # Set the parameters for the STFT
 window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
@@ -136,8 +136,8 @@ center_signal = center_signal[0:len(audio_signal), :]
 sides_signal = audio_signal-center_signal
 
 # Write the center and sides signals
-zaf.wavwrite(center_signal, sampling_frequency, 'center_file.wav')
-zaf.wavwrite(sides_signal, sampling_frequency, 'sides_file.wav')
+zaf.wavwrite(center_signal, sampling_frequency, "center_file.wav")
+zaf.wavwrite(sides_signal, sampling_frequency, "sides_file.wav")
 
 # Display the original, center, and sides signals in seconds
 plt.figure(figsize=(17, 10))
