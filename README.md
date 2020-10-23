@@ -25,7 +25,6 @@ Other:
 - `cqtchromshow` - Display a CQT audio chromagram in seconds
 
 
-
 ### Short-time Fourier transform (STFT)
 
 ```
@@ -386,7 +385,7 @@ scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
 scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm="ortho")
 scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm="ortho")
 
-# Plot the DCT-I, II, III, and IV, SciPy's versions, and the errors
+# Plot the DCT-I, II, III, and IV, SciPy's versions, and their differences
 plt.figure(figsize=(17,10))
 plt.subplot(3, 4, 1), plt.plot(audio_dct1), plt.autoscale(tight=True), plt.title("DCT-I")
 plt.subplot(3, 4, 2), plt.plot(audio_dct2), plt.autoscale(tight=True), plt.title("DCT-II")
@@ -395,9 +394,9 @@ plt.subplot(3, 4, 4), plt.plot(audio_dct4), plt.autoscale(tight=True), plt.title
 plt.subplot(3, 4, 5), plt.plot(scipy_dct1), plt.autoscale(tight=True), plt.title("SciPy's DCT-I")
 plt.subplot(3, 4, 6), plt.plot(scipy_dct2), plt.autoscale(tight=True), plt.title("SciPy's DCT-II")
 plt.subplot(3, 4, 7), plt.plot(scipy_dct3), plt.autoscale(tight=True), plt.title("SciPy's DCT-III")
-plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("Error")
+plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("Differences")
+plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("Differences")
+plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("Differences")
 plt.show()
 ```
 
