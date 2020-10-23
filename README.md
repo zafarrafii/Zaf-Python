@@ -415,52 +415,48 @@ Output:
     audio_dst: audio DST [number_frequencies, number_frames]
 ```
 
-#### Example: compute the 4 different DSTs and check their respective inverses
+#### Example: compute the 4 different DSTs and compare their respective inverses with the original audio
 
 ```
 # Import modules
-import scipy.io.wavfile
 import numpy as np
-import z
-import scipy.fftpack
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
-audio_signal = np.expand_dims(audio_signal, axis=1)
 
-# Audio signal for a given window length, and one frame
+# Get an audio segment for a given window length
 window_length = 1024
-audio_signal = audio_signal[0:window_length, :]
+audio_segment = audio_signal[0:window_length]
 
-# DST-I, II, III, and IV
-audio_dst1 = z.dst(audio_signal, 1)
-audio_dst2 = z.dst(audio_signal, 2)
-audio_dst3 = z.dst(audio_signal, 3)
-audio_dst4 = z.dst(audio_signal, 4)
+# Compute the DST-I, II, III, and IV
+audio_dst1 = zaf.dst(audio_signal, 1)
+audio_dst2 = zaf.dst(audio_signal, 2)
+audio_dst3 = zaf.dst(audio_signal, 3)
+audio_dst4 = zaf.dst(audio_signal, 4)
 
-# Respective inverses, i.e., DST-I, III, II, and IV
-audio_idst1 = z.dst(audio_dst1, 1)
-audio_idst2 = z.dst(audio_dst2, 3)
-audio_idst3 = z.dst(audio_dst3, 2)
-audio_idst4 = z.dst(audio_dst4, 4)
+# Compute their respective inverses, i.e., DST-I, II, III, and IV
+audio_idst1 = zaf.dst(audio_dst1, 1)
+audio_idst2 = zaf.dst(audio_dst2, 3)
+audio_idst3 = zaf.dst(audio_dst3, 2)
+audio_idst4 = zaf.dst(audio_dst4, 4)
 
-# DST-I, II, III, and IV, respective inverses, and errors displayed
-plt.rc('font', size=30)
-plt.subplot(4, 3, 1), plt.plot(audio_dst1), plt.autoscale(tight=True), plt.title("DCT-I")
-plt.subplot(4, 3, 2), plt.plot(audio_idst1), plt.autoscale(tight=True), plt.title("Inverse DST-I = DST-I")
-plt.subplot(4, 3, 3), plt.plot(audio_signal-audio_idst1), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 4), plt.plot(audio_dst2), plt.autoscale(tight=True), plt.title("DST-II")
-plt.subplot(4, 3, 5), plt.plot(audio_idst2), plt.autoscale(tight=True), plt.title("Inverse DST-II = DST-III")
-plt.subplot(4, 3, 6), plt.plot(audio_signal-audio_idst2), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 7), plt.plot(audio_dst3), plt.autoscale(tight=True), plt.title("DST-III")
-plt.subplot(4, 3, 8), plt.plot(audio_idst3), plt.autoscale(tight=True), plt.title("Inverse DST-III = DST-II")
-plt.subplot(4, 3, 9), plt.plot(audio_signal-audio_idst3), plt.autoscale(tight=True), plt.title("Error")
-plt.subplot(4, 3, 10), plt.plot(audio_dst4), plt.autoscale(tight=True), plt.title("DST-IV")
-plt.subplot(4, 3, 11), plt.plot(audio_idst4), plt.autoscale(tight=True), plt.title("Inverse DST-IV = DST-IV")
-plt.subplot(4, 3, 12), plt.plot(audio_signal-audio_idst4), plt.autoscale(tight=True), plt.title("Error")
+# Plot the DST-I, II, III, and IV, their respective inverses, and their differences with the original audio segment
+plt.figure(figsize=(17,10))
+plt.subplot(3, 4, 1), plt.plot(audio_dst1), plt.autoscale(tight=True), plt.title("DCT-I")
+plt.subplot(3, 4, 2), plt.plot(audio_dst2), plt.autoscale(tight=True), plt.title("DST-II")
+plt.subplot(3, 4, 3), plt.plot(audio_dst3), plt.autoscale(tight=True), plt.title("DST-III")
+plt.subplot(3, 4, 4), plt.plot(audio_dst4), plt.autoscale(tight=True), plt.title("DST-IV")
+plt.subplot(3, 4, 5), plt.plot(audio_idst1), plt.autoscale(tight=True), plt.title("Inverse DST-I (DST-I)")
+plt.subplot(3, 4, 6), plt.plot(audio_idst2), plt.autoscale(tight=True), plt.title("Inverse DST-II (DST-III)")
+plt.subplot(3, 4, 7), plt.plot(audio_idst3), plt.autoscale(tight=True), plt.title("Inverse DST-III (DST-II)")
+plt.subplot(3, 4, 8), plt.plot(audio_idst4), plt.autoscale(tight=True), plt.title("Inverse DST-IV (DST-IV)")
+plt.subplot(3, 4, 9), plt.plot(audio_signal-audio_idst1), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
+plt.subplot(3, 4, 10), plt.plot(audio_signal-audio_idst2), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
+plt.subplot(3, 4, 11), plt.plot(audio_signal-audio_idst3), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
+plt.subplot(3, 4, 12), plt.plot(audio_signal-audio_idst4), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
 plt.show()
 ```
 
