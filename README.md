@@ -415,7 +415,7 @@ Output:
     audio_dst: audio DST [number_frequencies, number_frames]
 ```
 
-#### Example: compute the 4 different DSTs and compare them to their respective inverses
+#### Example: compute the 4 different DSTs and check their respective inverses
 
 ```
 # Import modules
