@@ -954,22 +954,23 @@ def mdct(audio_signal, window_function):
     number_samples = len(audio_signal)
     window_length = len(window_function)
 
-    # Derive half the window length (used for the step length and the number of frequencies)
-    half_length = int(window_length / 2)
+    # Derive the step length and the number of frequencies (for clarity)
+    step_length = int(window_length / 2)
+    number_frequencies = int(window_length / 2)
 
     # Derive the number of time frames
-    number_times = int(np.ceil(number_samples / half_length)) + 1
+    number_times = int(np.ceil(number_samples / step_length)) + 1
 
     # Zero-pad the start and the end of the signal to center the windows
     audio_signal = np.pad(
         audio_signal,
-        (half_length, (number_times + 1) * half_length - number_samples),
+        (step_length, (number_times + 1) * step_length - number_samples),
         "constant",
         constant_values=0,
     )
 
     # Initialize the MDCT
-    audio_mdct = np.zeros((half_length, number_times))
+    audio_mdct = np.zeros((number_frequencies, number_times))
 
     # Prepare the pre-processing and post-processing arrays
     preprocessing_array = np.exp(
@@ -984,18 +985,21 @@ def mdct(audio_signal, window_function):
     )
 
     # Loop over the time frames
+    # (Do the pre and post-processing, and take the FFT in the loop to avoid storing twice longer frames)
     i = 0
     for j in range(number_times):
 
         # Window the signal
         audio_segment = audio_signal[i : i + window_length] * window_function
-        i = i + half_length
+        i = i + step_length
 
         # Compute the Fourier transform of the windowed segment using the FFT after pre-processing
         audio_segment = np.fft.fft(audio_segment * preprocessing_array, axis=0)
 
         # Truncate to the first half before post-processing (and take the real to ensure real values)
-        audio_mdct[:, j] = np.real(audio_segment[0:half_length] * postprocessing_array)
+        audio_mdct[:, j] = np.real(
+            audio_segment[0:number_frequencies] * postprocessing_array
+        )
 
     return audio_mdct
 
@@ -1011,55 +1015,53 @@ def imdct(audio_mdct, window_function):
         audio_signal: audio signal [number_samples,]
 
     Example: verify that the MDCT is perfectly invertible
-        # Import modules
-        import scipy.io.wavfile
+        # Import the modules
         import numpy as np
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / (2.0 ** (audio_signal.itemsize * 8 - 1))
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
         audio_signal = np.mean(audio_signal, 1)
 
-        # MDCT with a slope function as used in the Vorbis audio coding format
+        # Compute the MDCT with a slope function as used in the Vorbis audio coding format
         window_length = 2048
-        window_function = np.sin(np.pi / 2
-                                 * np.power(np.sin(np.pi / window_length * np.arange(0.5, window_length + 0.5)), 2))
-        audio_mdct = z.mdct(audio_signal, window_function)
+        window_function = np.sin(np.pi / 2*pow(np.sin(np.pi / window_length * np.arange(0.5, window_length + 0.5)), 2))
+        audio_mdct = zaf.mdct(audio_signal, window_function)
 
-        # Inverse MDCT and error signal
-        audio_signal2 = z.imdct(audio_mdct, window_function)
+        # Compute the inverse MDCT
+        audio_signal2 = zaf.imdct(audio_mdct, window_function)
         audio_signal2 = audio_signal2[0:len(audio_signal)]
-        error_signal = audio_signal - audio_signal2
 
-        # Original, resynthesized, and error signals displayed in s
-        plt.rc('font', size=30)
-        plt.subplot(3, 1, 1), plt.plot(audio_signal), plt.autoscale(tight=True), plt.title("Original Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
-        plt.subplot(3, 1, 2), plt.plot(audio_signal2), plt.autoscale(tight=True), plt.title("Resynthesized Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
-        plt.subplot(3, 1, 3), plt.plot(error_signal), plt.autoscale(tight=True), plt.title("Error Signal")
-        plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-                   np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-        plt.xlabel('Time (s)')
+        # Compute the differences between the original signal and the resynthesized one
+        audio_differences = audio_signal-audio_signal2
+        y_max = np.max(np.absolute(audio_differences))
+
+        # Display the original and resynthesized signals, and their differences in seconds
+        plt.figure(figsize=(17, 10))
+        plt.subplot(311),
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
+        plt.subplot(312)
+        zaf.sigplot(audio_signal2, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Resyntesized Signal")
+        plt.subplot(313)
+        zaf.sigplot(audio_differences, sampling_frequency, xtick_step=1), plt.ylim(-y_max, y_max), plt.title("Difference Signal")
         plt.show()
     """
 
-    # Number of frequency channels and time frames
+    # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_mdct)
 
-    # Number of samples for the signal
-    number_samples = number_frequencies * (number_times + 1)
+    # Derive the window length and the step length in samples (for clarity)
+    window_length = 2 * number_frequencies
+    step_length = number_frequencies
+
+    # Derive the number of samples for the signal
+    number_samples = step_length * (number_times + 1)
 
     # Initialize the audio signal
     audio_signal = np.zeros(number_samples)
 
-    # Pre and post-processing arrays
+    # Prepare the pre-processing and post-processing arrays
     preprocessing_array = np.exp(
         -1j
         * np.pi
@@ -1080,26 +1082,31 @@ def imdct(audio_mdct, window_function):
         / number_frequencies
     )
 
-    # FFT of the frames after pre-processing
+    # Compute the Fourier transform of the frames using the FFT after pre-processing (zero-pad to get twice the length)
     audio_mdct = np.fft.fft(
-        audio_mdct.T * preprocessing_array, n=2 * number_frequencies, axis=1
+        audio_mdct * preprocessing_array[:, np.newaxis],
+        n=2 * number_frequencies,
+        axis=0,
     )
 
-    # Apply the window to the frames after post-processing
-    audio_mdct = 2 * (np.real(audio_mdct * postprocessing_array) * window_function).T
+    # Apply the window function to the frames after post-processing (take the real to ensure real values)
+    audio_mdct = 2 * (
+        np.real(audio_mdct * postprocessing_array[:, np.newaxis])
+        * window_function[:, np.newaxis]
+    )
 
     # Loop over the time frames
-    for time_index in range(number_times):
+    i = 0
+    for j in range(number_times):
 
-        # Recover the signal thanks to the time-domain aliasing cancellation (TDAC) principle
-        sample_index = time_index * number_frequencies
-        audio_signal[sample_index : sample_index + 2 * number_frequencies] = (
-            audio_signal[sample_index : sample_index + 2 * number_frequencies]
-            + audio_mdct[:, time_index]
+        # Recover the signal with the time-domain aliasing cancellation (TDAC) principle
+        audio_signal[i : i + window_length] = (
+            audio_signal[i : i + window_length] + audio_mdct[:, j]
         )
+        i = i + step_length
 
-    # Remove the pre and post zero-padding
-    audio_signal = audio_signal[number_frequencies : -number_frequencies - 1]
+    # Remove the zero-padding at the start and at the end of the signal
+    audio_signal = audio_signal[step_length : -step_length - 1]
 
     return audio_signal
 
