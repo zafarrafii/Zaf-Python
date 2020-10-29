@@ -522,42 +522,36 @@ Output:
 
 Example: Verify that the MDCT is perfectly invertible
 ```
-# Import modules
-import scipy.io.wavfile
+# Import the modules
 import numpy as np
-import z
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0 ** (audio_signal.itemsize * 8 - 1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
-# MDCT with a slope function as used in the Vorbis audio coding format
+# Compute the MDCT with a slope function as used in the Vorbis audio coding format
 window_length = 2048
-window_function = np.sin(np.pi / 2
-                         * np.power(np.sin(np.pi / window_length * np.arange(0.5, window_length + 0.5)), 2))
-audio_mdct = z.mdct(audio_signal, window_function)
+window_function = np.sin(np.pi / 2*pow(np.sin(np.pi / window_length * np.arange(0.5, window_length + 0.5)), 2))
+audio_mdct = zaf.mdct(audio_signal, window_function)
 
-# Inverse MDCT and error signal
-audio_signal2 = z.imdct(audio_mdct, window_function)
+# Compute the inverse MDCT
+audio_signal2 = zaf.imdct(audio_mdct, window_function)
 audio_signal2 = audio_signal2[0:len(audio_signal)]
-error_signal = audio_signal - audio_signal2
 
-# Original, resynthesized, and error signals displayed in s
-plt.rc('font', size=30)
-plt.subplot(3, 1, 1), plt.plot(audio_signal), plt.autoscale(tight=True), plt.title("Original Signal")
-plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-           np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-plt.xlabel('Time (s)')
-plt.subplot(3, 1, 2), plt.plot(audio_signal2), plt.autoscale(tight=True), plt.title("Resynthesized Signal")
-plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-           np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-plt.xlabel('Time (s)')
-plt.subplot(3, 1, 3), plt.plot(error_signal), plt.autoscale(tight=True), plt.title("Error Signal")
-plt.xticks(np.arange(sample_rate, len(audio_signal), sample_rate),
-           np.arange(1, int(np.floor(len(audio_signal) / sample_rate)) + 1))
-plt.xlabel('Time (s)')
+# Compute the differences between the original signal and the resynthesized one
+audio_differences = audio_signal-audio_signal2
+y_max = np.max(np.absolute(audio_differences))
+
+# Display the original and resynthesized signals, and their differences in seconds
+plt.figure(figsize=(17, 10))
+plt.subplot(311),
+zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
+plt.subplot(312)
+zaf.sigplot(audio_signal2, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Resyntesized Signal")
+plt.subplot(313)
+zaf.sigplot(audio_differences, sampling_frequency, xtick_step=1), plt.ylim(-y_max, y_max), plt.title("Difference Signal")
 plt.show()
 ```
 
