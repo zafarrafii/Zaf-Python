@@ -568,7 +568,7 @@ plt.show()
 
 This Jupyter notebook shows examples for the different functions of the module `zaf`.
 
-See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Z/blob/master/examples.ipynb).
+See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Zaf-Python/blob/master/examples.ipynb).
 
 
 ## audio_file.wav
