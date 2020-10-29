@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    10/23/20
+    10/29/20
 """
 
 import numpy as np
@@ -123,13 +123,13 @@ def stft(audio_signal, window_function, step_length):
 
     # Loop over the time frames
     i = 0
-    for j in range(0, number_times):
+    for j in range(number_times):
 
         # Window the signal
         audio_stft[:, j] = audio_signal[i : i + window_length] * window_function
         i = i + step_length
 
-    # Compute the Fourier transform of the frames
+    # Compute the Fourier transform of the frames using the FFT
     audio_stft = np.fft.fft(audio_stft, axis=0)
 
     return audio_stft
@@ -215,7 +215,7 @@ def istft(audio_stft, window_function, step_length):
 
     # Loop over the time frames
     i = 0
-    for j in range(0, number_times):
+    for j in range(number_times):
 
         # Perform a constant overlap-add (COLA) of the signal (with proper window function and step length)
         audio_signal[i : i + window_length] = (
@@ -294,7 +294,7 @@ def cqtkernel(
     cqt_kernel = np.zeros((number_frequencies, fft_length), dtype=complex)
 
     # Loop over the frequency channels
-    for i in range(0, number_frequencies):
+    for i in range(number_frequencies):
 
         # Derive the frequency value in Hz
         frequency_value = minimum_frequency * pow(2, i / octave_resolution)
@@ -405,7 +405,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
     # Loop over the time frames
     i = 0
-    for j in range(0, number_times):
+    for j in range(number_times):
 
         # Compute the magnitude CQT using the kernel
         audio_spectrogram[:, j] = np.absolute(
@@ -473,7 +473,7 @@ def cqtchromagram(
     audio_chromagram = np.zeros((number_chromas, number_times))
 
     # Loop over the chroma channels
-    for i in range(0, number_chromas):
+    for i in range(number_chromas):
 
         # Sum the energy of the frequency channels for every chroma
         audio_chromagram[i, :] = np.sum(
@@ -561,7 +561,7 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
     filter_bank = np.zeros((number_filters, int(window_length / 2)))
 
     # Loop over the filters
-    for i in range(0, number_filters):
+    for i in range(number_filters):
 
         # Compute the left and right sides of the triangular filters (linspace is more accurate than triang or bartlett!)
         filter_bank[i, filter_indices[i] - 1 : filter_indices[i + 1]] = np.linspace(
@@ -922,64 +922,56 @@ def mdct(audio_signal, window_function):
     Output:
         audio_mdct: audio MDCT [number_frequencies, number_times]
 
-    Example: compute and display the MDCT as in the AC-3 audio coding format
-        # Import modules
-        import scipy.io.wavfile
+    Example: compute and display the MDCT as used in the AC-3 audio coding format
+        # Import the modules
         import numpy as np
-        import z
+        import zaf
         import matplotlib.pyplot as plt
 
-        # Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-        sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-        audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
         audio_signal = np.mean(audio_signal, 1)
 
-        # Kaiser-Bessel-derived (KBD) window as used in the AC-3 audio coding format
+        # Compute the Kaiser-Bessel-derived (KBD) window as used in the AC-3 audio coding format
         window_length = 512
         alpha_value = 5
         window_function = np.kaiser(int(window_length/2)+1, alpha_value*np.pi)
-        window_function2 = np.cumsum(window_function[0:int(window_length/2)])
+        window_function2 = np.cumsum(window_function[1:int(window_length/2)])
         window_function = np.sqrt(np.concatenate((window_function2, window_function2[int(window_length/2)::-1]))
-                                  / np.sum(window_function))
+                                / np.sum(window_function))
 
-        # MDCT
-        audio_mdct = z.mdct(audio_signal, window_function)
+        # Compute the MDCT
+        audio_mdct = zaf.mdct(audio_signal, window_function)
 
-        # MDCT displayed in dB, s, and kHz
-        plt.rc('font', size=30)
-        plt.imshow(20*np.log10(np.absolute(audio_mdct)), aspect='auto', cmap='jet', origin='lower')
-        plt.title('MDCT (dB)')
-        plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/(window_length/2)),
-                   np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-        plt.xlabel('Time (s)')
-        plt.yticks(np.round(np.arange(1e3, sample_rate/2+1, 1e3)/sample_rate*window_length),
-                   np.arange(1, int(sample_rate/2*1e3)+1))
-        plt.ylabel('Frequency (kHz)')
+        # Display the MDCT in dB, seconds, and Hz
+        plt.figure(figsize=(17, 10))
+        zaf.specshow(np.absolute(audio_mdct), len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
+        plt.title("MDCT (dB)")
         plt.show()
     """
 
-    # Number of samples and window length
+    # Get the number of samples and the window length in samples
     number_samples = len(audio_signal)
     window_length = len(window_function)
 
-    # Number of time frames
-    number_times = int(np.ceil(2 * number_samples / window_length) + 1)
+    # Derive half the window length (used for the step length and the number of frequencies)
+    half_length = int(window_length / 2)
 
-    # Pre and post zero-padding of the signal
+    # Derive the number of time frames
+    number_times = int(np.ceil(number_samples / half_length)) + 1
+
+    # Zero-pad the start and the end of the signal to center the windows
     audio_signal = np.pad(
         audio_signal,
-        (
-            int(window_length / 2),
-            int((number_times + 1) * window_length / 2 - number_samples),
-        ),
+        (half_length, (number_times + 1) * half_length - number_samples),
         "constant",
         constant_values=0,
     )
 
     # Initialize the MDCT
-    audio_mdct = np.zeros((int(window_length / 2), number_times))
+    audio_mdct = np.zeros((half_length, number_times))
 
-    # Pre and post-processing arrays
+    # Prepare the pre-processing and post-processing arrays
     preprocessing_array = np.exp(
         -1j * np.pi / window_length * np.arange(0, window_length)
     )
@@ -992,21 +984,18 @@ def mdct(audio_signal, window_function):
     )
 
     # Loop over the time frames
-    for time_index in range(0, number_times):
+    i = 0
+    for j in range(number_times):
 
         # Window the signal
-        sample_index = time_index * int(window_length / 2)
-        audio_segment = (
-            audio_signal[sample_index : sample_index + window_length] * window_function
-        )
+        audio_segment = audio_signal[i : i + window_length] * window_function
+        i = i + half_length
 
-        # FFT of the audio segment after pre-processing
-        audio_segment = np.fft.fft(audio_segment * preprocessing_array)
+        # Compute the Fourier transform of the windowed segment using the FFT after pre-processing
+        audio_segment = np.fft.fft(audio_segment * preprocessing_array, axis=0)
 
-        # Truncate to the first half before post-processing
-        audio_mdct[:, time_index] = np.real(
-            audio_segment[0 : int(window_length / 2)] * postprocessing_array
-        )
+        # Truncate to the first half before post-processing (and take the real to ensure real values)
+        audio_mdct[:, j] = np.real(audio_segment[0:half_length] * postprocessing_array)
 
     return audio_mdct
 
@@ -1100,7 +1089,7 @@ def imdct(audio_mdct, window_function):
     audio_mdct = 2 * (np.real(audio_mdct * postprocessing_array) * window_function).T
 
     # Loop over the time frames
-    for time_index in range(0, number_times):
+    for time_index in range(number_times):
 
         # Recover the signal thanks to the time-domain aliasing cancellation (TDAC) principle
         sample_index = time_index * number_frequencies
@@ -1130,7 +1119,7 @@ def wavread(audio_file):
     sampling_frequency, audio_signal = scipy.io.wavfile.read(audio_file)
 
     # Normalize the signal by the data range given the size of an item in bytes
-    audio_signal = audio_signal / np.power(2, audio_signal.itemsize * 8 - 1)
+    audio_signal = audio_signal / pow(2, audio_signal.itemsize * 8 - 1)
 
     return audio_signal, sampling_frequency
 
