@@ -478,38 +478,30 @@ Output:
 #### Example: compute and display the MDCT as used in the AC-3 audio coding format
 
 ```
-# Import modules
-import scipy.io.wavfile
+# Import the modules
 import numpy as np
-import z
+import zaf
 import matplotlib.pyplot as plt
 
-# Audio signal (normalized) averaged over its channels (expanded) and sample rate in Hz
-sample_rate, audio_signal = scipy.io.wavfile.read('audio_file.wav')
-audio_signal = audio_signal / (2.0**(audio_signal.itemsize*8-1))
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
-# Kaiser-Bessel-derived (KBD) window as used in the AC-3 audio coding format
+# Compute the Kaiser-Bessel-derived (KBD) window as used in the AC-3 audio coding format
 window_length = 512
 alpha_value = 5
 window_function = np.kaiser(int(window_length/2)+1, alpha_value*np.pi)
-window_function2 = np.cumsum(window_function[0:int(window_length/2)])
+window_function2 = np.cumsum(window_function[1:int(window_length/2)])
 window_function = np.sqrt(np.concatenate((window_function2, window_function2[int(window_length/2)::-1]))
                           / np.sum(window_function))
 
-# MDCT
-audio_mdct = z.mdct(audio_signal, window_function)
+# Compute the MDCT
+audio_mdct = zaf.mdct(audio_signal, window_function)
 
-# MDCT displayed in dB, s, and kHz
-plt.rc('font', size=30)
-plt.imshow(20*np.log10(np.absolute(audio_mdct)), aspect='auto', cmap='jet', origin='lower')
-plt.title('MDCT (dB)')
-plt.xticks(np.round(np.arange(1, np.floor(len(audio_signal)/sample_rate)+1)*sample_rate/(window_length/2)),
-           np.arange(1, int(np.floor(len(audio_signal)/sample_rate))+1))
-plt.xlabel('Time (s)')
-plt.yticks(np.round(np.arange(1e3, sample_rate/2+1, 1e3)/sample_rate*window_length),
-           np.arange(1, int(sample_rate/2*1e3)+1))
-plt.ylabel('Frequency (kHz)')
+# Display the MDCT in dB, seconds, and Hz
+plt.figure(figsize=(17, 10))
+zaf.specshow(np.absolute(audio_mdct), len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
+plt.title("MDCT (dB)")
 plt.show()
 ```
 
