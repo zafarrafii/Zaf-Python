@@ -1,5 +1,10 @@
 # Zaf-Python
 
+- `zaf.py`
+- `examples.ipynb`
+- `audio_file.wav`
+- Author
+
 ## zaf.py
 
 This Python module implements a number of functions for audio signal analysis. Simply copy the file `zaf.py` in your working directory and you are good to go. Make sure you have Python 3, NumPy, and SciPy installed.
