@@ -2,7 +2,7 @@
 
 Zafar's Audio Functions in Python for audio signal analysis.
 
-- [zaf.py](#zaf.py): Python module with the functions.
+- [zaf.py](#zafpy): Python module with the functions.
 - `examples.ipynb`: Jupyter module with some examples.
 - `audio_file.wav`: audio file for the examples.
 
