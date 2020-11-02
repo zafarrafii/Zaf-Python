@@ -334,7 +334,7 @@ zaf.sigplot(np.transpose(audio_mfcc), time_resolution, xtick_step=1), plt.title(
 plt.subplot(312)
 zaf.sigplot(np.transpose(audio_dmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
 plt.subplot(313)
-zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
 plt.show()
 ```
 
