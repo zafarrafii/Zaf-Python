@@ -1,5 +1,5 @@
 """
-This Python module implements several functions for audio signal analysis.
+This Python module implements a number of functions for audio signal analysis.
 
 Functions:
     stft - Short-time Fourier transform (STFT)
@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    10/29/20
+    11/02/20
 """
 
 import numpy as np
@@ -524,7 +524,7 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
         plt.subplot(312)
         zaf.sigplot(np.transpose(audio_dmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
         plt.subplot(313)
-        zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+        zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
         plt.show()
     """
 
