@@ -565,7 +565,7 @@ plt.show()
 
 ## examples.ipynb
 
-This Jupyter notebook shows examples for the different functions of the module `zaf`.
+This Jupyter notebook shows some examples for the different functions of the Python module `zaf`.
 
 See [Jupyter notebook viewer](https://nbviewer.jupyter.org/github/zafarrafii/Zaf-Python/blob/master/examples.ipynb).
 
