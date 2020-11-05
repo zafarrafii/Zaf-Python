@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/02/20
+    11/05/20
 """
 
 import numpy as np
@@ -593,10 +593,10 @@ def dct(audio_signal, dct_type):
     Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
 
     Inputs:
-        audio_signal: audio signal (window_length,) or (window_length, number_frames)
+        audio_signal: audio signal (window_length,)
         dct_type: DCT type (1, 2, 3, or 4)
     Output:
-        audio_dct: audio DCT (number_frequencies,) or (number_frequencies, number_frames)
+        audio_dct: audio DCT (number_frequencies,)
 
     Example: compute the 4 different DCTs and compare them to SciPy's DCTs
         # Import the modules
@@ -622,11 +622,11 @@ def dct(audio_signal, dct_type):
         # Comput SciPy's DCT-I (properly orthogonalized), II, and III (SciPy does not have a DCT-IV!)
         audio_segment1 = audio_segment.copy()
         audio_segment1[[0, -1]] = audio_segment1[[0, -1]]*np.sqrt(2)
-        scipy_dct1 = scipy.fftpack.dct(audio_segment1, axis=0, type=1, norm=None)
+        scipy_dct1 = scipy.fftpack.dct(audio_segment1, type=1, norm=None)
         scipy_dct1[[0, -1]] = scipy_dct1[[0, -1]]/np.sqrt(2)
         scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
-        scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm="ortho")
-        scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm="ortho")
+        scipy_dct2 = scipy.fftpack.dct(audio_segment, type=2, norm="ortho")
+        scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
 
         # Plot the DCT-I, II, III, and IV, SciPy's versions, and their differences
         plt.figure(figsize=(17,10))
@@ -647,7 +647,7 @@ def dct(audio_signal, dct_type):
     if dct_type == 1:
 
         # Get the number of samples in one frame
-        window_length = np.shape(audio_signal)[0]
+        window_length = len(audio_signal)
 
         # Pre-process the signal to make the DCT-I matrix orthogonal
         # (copy the signal to avoid modifying it outside of the function)
@@ -655,8 +655,8 @@ def dct(audio_signal, dct_type):
         audio_signal[[0, -1]] = audio_signal[[0, -1]] * np.sqrt(2)
 
         # Compute the DCT-I using the FFT
-        audio_dct = np.concatenate((audio_signal, audio_signal[-2:0:-1]), axis=0)
-        audio_dct = np.fft.fft(audio_dct, axis=0)
+        audio_dct = np.concatenate((audio_signal, audio_signal[-2:0:-1]))
+        audio_dct = np.fft.fft(audio_dct)
         audio_dct = np.real(audio_dct[0:window_length]) / 2
 
         # Post-process the results to make the DCT-I matrix orthogonal
@@ -668,18 +668,13 @@ def dct(audio_signal, dct_type):
     elif dct_type == 2:
 
         # Initialize the DCT-II
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dct = np.zeros(4 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dct = np.zeros((4 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dct = np.zeros(4 * window_length)
 
         # Compute the DCT-II using the FFT
         audio_dct[1 : 2 * window_length : 2] = audio_signal
         audio_dct[2 * window_length + 1 : 4 * window_length : 2] = audio_signal[::-1]
-        audio_dct = np.fft.fft(audio_dct, axis=0)
+        audio_dct = np.fft.fft(audio_dct)
         audio_dct = np.real(audio_dct[0:window_length]) / 2
 
         # Post-process the results to make the DCT-II matrix orthogonal
@@ -696,13 +691,8 @@ def dct(audio_signal, dct_type):
         audio_signal[0] = audio_signal[0] * np.sqrt(2)
 
         # Initialize the DCT-III
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dct = np.zeros(4 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dct = np.zeros((4 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dct = np.zeros(4 * window_length)
 
         # Compute the DCT-III using the FFT
         audio_dct[0:window_length] = audio_signal
@@ -711,7 +701,7 @@ def dct(audio_signal, dct_type):
             1:window_length
         ]
         audio_dct[3 * window_length + 1 : 4 * window_length] = audio_signal[:0:-1]
-        audio_dct = np.fft.fft(audio_dct, axis=0)
+        audio_dct = np.fft.fft(audio_dct)
         audio_dct = np.real(audio_dct[1 : 2 * window_length : 2]) / 4
 
         # Post-process the results to make the DCT-III matrix orthogonal
@@ -722,20 +712,15 @@ def dct(audio_signal, dct_type):
     elif dct_type == 4:
 
         # Initialize the DCT-IV
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dct = np.zeros(8 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dct = np.zeros((8 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dct = np.zeros(8 * window_length)
 
         # Compute the DCT-IV using the FFT
         audio_dct[1 : 2 * window_length : 2] = audio_signal
         audio_dct[2 * window_length + 1 : 4 * window_length : 2] = -audio_signal[::-1]
         audio_dct[4 * window_length + 1 : 6 * window_length : 2] = -audio_signal
         audio_dct[6 * window_length + 1 : 8 * window_length : 2] = audio_signal[::-1]
-        audio_dct = np.fft.fft(audio_dct, axis=0)
+        audio_dct = np.fft.fft(audio_dct)
         audio_dct = np.real(audio_dct[1 : 2 * window_length : 2]) / 4
 
         # Post-process the results to make the DCT-IV matrix orthogonal
@@ -749,10 +734,10 @@ def dst(audio_signal, dst_type):
     Discrete sine transform (DST) using the fast Fourier transform (FFT)
 
     Inputs:
-        audio_signal: audio signal (window_length,) or (window_length, number_frames)
+        audio_signal: audio signal (window_length,)
         dst_type: DST type (1, 2, 3, or 4)
     Output:
-        audio_dst: audio DST (number_frequencies,) or (number_frequencies, number_frames)
+        audio_dst: audio DST (number_frequencies,)
 
     Example: compute the 4 different DSTs and compare their respective inverses with the original audio
         # Import modules
@@ -801,18 +786,13 @@ def dst(audio_signal, dst_type):
     if dst_type == 1:
 
         # Initialize the DST-I
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dst = np.zeros(2 * window_length + 2)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dst = np.zeros((2 * window_length + 2, number_frames))
+        window_length = len(audio_signal)
+        audio_dst = np.zeros(2 * window_length + 2)
 
         # Compute the DST-I using the FFT
         audio_dst[1 : window_length + 1] = audio_signal
         audio_dst[window_length + 2 :] = -audio_signal[::-1]
-        audio_dst = np.fft.fft(audio_dst, axis=0)
+        audio_dst = np.fft.fft(audio_dst)
         audio_dst = -np.imag(audio_dst[1 : window_length + 1]) / 2
 
         # Post-process the results to make the DST-I matrix orthogonal
@@ -823,20 +803,15 @@ def dst(audio_signal, dst_type):
     elif dst_type == 2:
 
         # Initialize the DST-II
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dst = np.zeros(4 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dst = np.zeros((4 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dst = np.zeros(4 * window_length)
 
         # Compute the DST-II using the FFT
         audio_dst[1 : 2 * window_length : 2] = audio_signal
         audio_dst[2 * window_length + 1 : 4 * window_length : 2] = -audio_signal[
             window_length - 1 :: -1
         ]
-        audio_dst = np.fft.fft(audio_dst, axis=0)
+        audio_dst = np.fft.fft(audio_dst)
         audio_dst = -np.imag(audio_dst[1 : window_length + 1]) / 2
 
         # Post-process the results to make the DST-II matrix orthogonal
@@ -848,13 +823,8 @@ def dst(audio_signal, dst_type):
     elif dst_type == 3:
 
         # Initialize the DST-III
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dst = np.zeros(4 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dst = np.zeros((4 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dst = np.zeros(4 * window_length)
 
         # Pre-process the signal to make the DST-III matrix orthogonal
         # (copy the signal to avoid modifying it outside of the function)
@@ -875,7 +845,7 @@ def dst(audio_signal, dst_type):
         audio_dst[3 * window_length + 1 : 4 * window_length] = -audio_signal[
             window_length - 2 :: -1
         ]
-        audio_dst = np.fft.fft(audio_dst, axis=0)
+        audio_dst = np.fft.fft(audio_dst)
         audio_dst = -np.imag(audio_dst[1 : 2 * window_length : 2]) / 4
 
         # Post-process the results to make the DST-III matrix orthogonal
@@ -886,13 +856,8 @@ def dst(audio_signal, dst_type):
     elif dst_type == 4:
 
         # Initialize the DST-IV
-        # (cleaner to have the if condition with an initialization rather than a direct concatenation)
-        if np.ndim(audio_signal) == 1:
-            window_length = np.shape(audio_signal)[0]
-            audio_dst = np.zeros(8 * window_length)
-        else:
-            window_length, number_frames = np.shape(audio_signal)
-            audio_dst = np.zeros((8 * window_length, number_frames))
+        window_length = len(audio_signal)
+        audio_dst = np.zeros(8 * window_length)
 
         # Compute the DST-IV using the FFT
         audio_dst[1 : 2 * window_length : 2] = audio_signal
@@ -903,7 +868,7 @@ def dst(audio_signal, dst_type):
         audio_dst[6 * window_length + 1 : 8 * window_length : 2] = -audio_signal[
             window_length - 1 :: -1
         ]
-        audio_dst = np.fft.fft(audio_dst, axis=0)
+        audio_dst = np.fft.fft(audio_dst)
         audio_dst = -np.imag(audio_dst[1 : 2 * window_length : 2]) / 4
 
         # Post-process the results to make the DST-IV matrix orthogonal
