@@ -353,10 +353,10 @@ plt.show()
 audio_dct = zaf.dct(audio_signal, dct_type)
 
 Inputs:
-    audio_signal: audio signal (window_length,) or (window_length, number_frames)
+    audio_signal: audio signal (window_length,)
     dct_type: dct type (1, 2, 3, or 4)
 Output:
-    audio_dct: audio DCT (number_frequencies,) or (number_frequencies, number_frames)
+    audio_dct: audio DCT (number_frequencies,)
 ```
 
 #### Example: compute the 4 different DCTs and compare them to SciPy's DCTs
@@ -385,11 +385,11 @@ audio_dct4 = zaf.dct(audio_segment, 4)
 # Comput SciPy's DCT-I (properly orthogonalized), II, and III (SciPy does not have a DCT-IV!)
 audio_segment1 = audio_segment.copy()
 audio_segment1[[0, -1]] = audio_segment1[[0, -1]]*np.sqrt(2)
-scipy_dct1 = scipy.fftpack.dct(audio_segment1, axis=0, type=1, norm=None)
+scipy_dct1 = scipy.fftpack.dct(audio_segment1, type=1, norm=None)
 scipy_dct1[[0, -1]] = scipy_dct1[[0, -1]]/np.sqrt(2)
 scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
-scipy_dct2 = scipy.fftpack.dct(audio_segment, axis=0, type=2, norm="ortho")
-scipy_dct3 = scipy.fftpack.dct(audio_segment, axis=0, type=3, norm="ortho")
+scipy_dct2 = scipy.fftpack.dct(audio_segment, type=2, norm="ortho")
+scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
 
 # Plot the DCT-I, II, III, and IV, SciPy's versions, and their differences
 plt.figure(figsize=(17,10))
@@ -415,10 +415,10 @@ plt.show()
 audio_dst = zaf.dst(audio_signal, dst_type)
 
 Inputs:
-    audio_signal: audio signal (window_length,) or (window_length, number_frames)
+    audio_signal: audio signal (window_length,)
     dst_type: DST type (1, 2, 3, or 4)
 Output:
-    audio_dst: audio DST (number_frequencies,) or (number_frequencies, number_frames)
+    audio_dst: audio DST (number_frequencies,)
 ```
 
 #### Example: compute the 4 different DSTs and compare their respective inverses with the original audio
