@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/05/20
+    11/10/20
 """
 
 import numpy as np
@@ -1135,7 +1135,7 @@ def sigplot(
         xtick_step * sampling_frequency,
     )
     xtick_labels = np.arange(
-        xtick_step, number_samples / sampling_frequency + 1, xtick_step
+        xtick_step, number_samples / sampling_frequency, xtick_step
     ).astype(int)
 
     # Plot the signal in seconds
@@ -1180,7 +1180,7 @@ def specshow(
         number_times,
         xtick_step * time_resolution,
     )
-    xtick_labels = np.arange(xtick_step, number_seconds + 1, xtick_step).astype(int)
+    xtick_labels = np.arange(xtick_step, number_seconds, xtick_step).astype(int)
 
     # Prepare the tick locations and labels for the y-axis
     ytick_locations = np.arange(
@@ -1188,7 +1188,7 @@ def specshow(
         number_frequencies,
         ytick_step * frequency_resolution,
     )
-    ytick_labels = np.arange(ytick_step, number_hertz + 1, ytick_step).astype(int)
+    ytick_labels = np.arange(ytick_step, number_hertz, ytick_step).astype(int)
 
     # Display the spectrogram in dB, seconds, and Hz
     plt.imshow(
@@ -1230,7 +1230,7 @@ def cqtspecshow(
         xtick_step * time_resolution,
     )
     xtick_labels = np.arange(
-        xtick_step, number_times / time_resolution + 1, xtick_step
+        xtick_step, number_times / time_resolution, xtick_step
     ).astype(int)
 
     # Compute the octave resolution and number of frequencies
@@ -1282,7 +1282,7 @@ def cqtchromshow(
         xtick_step * time_resolution,
     )
     xtick_labels = np.arange(
-        xtick_step, number_times / time_resolution + 1, xtick_step
+        xtick_step, number_times / time_resolution, xtick_step
     ).astype(int)
 
     # Display the spectrogram in dB, seconds, and Hz
