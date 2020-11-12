@@ -2,24 +2,24 @@
 This Python module implements a number of functions for audio signal analysis.
 
 Functions:
-    stft - Short-time Fourier transform (STFT)
-    istft - inverse STFT
-    cqtkernel - Constant-Q transform (CQT) kernel
-    cqtspectrogram - CQT spectrogram using a CQT kernel
-    cqtchromagram - CQT chromagram using a CQT kernel
-    mfcc - Mel frequency cepstrum coefficients (MFCCs)
-    dct - Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
-    dst - Discrete sine transform (DST) using the FFT
-    mdct - Modified discrete cosine transform (MDCT) using the FFT
-    imdct - Inverse MDCT using the FFT
+    stft - Compute the short-time Fourier transform (STFT).
+    istft - Compute the inverse STFT.
+    cqtkernel - Compute the constant-Q transform (CQT) kernel.
+    cqtspectrogram - Compute the CQT spectrogram using a CQT kernel.
+    cqtchromagram - Compute the CQT chromagram using a CQT kernel.
+    mfcc - Compute the mel frequency cepstrum coefficients (MFCCs).
+    dct - Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
+    dst - Compute the discrete sine transform (DST) using the FFT.
+    mdct - Compute the modified discrete cosine transform (MDCT) using the FFT.
+    imdct - Compute the inverse MDCT using the FFT.
 
 Other:
-    wavread - Read a WAVE file (using Scipy)
-    wavwrite - Write a WAVE file (using Scipy)
-    sigplot - Plot an audio signal in seconds
-    specshow - Display an audio spectrogram in dB, seconds, and Hz
-    cqtspecshow - Display a CQT audio spectrogram in dB, seconds, and Hz
-    cqtchromshow - Display a CQT audio chromagram in seconds
+    wavread - Read a WAVE file (using Scipy).
+    wavwrite - Write a WAVE file (using Scipy).
+    sigplot - Plot a signal in seconds.
+    specshow - Display an spectrogram in dB, seconds, and Hz.
+    cqtspecshow - Display a CQT spectrogram in dB, seconds, and Hz.
+    cqtchromshow - Display a CQT chromagram in seconds.
 
 Author:
     Zafar Rafii
@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/10/20
+    11/12/20
 """
 
 import numpy as np
@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 
 def stft(audio_signal, window_function, step_length):
     """
-    Short-time Fourier transform (STFT)
+    Compute the short-time Fourier transform (STFT).
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -137,7 +137,7 @@ def stft(audio_signal, window_function, step_length):
 
 def istft(audio_stft, window_function, step_length):
     """
-    Inverse short-time Fourier transform (STFT)
+    Compute the inverse short-time Fourier transform (STFT).
 
     Inputs:
         audio_stft: audio STFT (window_length, number_frames)
