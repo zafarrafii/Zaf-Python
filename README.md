@@ -13,24 +13,24 @@ This Python module implements a number of functions for audio signal analysis.
 Simply copy the file `zaf.py` in your working directory and you are good to go. Make sure you have Python 3, NumPy, and SciPy installed.
 
 Functions:
-- `stft` - [Short-time Fourier transform (STFT)](#short-time-fourier-transform-stft)
-- `istft` - [Inverse STFT](#inverse-short-time-fourier-transform-stft)
-- `cqtkernel` - [Constant-Q transform (CQT) kernel](#constant-q-transform-cqt-kernel)
-- `cqtspectrogram` - [CQT spectrogram using a CQT kernel](#constant-q-transform-cqt-spectrogram-using-a-cqt-kernel)
-- `cqtchromagram` - [CQT chromagram using a CQT kernel](#constant-q-transform-cqt-chromagram-using-a-cqt-kernel)
-- `mfcc` - [Mel frequency cepstrum coefficients (MFCCs)](#mel-frequency-cepstrum-coefficients-mfccs)
-- `dct` - [Discrete cosine transform (DCT) using the fast Fourier transform (FFT)](#discrete-cosine-transform-dct-using-the-fast-fourier-transform-fft)
-- `dst` - [Discrete sine transform (DST) using the FFT](#discrete-sine-transform-dst-using-the-fast-fourier-transform-fft)
-- `mdct` - [Modified discrete cosine transform (MDCT) using the FFT](#modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
-- `imdct` - [Inverse MDCT using the FFT](#inverse-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft)
+- [`stft`](#short-time-fourier-transform-stft) - Compute the short-time Fourier transform (STFT).
+- [`istft`](#inverse-short-time-fourier-transform-stft) - Compute the inverse STFT.
+- [`cqtkernel`](#constant-q-transform-cqt-kernel) - Compute the constant-Q transform (CQT) kernel.
+- [`cqtspectrogram`](#constant-q-transform-cqt-spectrogram-using-a-cqt-kernel) - Compute the CQT spectrogram using a CQT kernel.
+- [`cqtchromagram`](#constant-q-transform-cqt-chromagram-using-a-cqt-kernel) - Compute the CQT chromagram using a CQT kernel.
+- [`mfcc`](#mel-frequency-cepstrum-coefficients-mfccs) - Compute the mel frequency cepstrum coefficients (MFCCs).
+- [`dct`](#discrete-cosine-transform-dct-using-the-fast-fourier-transform-fft) - Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
+- [`dst`](#discrete-sine-transform-dst-using-the-fast-fourier-transform-fft) - Compute the discrete sine transform (DST) using the FFT.
+- [`mdct`](#modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft) - Compute the modified discrete cosine transform (MDCT) using the FFT.
+- [`imdct`](#inverse-modified-discrete-cosine-transform-mdct-using-the-fast-fourier-transform-fft) - Compute the inverse MDCT using the FFT.
 
 Other:
-- `wavread` - Read a WAVE file (using Scipy)
-- `wavwrite` - Write a WAVE file (using SciPy)
-- `sigplot` - Plot an audio signal in seconds
-- `specshow` - Display an audio spectrogram in dB, seconds, and Hz
-- `cqtspecshow` - Display a CQT audio spectrogram in dB, seconds, and Hz
-- `cqtchromshow` - Display a CQT audio chromagram in seconds
+- `wavread` - Read a WAVE file (using Scipy).
+- `wavwrite` - Write a WAVE file (using SciPy).
+- `sigplot` - Plot a signal in seconds.
+- `specshow` - Display a spectrogram in dB, seconds, and Hz..
+- `cqtspecshow` - Display a CQT spectrogram in dB, seconds, and Hz.
+- `cqtchromshow` - Display a CQT chromagram in seconds.
 
 
 ### Short-time Fourier transform (STFT)
