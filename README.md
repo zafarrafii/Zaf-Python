@@ -137,7 +137,7 @@ center_signal2 = zaf.istft(center_stft2, window_function, step_length)
 
 # Derive the final stereo center and sides signals
 center_signal = np.stack((center_signal1, center_signal2), axis=1)
-center_signal = center_signal[0:len(audio_signal), :]
+center_signal = center_signal[0:np.shape(audio_signal)[0], :]
 sides_signal = audio_signal-center_signal
 
 # Write the center and sides signals
