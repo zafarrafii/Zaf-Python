@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/12/20
+    11/13/20
 """
 
 import numpy as np
@@ -193,11 +193,11 @@ def istft(audio_stft, window_function, step_length):
         # Display the original, center, and sides signals in seconds
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original signal")
         plt.subplot(3, 1, 2)
-        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Center Signal")
+        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Center signal")
         plt.subplot(3, 1, 3)
-        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Sides Signal")
+        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Sides signal")
         plt.show()
     """
 
@@ -1117,10 +1117,10 @@ def sigplot(
     xtick_step=1,
 ):
     """
-    Plot an audio signal in seconds
+    Plot a signal in seconds.
 
     Inputs:
-        audio_signal: audio signal (without DC and mirrored frequencies) (number_samples, number_channels)
+        audio_signal: audio signal (number_samples,)
         sampling_frequency: sampling frequency in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
@@ -1153,14 +1153,14 @@ def specshow(
     ytick_step=1000,
 ):
     """
-    Display an audio spectrogram in dB, seconds, and Hz
+    Display a spectrogram in dB, seconds, and Hz.
 
     Inputs:
         audio_spectrogram: audio spectrogram (without DC and mirrored frequencies) (number_frequencies, number_times)
         number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
-        ytick_step: resolution for the y-axis ticks in Hz (default: 1000 Hz)
+        ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
 
     # Get the number of frequency channels and time frames
@@ -1209,7 +1209,7 @@ def cqtspecshow(
     xtick_step=1,
 ):
     """
-    Display a CQT audio spectrogram in dB, seconds, and Hz
+    Display a CQT spectrogram in dB, seconds, and Hz.
 
     Inputs:
         audio_spectrogram: CQT audio spectrogram (number_frequencies, number_times)
@@ -1264,7 +1264,7 @@ def cqtchromshow(
     xtick_step=1,
 ):
     """
-    Display a CQT audio chromagram seconds
+    Display a CQT chromagram in seconds.
 
     Inputs:
         audio_chromagram: CQT audio chromagram (number_chromas, number_times)
