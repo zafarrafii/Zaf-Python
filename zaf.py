@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/13/20
+    11/16/20
 """
 
 import numpy as np
@@ -1223,6 +1223,12 @@ def cqtspecshow(
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
 
+    # Compute the octave resolution and number of frequencies
+    octave_resolution = 12 * frequency_resolution
+    number_frequencies = int(
+        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
+    )
+
     # Prepare the tick locations and labels for the x-axis
     xtick_locations = np.arange(
         xtick_step * time_resolution,
@@ -1233,22 +1239,13 @@ def cqtspecshow(
         xtick_step, number_times / time_resolution, xtick_step
     ).astype(int)
 
-    # Compute the octave resolution and number of frequencies
-    octave_resolution = 12 * frequency_resolution
-    number_frequencies = int(
-        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
-    )
-
     # Prepare the tick locations and labels for the y-axis
     ytick_locations = np.arange(0, number_frequencies, octave_resolution)
     ytick_labels = (
-        minimum_frequency
-        * pow(
-            2, np.arange(0, number_frequencies, octave_resolution) / octave_resolution
-        )
+        minimum_frequency * pow(2, ytick_locations / octave_resolution)
     ).astype(int)
 
-    # Display the spectrogram in dB, seconds, and Hz
+    # Display the spectrogram in dB and seconds, and Hz
     plt.imshow(
         20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
@@ -1285,7 +1282,7 @@ def cqtchromshow(
         xtick_step, number_times / time_resolution, xtick_step
     ).astype(int)
 
-    # Display the spectrogram in dB, seconds, and Hz
+    # Display the chromagram in seconds
     plt.imshow(audio_chromagram, aspect="auto", cmap="jet", origin="lower")
     plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.xlabel("Time (s)")
