@@ -113,7 +113,7 @@ import matplotlib.pyplot as plt
 audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 
 # Set the parameters for the STFT
-window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
+window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
 window_function = scipy.signal.hamming(window_length, False)
 step_length = int(window_length/2)
 
@@ -333,7 +333,7 @@ audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
 audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
 # Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
-time_resolution = sampling_frequency * np.shape(audio_mfcc)[1] / len(audio_signal)
+time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
 
 # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
 plt.figure(figsize=(17, 10))
@@ -389,7 +389,7 @@ audio_segment1 = audio_segment.copy()
 audio_segment1[[0, -1]] = audio_segment1[[0, -1]]*np.sqrt(2)
 scipy_dct1 = scipy.fftpack.dct(audio_segment1, type=1, norm=None)
 scipy_dct1[[0, -1]] = scipy_dct1[[0, -1]]/np.sqrt(2)
-scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1)) / 2
+scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1))/2
 scipy_dct2 = scipy.fftpack.dct(audio_segment, type=2, norm="ortho")
 scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
 
@@ -501,7 +501,7 @@ alpha_value = 5
 window_function = np.kaiser(int(window_length/2)+1, alpha_value*np.pi)
 window_function2 = np.cumsum(window_function[1:int(window_length/2)])
 window_function = np.sqrt(np.concatenate((window_function2, window_function2[int(window_length/2)::-1]))
-                          / np.sum(window_function))
+                          /np.sum(window_function))
 
 # Compute the MDCT
 audio_mdct = zaf.mdct(audio_signal, window_function)
@@ -541,7 +541,7 @@ audio_signal = np.mean(audio_signal, 1)
 
 # Compute the MDCT with a slope function as used in the Vorbis audio coding format
 window_length = 2048
-window_function = np.sin(np.pi / 2*pow(np.sin(np.pi / window_length * np.arange(0.5, window_length + 0.5)), 2))
+window_function = np.sin(np.pi/2*pow(np.sin(np.pi/window_length*np.arange(0.5, window_length+0.5)), 2))
 audio_mdct = zaf.mdct(audio_signal, window_function)
 
 # Compute the inverse MDCT
