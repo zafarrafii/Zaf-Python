@@ -619,14 +619,11 @@ def dct(audio_signal, dct_type):
         audio_dct3 = zaf.dct(audio_segment, 3)
         audio_dct4 = zaf.dct(audio_segment, 4)
 
-        # Comput SciPy's DCT-I (properly orthogonalized), II, and III (SciPy does not have a DCT-IV!)
-        audio_segment1 = audio_segment.copy()
-        audio_segment1[[0, -1]] = audio_segment1[[0, -1]]*np.sqrt(2)
-        scipy_dct1 = scipy.fftpack.dct(audio_segment1, type=1, norm=None)
-        scipy_dct1[[0, -1]] = scipy_dct1[[0, -1]]/np.sqrt(2)
-        scipy_dct1 = scipy_dct1*np.sqrt(2/(window_length-1))/2
+        # Compute SciPy's DCT-I, II, III, and IV (orthogonalized)
+        scipy_dct1 = scipy.fftpack.dct(audio_segment, type=1, norm="ortho")
         scipy_dct2 = scipy.fftpack.dct(audio_segment, type=2, norm="ortho")
         scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
+        scipy_dct4 = scipy.fftpack.dct(audio_segment, type=4, norm="ortho")
 
         # Plot the DCT-I, II, III, and IV, SciPy's versions, and their differences
         plt.figure(figsize=(17,10))
@@ -637,9 +634,11 @@ def dct(audio_signal, dct_type):
         plt.subplot(3, 4, 5), plt.plot(scipy_dct1), plt.autoscale(tight=True), plt.title("SciPy's DCT-I")
         plt.subplot(3, 4, 6), plt.plot(scipy_dct2), plt.autoscale(tight=True), plt.title("SciPy's DCT-II")
         plt.subplot(3, 4, 7), plt.plot(scipy_dct3), plt.autoscale(tight=True), plt.title("SciPy's DCT-III")
-        plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("Differences")
-        plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("Differences")
-        plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("Differences")
+        plt.subplot(3, 4, 8), plt.plot(scipy_dct4), plt.autoscale(tight=True), plt.title("SciPy's DCT-IV")
+        plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True), plt.title("DCT-I - SciPy's DCT-I")
+        plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("DCT-II - SciPy's DCT-II")
+        plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("DCT-III - SciPy's DCT-III")
+        plt.subplot(3, 4, 12), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("DCT-IV - SciPy's DCT-IV")
         plt.show()
     """
 
