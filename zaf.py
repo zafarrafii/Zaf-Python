@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/18/20
+    11/19/20
 """
 
 import numpy as np
@@ -646,7 +646,7 @@ def dct(audio_signal, dct_type):
     # Check if the DCT type is I, II, III, or IV
     if dct_type == 1:
 
-        # Get the number of samples in one frame
+        # Get the number of samples
         window_length = len(audio_signal)
 
         # Pre-process the signal to make the DCT-I matrix orthogonal
@@ -667,11 +667,11 @@ def dct(audio_signal, dct_type):
 
     elif dct_type == 2:
 
-        # Initialize the DCT-II
+        # Get the number of samples
         window_length = len(audio_signal)
-        audio_dct = np.zeros(4 * window_length)
 
         # Compute the DCT-II using the FFT
+        audio_dct = np.zeros(4 * window_length)
         audio_dct[1 : 2 * window_length : 2] = audio_signal
         audio_dct[2 * window_length + 1 : 4 * window_length : 2] = audio_signal[::-1]
         audio_dct = np.fft.fft(audio_dct)
@@ -685,16 +685,16 @@ def dct(audio_signal, dct_type):
 
     elif dct_type == 3:
 
+        # Get the number of samples
+        window_length = len(audio_signal)
+
         # Pre-process the signal to make the DCT-III matrix orthogonal
         # (copy the signal to avoid modifying it outside of the function)
         audio_signal = audio_signal.copy()
         audio_signal[0] = audio_signal[0] * np.sqrt(2)
 
-        # Initialize the DCT-III
-        window_length = len(audio_signal)
-        audio_dct = np.zeros(4 * window_length)
-
         # Compute the DCT-III using the FFT
+        audio_dct = np.zeros(4 * window_length)
         audio_dct[0:window_length] = audio_signal
         audio_dct[window_length + 1 : 2 * window_length + 1] = -audio_signal[::-1]
         audio_dct[2 * window_length + 1 : 3 * window_length] = -audio_signal[
@@ -711,11 +711,11 @@ def dct(audio_signal, dct_type):
 
     elif dct_type == 4:
 
-        # Initialize the DCT-IV
+        # Get the number of samples
         window_length = len(audio_signal)
-        audio_dct = np.zeros(8 * window_length)
 
         # Compute the DCT-IV using the FFT
+        audio_dct = np.zeros(8 * window_length)
         audio_dct[1 : 2 * window_length : 2] = audio_signal
         audio_dct[2 * window_length + 1 : 4 * window_length : 2] = -audio_signal[::-1]
         audio_dct[4 * window_length + 1 : 6 * window_length : 2] = -audio_signal
