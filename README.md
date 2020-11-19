@@ -384,7 +384,7 @@ audio_dct2 = zaf.dct(audio_segment, 2)
 audio_dct3 = zaf.dct(audio_segment, 3)
 audio_dct4 = zaf.dct(audio_segment, 4)
 
-# Compute SciPy's DCT-I, II, III, and IV (orthogonilized)
+# Compute SciPy's DCT-I, II, III, and IV (orthogonalized)
 scipy_dct1 = scipy.fftpack.dct(audio_segment, type=1, norm="ortho")
 scipy_dct2 = scipy.fftpack.dct(audio_segment, type=2, norm="ortho")
 scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
