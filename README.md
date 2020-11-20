@@ -439,10 +439,10 @@ window_length = 1024
 audio_segment = audio_signal[0:window_length]
 
 # Compute the DST-I, II, III, and IV
-audio_dst1 = zaf.dst(audio_signal, 1)
-audio_dst2 = zaf.dst(audio_signal, 2)
-audio_dst3 = zaf.dst(audio_signal, 3)
-audio_dst4 = zaf.dst(audio_signal, 4)
+audio_dst1 = zaf.dst(audio_segment, 1)
+audio_dst2 = zaf.dst(audio_segment, 2)
+audio_dst3 = zaf.dst(audio_segment, 3)
+audio_dst4 = zaf.dst(audio_segment, 4)
 
 # Compute their respective inverses, i.e., DST-I, II, III, and IV
 audio_idst1 = zaf.dst(audio_dst1, 1)
@@ -460,10 +460,10 @@ plt.subplot(3, 4, 5), plt.plot(audio_idst1), plt.autoscale(tight=True), plt.titl
 plt.subplot(3, 4, 6), plt.plot(audio_idst2), plt.autoscale(tight=True), plt.title("Inverse DST-II (DST-III)")
 plt.subplot(3, 4, 7), plt.plot(audio_idst3), plt.autoscale(tight=True), plt.title("Inverse DST-III (DST-II)")
 plt.subplot(3, 4, 8), plt.plot(audio_idst4), plt.autoscale(tight=True), plt.title("Inverse DST-IV (DST-IV)")
-plt.subplot(3, 4, 9), plt.plot(audio_signal-audio_idst1), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
-plt.subplot(3, 4, 10), plt.plot(audio_signal-audio_idst2), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
-plt.subplot(3, 4, 11), plt.plot(audio_signal-audio_idst3), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
-plt.subplot(3, 4, 12), plt.plot(audio_signal-audio_idst4), plt.autoscale(tight=True), plt.title("Differences with the orginal audio")
+plt.subplot(3, 4, 9), plt.plot(audio_idst1-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-I - audio segment")
+plt.subplot(3, 4, 10), plt.plot(audio_idst2-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-II - audio segment")
+plt.subplot(3, 4, 11), plt.plot(audio_idst3-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-III - audio segment")
+plt.subplot(3, 4, 12), plt.plot(audio_idst4-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-IV - audio segment")
 plt.show()
 ```
 
