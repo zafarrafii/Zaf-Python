@@ -507,7 +507,7 @@ audio_mdct = zaf.mdct(audio_signal, window_function)
 
 # Display the MDCT in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
-zaf.specshow(np.absolute(audio_mdct), len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
+zaf.specshow(audio_mdct, len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("MDCT (dB)")
 plt.show()
 ```
