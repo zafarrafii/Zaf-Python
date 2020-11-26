@@ -950,7 +950,7 @@ def mdct(audio_signal, window_function):
         i = i + step_length
 
         # Compute the Fourier transform of the windowed segment using the FFT after pre-processing
-        audio_segment = np.fft.fft(audio_segment * preprocessing_array, axis=0)
+        audio_segment = np.fft.fft(audio_segment * preprocessing_array)
 
         # Truncate to the first half before post-processing (and take the real to ensure real values)
         audio_mdct[:, j] = np.real(
