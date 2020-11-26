@@ -66,7 +66,7 @@ window_duration = 0.04
 window_length = pow(2, int(np.ceil(np.log2(window_duration*sampling_frequency))))
 
 # Compute the window function (use SciPy's periodic Hamming window for COLA as NumPy's Hamming window is symmetric)
-window_function = scipy.signal.hamming(window_length, False)
+window_function = scipy.signal.hamming(window_length, sym=False)
 
 # Set the step length in samples (half of the window length for COLA)
 step_length = int(window_length/2)
@@ -114,7 +114,7 @@ audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 
 # Set the parameters for the STFT
 window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
-window_function = scipy.signal.hamming(window_length, False)
+window_function = scipy.signal.hamming(window_length, sym=False)
 step_length = int(window_length/2)
 
 # Compute the STFTs for the left and right channels
