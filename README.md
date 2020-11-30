@@ -527,7 +527,7 @@ Output:
     audio_signal: audio signal (number_samples,)
 ```
 
-#### Example: Verify that the MDCT is perfectly invertible
+#### Example: verify that the MDCT is perfectly invertible
 ```
 # Import the modules
 import numpy as np
