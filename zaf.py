@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/20/20
+    11/25/20
 """
 
 import numpy as np
@@ -67,7 +67,7 @@ def stft(audio_signal, window_function, step_length):
         window_length = pow(2, int(np.ceil(np.log2(window_duration*sampling_frequency))))
 
         # Compute the window function (use SciPy's periodic Hamming window for COLA as NumPy's Hamming window is symmetric)
-        window_function = scipy.signal.hamming(window_length, False)
+        window_function = scipy.signal.hamming(window_length, sym=False)
 
         # Set the step length in samples (half of the window length for COLA)
         step_length = int(window_length/2)
@@ -158,7 +158,7 @@ def istft(audio_stft, window_function, step_length):
 
         # Set the parameters for the STFT
         window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
-        window_function = scipy.signal.hamming(window_length, False)
+        window_function = scipy.signal.hamming(window_length, sym=False)
         step_length = int(window_length/2)
 
         # Compute the STFTs for the left and right channels
