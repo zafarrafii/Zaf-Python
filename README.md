@@ -554,11 +554,11 @@ y_max = np.max(np.absolute(audio_differences))
 # Display the original and resynthesized signals, and their differences in seconds
 plt.figure(figsize=(17, 10))
 plt.subplot(3, 1, 1),
-zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original Signal")
+zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original signal")
 plt.subplot(3, 1, 2)
-zaf.sigplot(audio_signal2, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Resyntesized Signal")
+zaf.sigplot(audio_signal2, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Resyntesized signal")
 plt.subplot(3, 1, 3)
-zaf.sigplot(audio_differences, sampling_frequency, xtick_step=1), plt.ylim(-y_max, y_max), plt.title("Difference Signal")
+zaf.sigplot(audio_differences, sampling_frequency, xtick_step=1), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
 plt.show()
 ```
 
