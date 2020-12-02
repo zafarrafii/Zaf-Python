@@ -14,8 +14,8 @@ Functions:
     imdct - Compute the inverse MDCT using the FFT.
 
 Other:
-    wavread - Read a WAVE file (using Scipy).
-    wavwrite - Write a WAVE file (using Scipy).
+    wavread - Read a WAVE file (using SciPy).
+    wavwrite - Write a WAVE file (using SciPy).
     sigplot - Plot a signal in seconds.
     specshow - Display an spectrogram in dB, seconds, and Hz.
     cqtspecshow - Display a CQT spectrogram in dB, seconds, and Hz.
@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    11/25/20
+    12/02/20
 """
 
 import numpy as np
@@ -49,7 +49,7 @@ def stft(audio_signal, window_function, step_length):
     Output:
         audio_stft: audio STFT (window_length, number_frames)
 
-    Example: compute and display the spectrogram from an audio file
+    Example: Compute and display the spectrogram from an audio file.
         # Import the modules
         import numpy as np
         import scipy.signal
@@ -146,7 +146,7 @@ def istft(audio_stft, window_function, step_length):
     Output:
         audio_signal: audio signal (number_samples,)
 
-    Example: estimate the center and the sides from a stereo audio file
+    Example: Estimate the center and the sides from a stereo audio file.
         # Import the modules
         import numpy as np
         import scipy.signal
@@ -238,7 +238,7 @@ def cqtkernel(
     sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency
 ):
     """
-    Constant-Q transform (CQT) kernel
+    Compute the constant-Q transform (CQT) kernel.
 
     Inputs:
         sampling_frequency: sampling frequency in Hz
@@ -248,7 +248,7 @@ def cqtkernel(
     Output:
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
 
-    Example: compute and display a CQT kernel
+    Example: Compute and display a CQT kernel.
         # Import the modules
         import numpy as np
         import zaf
@@ -343,7 +343,7 @@ def cqtkernel(
 
 def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel):
     """
-    Constant-Q transform (CQT) spectrogram using a kernel
+    Compute the constant-Q transform (CQT) spectrogram using a kernel.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -353,7 +353,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     Output:
         audio_spectrogram: audio spectrogram in magnitude (number_frequencies, number_times)
 
-    Example: compute and display the CQT spectrogram
+    Example: Compute and display the CQT spectrogram.
         # Import the modules
         import numpy as np
         import zaf
@@ -420,7 +420,7 @@ def cqtchromagram(
     audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel
 ):
     """
-    Constant-Q transform (CQT) chromagram using a kernel
+    Compute the constant-Q transform (CQT) chromagram using a kernel.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -431,7 +431,7 @@ def cqtchromagram(
     Output:
         audio_chromagram: audio chromagram (number_chromas, number_times)
 
-    Example: compute and display the CQT chromagram
+    Example: Compute and display the CQT chromagram.
         # Import the modules
         import numpy as np
         import zaf
@@ -485,7 +485,7 @@ def cqtchromagram(
 
 def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
     """
-    Mel frequency cepstrum coefficients (MFFCs)
+    Compute the mel frequency cepstrum coefficients (MFFCs).
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -495,7 +495,7 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
     Output:
         audio_mfcc: audio MFCCs (number_times, number_coefficients)
 
-    Example: compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs
+    Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
         # Import the modules
         import numpy as np
         import zaf
@@ -590,7 +590,7 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
 
 def dct(audio_signal, dct_type):
     """
-    Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
+    Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
 
     Inputs:
         audio_signal: audio signal (window_length,)
@@ -598,7 +598,7 @@ def dct(audio_signal, dct_type):
     Output:
         audio_dct: audio DCT (number_frequencies,)
 
-    Example: compute the 4 different DCTs and compare them to SciPy's DCTs
+    Example: Compute the 4 different DCTs and compare them to SciPy's DCTs.
         # Import the modules
         import numpy as np
         import zaf
@@ -728,7 +728,7 @@ def dct(audio_signal, dct_type):
 
 def dst(audio_signal, dst_type):
     """
-    Discrete sine transform (DST) using the fast Fourier transform (FFT)
+    Compute the discrete sine transform (DST) using the fast Fourier transform (FFT).
 
     Inputs:
         audio_signal: audio signal (window_length,)
@@ -736,7 +736,7 @@ def dst(audio_signal, dst_type):
     Output:
         audio_dst: audio DST (number_frequencies,)
 
-    Example: compute the 4 different DSTs and compare their respective inverses with the original audio
+    Example: Compute the 4 different DSTs and compare their respective inverses with the original audio.
         # Import modules
         import numpy as np
         import zaf
@@ -870,7 +870,7 @@ def dst(audio_signal, dst_type):
 
 def mdct(audio_signal, window_function):
     """
-    Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
+    Compute the modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT).
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -878,7 +878,7 @@ def mdct(audio_signal, window_function):
     Output:
         audio_mdct: audio MDCT (number_frequencies, number_times)
 
-    Example: compute and display the MDCT as used in the AC-3 audio coding format
+    Example: Compute and display the MDCT as used in the AC-3 audio coding format.
         # Import the modules
         import numpy as np
         import zaf
@@ -962,7 +962,7 @@ def mdct(audio_signal, window_function):
 
 def imdct(audio_mdct, window_function):
     """
-    Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
+    Compute the inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT).
 
     Inputs:
         audio_mdct: audio MDCT (number_frequencies, number_times)
@@ -970,7 +970,7 @@ def imdct(audio_mdct, window_function):
     Output:
         audio_signal: audio signal (number_samples,)
 
-    Example: verify that the MDCT is perfectly invertible
+    Example: Verify that the MDCT is perfectly invertible.
         # Import the modules
         import numpy as np
         import zaf
@@ -1069,7 +1069,7 @@ def imdct(audio_mdct, window_function):
 
 def wavread(audio_file):
     """
-    Read a WAVE file (using SciPy)
+    Read a WAVE file (using SciPy).
 
     Input:
         audio_file: path to an audio file
@@ -1089,7 +1089,7 @@ def wavread(audio_file):
 
 def wavwrite(audio_signal, sampling_frequency, audio_file):
     """
-    Write a WAVE file (using Scipy)
+    Write a WAVE file (using Scipy).
 
     Inputs:
         audio_signal: audio signal (number_samples, number_channels)
