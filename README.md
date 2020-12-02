@@ -52,7 +52,7 @@ Output:
     audio_stft: audio STFT (window_length, number_frames)
 ```
 
-Example: compute and display the spectrogram from an audio file.
+Example: Compute and display the spectrogram from an audio file.
 
 ```
 # Import the modules
@@ -93,7 +93,9 @@ plt.show()
 <img src="images/stft.png" width="1000">
 
 
-### Inverse short-time Fourier transform (STFT)
+### istft
+
+Compute the inverse short-time Fourier transform (STFT).
 
 ```
 audio_signal = zaf.istft(audio_stft, window_function, step_length)
@@ -106,7 +108,7 @@ Output:
     audio_signal: audio signal (number_samples,)
 ```
 
-#### Example: estimate the center and the sides from a stereo audio file
+Example: Estimate the center and the sides from a stereo audio file.
 
 ```
 # Import the modules
@@ -166,7 +168,9 @@ plt.show()
 <img src="images/istft.png" width="1000">
 
 
-### Constant-Q transform (CQT) kernel
+### cqtkernel
+
+Compute the constant-Q transform (CQT) kernel.
 
 ```
 cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
@@ -180,7 +184,7 @@ Output:
     cqt_kernel: CQT kernel (number_frequencies, fft_length)
 ```
 
-#### Example: compute and display the CQT kernel
+Example: Compute and display the CQT kernel.
 
 ```
 # Import the modules
@@ -209,7 +213,9 @@ plt.show()
 <img src="images/cqtkernel.png" width="1000">
 
 
-### Constant-Q transform (CQT) spectrogram using a CQT kernel
+### cqtspectrogram
+
+Compute the constant-Q transform (CQT) kernel.
 
 ```
 audio_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
@@ -223,7 +229,7 @@ Output:
     audio_spectrogram: audio spectrogram in magnitude (number_frequencies, number_times)
 ```
 
-#### Example: compute and display the CQT spectrogram
+Example: Compute and display the CQT spectrogram.
 
 ```
 # Import the modules
@@ -255,7 +261,9 @@ plt.show()
 <img src="images/cqtspectrogram.png" width="1000">
 
 
-### Constant-Q transform (CQT) chromagram using a CQT kernel
+### cqtchromagram
+
+Compute the constant-Q transform (CQT) chromagram using a kernel.
 
 ```
 audio_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
@@ -270,7 +278,7 @@ Output:
     audio_chromagram: audio chromagram (number_chromas, number_times)
 ```
 
-#### Example: compute and display the CQT chromagram
+Example: Compute and display the CQT chromagram.
 
 ```
 # Import the modules
@@ -303,7 +311,9 @@ plt.show()
 <img src="images/cqtchromagram.png" width="1000">
 
 
-### Mel frequency cepstrum coefficients (MFCCs)
+### mfcc
+
+Compute the mel frequency cepstrum coefficients (MFFCs).
 
 ```
 audio_mfcc = zaf.mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
@@ -317,7 +327,7 @@ Output:
     audio_mfcc: audio MFCCs (number_times, number_coefficients)
 ```
 
-#### Example: compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs
+Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
 
 ```
 # Import the modules
@@ -355,7 +365,9 @@ plt.show()
 <img src="images/mfcc.png" width="1000">
 
 
-### Discrete cosine transform (DCT) using the fast Fourier transform (FFT)
+### dct
+
+Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
 
 ```
 audio_dct = zaf.dct(audio_signal, dct_type)
@@ -367,7 +379,7 @@ Output:
     audio_dct: audio DCT (number_frequencies,)
 ```
 
-#### Example: compute the 4 different DCTs and compare them to SciPy's DCTs
+Example: Compute the 4 different DCTs and compare them to SciPy's DCTs.
 
 ```
 # Import the modules
@@ -416,7 +428,9 @@ plt.show()
 <img src="images/dct.png" width="1000">
 
 
-### Discrete sine transform (DST) using the fast Fourier transform (FFT)
+### dst
+
+Compute the discrete sine transform (DST) using the fast Fourier transform (FFT).
 
 ```
 audio_dst = zaf.dst(audio_signal, dst_type)
@@ -428,7 +442,7 @@ Output:
     audio_dst: audio DST (number_frequencies,)
 ```
 
-#### Example: compute the 4 different DSTs and compare their respective inverses with the original audio
+Example: Compute the 4 different DSTs and compare their respective inverses with the original audio.
 
 ```
 # Import modules
@@ -476,7 +490,9 @@ plt.show()
 <img src="images/dst.png" width="1000">
 
 
-### Modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
+### mdct
+
+Compute the modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT).
 
 ```
 audio_mdct = zaf.mdct(audio_signal, window_function)
@@ -488,7 +504,7 @@ Output:
     audio_mdct: audio MDCT (number_frequencies, number_times)
 ```
 
-#### Example: compute and display the MDCT as used in the AC-3 audio coding format
+Example: Compute and display the MDCT as used in the AC-3 audio coding format.
 
 ```
 # Import the modules
@@ -521,7 +537,9 @@ plt.show()
 <img src="images/mdct.png" width="1000">
 
 
-### Inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT)
+### imdct
+
+Compute the inverse modified discrete cosine transform (MDCT) using the fast Fourier transform (FFT).
 
 ```
 audio_signal = zaf.imdct(audio_mdct, window_function)
@@ -533,7 +551,8 @@ Output:
     audio_signal: audio signal (number_samples,)
 ```
 
-#### Example: verify that the MDCT is perfectly invertible
+Example: Verify that the MDCT is perfectly invertible.
+
 ```
 # Import the modules
 import numpy as np
