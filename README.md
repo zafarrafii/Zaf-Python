@@ -29,7 +29,7 @@ Functions:
 - [`imdct`](#imdct) - Compute the inverse MDCT using the FFT.
 
 Other:
-- `wavread` - Read a WAVE file (using Scipy).
+- `wavread` - Read a WAVE file (using SciPy).
 - `wavwrite` - Write a WAVE file (using SciPy).
 - `sigplot` - Plot a signal in seconds.
 - `specshow` - Display a spectrogram in dB, seconds, and Hz..
@@ -52,7 +52,7 @@ Output:
     audio_stft: audio STFT (window_length, number_frames)
 ```
 
-#### Example: compute and display the spectrogram from an audio file
+Example: compute and display the spectrogram from an audio file.
 
 ```
 # Import the modules
