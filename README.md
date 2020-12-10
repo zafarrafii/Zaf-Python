@@ -256,7 +256,7 @@ audio_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_re
 
 # Display the CQT spectrogram in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
-zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, maximum_frequency, xtick_step=1)
+zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
 plt.title("CQT spectrogram (dB)")
 plt.show()
 ```
