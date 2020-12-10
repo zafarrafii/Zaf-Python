@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    12/02/20
+    12/10/20
 """
 
 import numpy as np
@@ -193,11 +193,14 @@ def istft(audio_stft, window_function, step_length):
         # Display the original, center, and sides signals in seconds
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original signal")
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1)
+        plt.ylim(-1, 1), plt.title("Original signal")
         plt.subplot(3, 1, 2)
-        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Center signal")
+        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1)
+        plt.ylim(-1, 1), plt.title("Center signal")
         plt.subplot(3, 1, 3)
-        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Sides signal")
+        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1)
+        plt.ylim(-1, 1), plt.title("Sides signal")
         plt.show()
     """
 
@@ -375,7 +378,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
         # Display the CQT spectrogram in dB, seconds, and Hz
         plt.figure(figsize=(17, 10))
-        zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, maximum_frequency, xtick_step=1)
+        zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
         plt.title("CQT spectrogram (dB)")
         plt.show()
     """
@@ -1196,7 +1199,6 @@ def cqtspecshow(
     time_resolution,
     frequency_resolution,
     minimum_frequency,
-    maximum_frequency,
     xtick_step=1,
 ):
     """
@@ -1207,18 +1209,14 @@ def cqtspecshow(
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitone
         minimum_frequency: minimum frequency in Hz
-        maximum_frequency: maximum frequency in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
 
-    # Compute the octave resolution and number of frequencies
+    # Derive the octave resolution
     octave_resolution = 12 * frequency_resolution
-    number_frequencies = int(
-        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
-    )
 
     # Prepare the tick locations and labels for the x-axis
     xtick_locations = np.arange(
