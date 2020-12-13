@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    12/10/20
+    12/12/20
 """
 
 import numpy as np
@@ -826,12 +826,7 @@ def dst(audio_signal, dst_type):
         # Pre-process the signal to make the DST-III matrix orthogonal
         # (copy the signal to avoid modifying it outside of the function)
         audio_signal = audio_signal.copy()
-        audio_signal = np.concatenate(
-            (
-                audio_signal[0:-1],
-                audio_signal[-1:] * np.sqrt(2),
-            )
-        )
+        audio_signal[-1] = audio_signal[-1] * np.sqrt(2)
 
         # Compute the DST-III using the FFT
         audio_dst = np.zeros(4 * window_length)
