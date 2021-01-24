@@ -91,7 +91,7 @@ plt.title("Spectrogram (dB)")
 plt.show()
 ```
 
-<img src="images/stft.png" width="1000">
+<img src="./images/stft.png" width="1000">
 
 
 ### istft
