@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    12/12/20
+    02/16/21
 """
 
 import numpy as np
@@ -282,8 +282,8 @@ def cqtkernel(
     quality_factor = 1 / (pow(2, 1 / octave_resolution) - 1)
 
     # Compute the number of frequency channels for the CQT
-    number_frequencies = int(
-        round(octave_resolution * np.log2(maximum_frequency / minimum_frequency))
+    number_frequencies = round(
+        octave_resolution * np.log2(maximum_frequency / minimum_frequency)
     )
 
     # Compute the window length for the FFT (= longest window for the minimum frequency)
