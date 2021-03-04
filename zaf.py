@@ -27,7 +27,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    02/16/21
+    03/04/21
 """
 
 import numpy as np
@@ -484,6 +484,67 @@ def cqtchromagram(
         )
 
     return audio_chromagram
+
+
+def melfilterbank(sampling_frequency, window_length, number_filters):
+    """
+    Compute a mel filter bank.
+
+    Inputs:
+        sampling_frequency: sampling frequency in Hz
+        window_length: window length for the frequency analysis in samples
+        number_filters: number of filters
+    Output:
+
+    Example: Compute and display the mel filter bank.
+        # Import the modules
+        ...
+    """
+
+    # Compute the minimum and maximum frequencies in mels
+    mininum_frequency = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
+    maximum_frequency = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
+
+    # Derive the width of the overlapping filters in the mel scale (constant)
+    filter_width = 2 * (maximum_frequency - mininum_frequency) / (number_filters + 1)
+
+    # Compute the indices of the overlapping filters in the mel scale (linearly spaced)
+    filter_indices = np.arange(
+        mininum_frequency, maximum_frequency + 1, filter_width / 2
+    )
+
+    # Derive the indices of the overlapping filters in the linear frequency scale (log spaced)
+    filter_indices = np.round(
+        700
+        * (np.power(10, filter_indices / 2595) - 1)
+        * window_length
+        / sampling_frequency
+    ).astype(int)
+
+    # Initialize the mel filterbank
+    mel_filterbank = np.zeros((number_filters, int(window_length / 2)))
+
+    # Loop over the filters
+    for i in range(number_filters):
+
+        # Compute the left and right sides of the triangular filters (linspace is more accurate than triang or bartlett!)
+        mel_filterbank[i, filter_indices[i] - 1 : filter_indices[i + 1]] = np.linspace(
+            0,
+            1,
+            num=filter_indices[i + 1] - filter_indices[i] + 1,
+        )
+        mel_filterbank[
+            i, filter_indices[i + 1] - 1 : filter_indices[i + 2]
+        ] = np.linspace(
+            1,
+            0,
+            num=filter_indices[i + 2] - filter_indices[i + 1] + 1,
+        )
+
+    # Make the mel filterbank sparse by saving it as a compressed sparse row matrix
+    mel_filterbank = scipy.sparse.csr_matrix(mel_filterbank)
+
+    return mel_filterbank
 
 
 def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
