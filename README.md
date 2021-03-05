@@ -23,7 +23,9 @@ Functions:
 - [`cqtkernel`](#cqtkernel) - Compute the constant-Q transform (CQT) kernel.
 - [`cqtspectrogram`](#cqtspectrogram) - Compute the CQT spectrogram using a CQT kernel.
 - [`cqtchromagram`](#cqtchromagram) - Compute the CQT chromagram using a CQT kernel.
-- [`mfcc`](#mfcc) - Compute the mel frequency cepstrum coefficients (MFCCs).
+- [`melfilterbank`](#melfilterbank) - Compute the mel filterbank.
+- [`melspectrogram`](#melspectrogram) - Compute the mel spectrogram using a mel filterbank.
+- [`mfcc`](#mfcc) - Compute the mel frequency cepstrum coefficients (MFCCs) using a mel filterbank.
 - [`dct`](#dct) - Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
 - [`dst`](#dst) - Compute the discrete sine transform (DST) using the FFT.
 - [`mdct`](#mdct) - Compute the modified discrete cosine transform (MDCT) using the FFT.
@@ -315,10 +317,19 @@ plt.show()
 
 <img src="images/cqtchromagram.png" width="1000">
 
+### melfilterbank
+
+Compute the mel filterbank.
+
+
+### melspectrogram
+
+Compute the mel spectrogram using a mel filterbank.
+
 
 ### mfcc
 
-Compute the mel frequency cepstrum coefficients (MFFCs).
+Compute the mel frequency cepstrum coefficients (MFFCs) using a mel filterbank.
 
 ```
 audio_mfcc = zaf.mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
