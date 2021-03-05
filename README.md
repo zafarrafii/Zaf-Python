@@ -82,7 +82,7 @@ step_length = int(window_length/2)
 audio_stft = zaf.stft(audio_signal, window_function, step_length)
 
 # Derive the magnitude spectrogram (without the DC component and the mirrored frequencies)
-audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
+audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2)+1, :])
 
 # Display the spectrogram in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
@@ -131,16 +131,17 @@ audio_stft1 = zaf.stft(audio_signal[:, 0], window_function, step_length)
 audio_stft2 = zaf.stft(audio_signal[:, 1], window_function, step_length)
 
 # Derive the magnitude spectrograms (with DC component) for the left and right channels
-audio_spectrogram1 = abs(audio_stft1[0:int(window_length/2)+1, :])
-audio_spectrogram2 = abs(audio_stft2[0:int(window_length/2)+1, :])
+number_frequencies = int(window_length/2)+1
+audio_spectrogram1 = abs(audio_stft1[0:number_frequencies, :])
+audio_spectrogram2 = abs(audio_stft2[0:number_frequencies, :])
 
 # Estimate the time-frequency masks for the left and right channels for the center
 center_mask1 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram1
 center_mask2 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram2
 
 # Derive the STFTs for the left and right channels for the center (with mirrored frequencies)
-center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[int(window_length/2)-1:0:-1, :])), audio_stft1)
-center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[int(window_length/2)-1:0:-1, :])), audio_stft2)
+center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[-2:0:-1, :])), audio_stft1)
+center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[-2:0:-1, :])), audio_stft2)
 
 # Synthesize the signals for the left and right channels for the center
 center_signal1 = zaf.istft(center_stft1, window_function, step_length)
