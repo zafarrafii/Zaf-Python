@@ -7,7 +7,9 @@ Functions:
     cqtkernel - Compute the constant-Q transform (CQT) kernel.
     cqtspectrogram - Compute the CQT spectrogram using a CQT kernel.
     cqtchromagram - Compute the CQT chromagram using a CQT kernel.
-    mfcc - Compute the mel frequency cepstrum coefficients (MFCCs).
+    melfilterbank - Compute the mel filterbank.
+    melspectrogram - Compute the mel spectrogram using a mel filterbank.
+    mfcc - Compute the mel frequency cepstrum coefficients (MFCCs) using a mel filterbank.
     dct - Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
     dst - Compute the discrete sine transform (DST) using the FFT.
     mdct - Compute the modified discrete cosine transform (MDCT) using the FFT.
@@ -27,7 +29,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/04/21
+    03/05/21
 """
 
 import numpy as np
@@ -76,7 +78,7 @@ def stft(audio_signal, window_function, step_length):
         audio_stft = zaf.stft(audio_signal, window_function, step_length)
 
         # Derive the magnitude spectrogram (without the DC component and the mirrored frequencies)
-        audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2+1), :])
+        audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2)+1, :])
 
         # Display the spectrogram in dB, seconds, and Hz
         plt.figure(figsize=(17, 10))
@@ -166,16 +168,17 @@ def istft(audio_stft, window_function, step_length):
         audio_stft2 = zaf.stft(audio_signal[:, 1], window_function, step_length)
 
         # Derive the magnitude spectrograms (with DC component) for the left and right channels
-        audio_spectrogram1 = abs(audio_stft1[0:int(window_length/2)+1, :])
-        audio_spectrogram2 = abs(audio_stft2[0:int(window_length/2)+1, :])
+        number_frequencies = int(window_length/2)+1
+        audio_spectrogram1 = abs(audio_stft1[0:number_frequencies, :])
+        audio_spectrogram2 = abs(audio_stft2[0:number_frequencies, :])
 
         # Estimate the time-frequency masks for the left and right channels for the center
         center_mask1 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram1
         center_mask2 = np.minimum(audio_spectrogram1, audio_spectrogram2)/audio_spectrogram2
 
         # Derive the STFTs for the left and right channels for the center (with mirrored frequencies)
-        center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[int(window_length/2)-1:0:-1, :])), audio_stft1)
-        center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[int(window_length/2)-1:0:-1, :])), audio_stft2)
+        center_stft1 = np.multiply(np.concatenate((center_mask1, center_mask1[-2:0:-1, :])), audio_stft1)
+        center_stft2 = np.multiply(np.concatenate((center_mask2, center_mask2[-2:0:-1, :])), audio_stft2)
 
         # Synthesize the signals for the left and right channels for the center
         center_signal1 = zaf.istft(center_stft1, window_function, step_length)
@@ -183,7 +186,7 @@ def istft(audio_stft, window_function, step_length):
 
         # Derive the final stereo center and sides signals
         center_signal = np.stack((center_signal1, center_signal2), axis=1)
-        center_signal = center_signal[0:len(audio_signal), :]
+        center_signal = center_signal[0:np.shape(audio_signal)[0], :]
         sides_signal = audio_signal-center_signal
 
         # Write the center and sides signals
@@ -488,15 +491,16 @@ def cqtchromagram(
 
 def melfilterbank(sampling_frequency, window_length, number_filters):
     """
-    Compute a mel filter bank.
+    Compute the mel filterbank.
 
     Inputs:
         sampling_frequency: sampling frequency in Hz
-        window_length: window length for the frequency analysis in samples
-        number_filters: number of filters
+        window_length: window length for the Fourier analysis in samples
+        number_mels: number of mel filters
     Output:
+        mel_filterbank: mel filterbank (number_mels, number_frequencies)
 
-    Example: Compute and display the mel filter bank.
+    Example: Compute and display the mel filterbank.
         # Import the modules
         ...
     """
@@ -549,7 +553,7 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
 
 def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
     """
-    Compute the mel frequency cepstrum coefficients (MFFCs).
+    Compute the mel frequency cepstrum coefficients (MFFCs) using a mel filterbank.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
