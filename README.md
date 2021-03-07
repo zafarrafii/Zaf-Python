@@ -188,7 +188,7 @@ Inputs:
     minimum_frequency: minimum frequency in Hz
     maximum_frequency: maximum frequency in Hz
 Output:
-    cqt_kernel: CQT kernel (number_frequencies, fft_length)
+    cqt_kernel: CQT kernel (sparse) (number_frequencies, fft_length)
 ```
 
 #### Example: Compute and display the CQT kernel.
@@ -222,10 +222,10 @@ plt.show()
 
 ### cqtspectrogram
 
-Compute the constant-Q transform (CQT) kernel.
+Compute the constant-Q transform (CQT) spectrogram.
 
 ```
-audio_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
 
 Inputs:
     audio_signal: audio signal (number_samples,)
@@ -233,7 +233,7 @@ Inputs:
     time_resolution: time resolution in number of time frames per second
     cqt_kernel: CQT kernel (number_frequencies, fft_length)
 Output:
-    audio_spectrogram: audio spectrogram in magnitude (number_frequencies, number_times)
+    audio_spectrogram: CQT spectrogram (number_frequencies, number_times)
 ```
 
 #### Example: Compute and display the CQT spectrogram.
@@ -256,11 +256,11 @@ cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_fre
 
 # Compute the (magnitude) CQT spectrogram using the kernel
 time_resolution = 25
-audio_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
+cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
 # Display the CQT spectrogram in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
-zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
+zaf.cqtspecshow(cqt_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
 plt.title("CQT spectrogram (dB)")
 plt.show()
 ```
