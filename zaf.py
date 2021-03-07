@@ -29,7 +29,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/05/21
+    03/06/21
 """
 
 import numpy as np
@@ -357,7 +357,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         time_resolution: time resolution in number of time frames per second
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
-        audio_spectrogram: audio spectrogram in magnitude (number_frequencies, number_times)
+        audio_spectrogram: CQT spectrogram (number_frequencies, number_times)
 
     Example: Compute and display the CQT spectrogram.
         # Import the modules
@@ -377,11 +377,11 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
         # Compute the (magnitude) CQT spectrogram using the kernel
         time_resolution = 25
-        audio_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
+        cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
         # Display the CQT spectrogram in dB, seconds, and Hz
         plt.figure(figsize=(17, 10))
-        zaf.cqtspecshow(audio_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
+        zaf.cqtspecshow(cqt_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
         plt.title("CQT spectrogram (dB)")
         plt.show()
     """
@@ -407,19 +407,19 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     )
 
     # Initialize the spectrogram
-    audio_spectrogram = np.zeros((number_frequencies, number_times))
+    cqt_spectrogram = np.zeros((number_frequencies, number_times))
 
     # Loop over the time frames
     i = 0
     for j in range(number_times):
 
         # Compute the magnitude CQT using the kernel
-        audio_spectrogram[:, j] = np.absolute(
+        cqt_spectrogram[:, j] = np.absolute(
             cqt_kernel * np.fft.fft(audio_signal[i : i + fft_length])
         )
         i = i + step_length
 
-    return audio_spectrogram
+    return cqt_spectrogram
 
 
 def cqtchromagram(
@@ -498,7 +498,7 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
         window_length: window length for the Fourier analysis in samples
         number_mels: number of mel filters
     Output:
-        mel_filterbank: mel filterbank (number_mels, number_frequencies)
+        mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
 
     Example: Compute and display the mel filterbank.
         # Import the modules
@@ -509,10 +509,10 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
     mininum_frequency = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
     maximum_frequency = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
 
-    # Derive the width of the overlapping filters in the mel scale (constant)
+    # Derive the width of the (overlapping) filters in the mel scale (constant)
     filter_width = 2 * (maximum_frequency - mininum_frequency) / (number_filters + 1)
 
-    # Compute the indices of the overlapping filters in the mel scale (linearly spaced)
+    # Compute the start and end indices of the filters in the mel scale (linearly spaced)
     filter_indices = np.arange(
         mininum_frequency, maximum_frequency + 1, filter_width / 2
     )
