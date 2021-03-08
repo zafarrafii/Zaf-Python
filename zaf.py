@@ -29,7 +29,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/06/21
+    03/07/21
 """
 
 import numpy as np
@@ -52,7 +52,7 @@ def stft(audio_signal, window_function, step_length):
         audio_stft: audio STFT (window_length, number_frames)
 
     Example: Compute and display the spectrogram from an audio file.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import scipy.signal
         import zaf
@@ -149,7 +149,7 @@ def istft(audio_stft, window_function, step_length):
         audio_signal: audio signal (number_samples,)
 
     Example: Estimate the center and the sides from a stereo audio file.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import scipy.signal
         import zaf
@@ -252,10 +252,10 @@ def cqtkernel(
         minimum_frequency: minimum frequency in Hz
         maximum_frequency: maximum frequency in Hz
     Output:
-        cqt_kernel: CQT kernel (number_frequencies, fft_length)
+        cqt_kernel: CQT kernel (sparse) (number_frequencies, fft_length)
 
     Example: Compute and display a CQT kernel.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
@@ -357,7 +357,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         time_resolution: time resolution in number of time frames per second
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
-        audio_spectrogram: CQT spectrogram (number_frequencies, number_times)
+        cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
 
     Example: Compute and display the CQT spectrogram.
         # Import the modules
@@ -435,10 +435,10 @@ def cqtchromagram(
         frequency_resolution: frequency resolution in number of frequency channels per semitones
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
-        audio_chromagram: audio chromagram (number_chromas, number_times)
+        cqt_chromagram: CQT chromagram (number_chromas, number_times)
 
     Example: Compute and display the CQT chromagram.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
@@ -455,38 +455,38 @@ def cqtchromagram(
 
         # Compute the CQT chromagram
         time_resolution = 25
-        audio_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+        cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
 
         # Display the CQT chromagram in seconds
         plt.figure(figsize=(17, 5))
-        zaf.cqtchromshow(audio_chromagram, time_resolution, xtick_step=1)
+        zaf.cqtchromshow(cqt_chromagram, time_resolution, xtick_step=1)
         plt.title("CQT chromagram")
         plt.show()
     """
 
     # Compute the CQT spectrogram
-    audio_spectrogram = cqtspectrogram(
+    cqt_spectrogram = cqtspectrogram(
         audio_signal, sampling_frequency, time_resolution, cqt_kernel
     )
 
     # Get the number of frequency channels and time frames
-    number_frequencies, number_times = np.shape(audio_spectrogram)
+    number_frequencies, number_times = np.shape(cqt_spectrogram)
 
     # Derive the number of chroma channels
     number_chromas = 12 * frequency_resolution
 
     # Initialize the chromagram
-    audio_chromagram = np.zeros((number_chromas, number_times))
+    cqt_chromagram = np.zeros((number_chromas, number_times))
 
     # Loop over the chroma channels
     for i in range(number_chromas):
 
         # Sum the energy of the frequency channels for every chroma
-        audio_chromagram[i, :] = np.sum(
-            audio_spectrogram[i:number_frequencies:number_chromas, :], axis=0
+        cqt_chromagram[i, :] = np.sum(
+            cqt_spectrogram[i:number_frequencies:number_chromas, :], axis=0
         )
 
-    return audio_chromagram
+    return cqt_chromagram
 
 
 def melfilterbank(sampling_frequency, window_length, number_filters):
@@ -501,8 +501,27 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
         mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
 
     Example: Compute and display the mel filterbank.
-        # Import the modules
-        ...
+        # Import the needed modules
+        import numpy as np
+        import zaf
+        import matplotlib.pyplot as plt
+
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+        audio_signal = np.mean(audio_signal, 1)
+
+        # Compute the mel filterbank using some parameters
+        window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
+        number_mels = 128
+        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+        # Display the mel filterbank
+        plt.figure(figsize=(17, 5))
+        plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
+        plt.title("Mel filterbank")
+        plt.xlabel("Number of frequencies")
+        plt.ylabel("Number of mels")
+        plt.show()
     """
 
     # Compute the minimum and maximum frequencies in mels
@@ -564,7 +583,7 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
         audio_mfcc: audio MFCCs (number_times, number_coefficients)
 
     Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
@@ -667,7 +686,7 @@ def dct(audio_signal, dct_type):
         audio_dct: audio DCT (number_frequencies,)
 
     Example: Compute the 4 different DCTs and compare them to SciPy's DCTs.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import scipy.fftpack
@@ -805,7 +824,7 @@ def dst(audio_signal, dst_type):
         audio_dst: audio DST (number_frequencies,)
 
     Example: Compute the 4 different DSTs and compare their respective inverses with the original audio.
-        # Import modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
@@ -942,7 +961,7 @@ def mdct(audio_signal, window_function):
         audio_mdct: audio MDCT (number_frequencies, number_times)
 
     Example: Compute and display the MDCT as used in the AC-3 audio coding format.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
@@ -1034,7 +1053,7 @@ def imdct(audio_mdct, window_function):
         audio_signal: audio signal (number_samples,)
 
     Example: Verify that the MDCT is perfectly invertible.
-        # Import the modules
+        # Import the needed modules
         import numpy as np
         import zaf
         import matplotlib.pyplot as plt
