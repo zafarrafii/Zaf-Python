@@ -58,7 +58,7 @@ Output:
 #### Example: Compute and display the spectrogram from an audio file.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import scipy.signal
 import zaf
@@ -114,7 +114,7 @@ Output:
 #### Example: Estimate the center and the sides from a stereo audio file.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import scipy.signal
 import zaf
@@ -194,7 +194,7 @@ Output:
 #### Example: Compute and display the CQT kernel.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -239,7 +239,7 @@ Output:
 #### Example: Compute and display the CQT spectrogram.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -288,7 +288,7 @@ Output:
 #### Example: Compute and display the CQT chromagram.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -335,9 +335,27 @@ Output:
 #### Example: Compute and display the mel filterbank.
 
 ```
-# Import the modules
-...
+# Import the needed modules
+import numpy as np
+import zaf
+import matplotlib.pyplot as plt
 
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+audio_signal = np.mean(audio_signal, 1)
+
+# Compute the mel filterbank using some parameters
+window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
+number_mels = 128
+mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+# Display the mel filterbank
+plt.figure(figsize=(17, 5))
+plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
+plt.title("Mel filterbank")
+plt.xlabel("Number of frequencies")
+plt.ylabel("Number of mels")
+plt.show()
 ```
 
 ### melspectrogram
@@ -364,7 +382,7 @@ Output:
 #### Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -416,7 +434,7 @@ Output:
 #### Example: Compute the 4 different DCTs and compare them to SciPy's DCTs.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import scipy.fftpack
@@ -479,7 +497,7 @@ Output:
 #### Example: Compute the 4 different DSTs and compare their respective inverses with the original audio.
 
 ```
-# Import modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -541,7 +559,7 @@ Output:
 #### Example: Compute and display the MDCT as used in the AC-3 audio coding format.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -588,7 +606,7 @@ Output:
 #### Example: Verify that the MDCT is perfectly invertible.
 
 ```
-# Import the modules
+# Import the needed modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
