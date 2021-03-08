@@ -4,12 +4,12 @@ This Python module implements a number of functions for audio signal analysis.
 Functions:
     stft - Compute the short-time Fourier transform (STFT).
     istft - Compute the inverse STFT.
-    cqtkernel - Compute the constant-Q transform (CQT) kernel.
-    cqtspectrogram - Compute the CQT spectrogram using a CQT kernel.
-    cqtchromagram - Compute the CQT chromagram using a CQT kernel.
     melfilterbank - Compute the mel filterbank.
     melspectrogram - Compute the mel spectrogram using a mel filterbank.
     mfcc - Compute the mel frequency cepstrum coefficients (MFCCs) using a mel filterbank.
+    cqtkernel - Compute the constant-Q transform (CQT) kernel.
+    cqtspectrogram - Compute the CQT spectrogram using a CQT kernel.
+    cqtchromagram - Compute the CQT chromagram using a CQT kernel.
     dct - Compute the discrete cosine transform (DCT) using the fast Fourier transform (FFT).
     dst - Compute the discrete sine transform (DST) using the FFT.
     mdct - Compute the modified discrete cosine transform (MDCT) using the FFT.
@@ -21,6 +21,7 @@ Other:
     sigplot - Plot a signal in seconds.
     specshow - Display an spectrogram in dB, seconds, and Hz.
     melspecshow - Display a mel spectrogram in dB, seconds, and Hz.
+    mfccshow - Display MFCCs in seconds.
     cqtspecshow - Display a CQT spectrogram in dB, seconds, and Hz.
     cqtchromshow - Display a CQT chromagram in seconds.
 
@@ -30,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/07/21
+    03/08/21
 """
 
 import numpy as np
@@ -239,6 +240,214 @@ def istft(audio_stft, window_function, step_length):
     audio_signal = audio_signal / sum(window_function[0:window_length:step_length])
 
     return audio_signal
+
+
+def melfilterbank(sampling_frequency, window_length, number_filters):
+    """
+    Compute the mel filterbank.
+
+    Inputs:
+        sampling_frequency: sampling frequency in Hz
+        window_length: window length for the Fourier analysis in samples
+        number_mels: number of mel filters
+    Output:
+        mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
+
+    Example: Compute and display the mel filterbank.
+        # Import the needed modules
+        import numpy as np
+        import zaf
+        import matplotlib.pyplot as plt
+
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+        audio_signal = np.mean(audio_signal, 1)
+
+        # Compute the mel filterbank using some parameters
+        window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
+        number_mels = 128
+        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+        # Display the mel filterbank
+        plt.figure(figsize=(17, 5))
+        plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
+        plt.title("Mel filterbank")
+        plt.xlabel("Number of frequencies")
+        plt.ylabel("Number of mels")
+        plt.show()
+    """
+
+    # Compute the minimum and maximum mels
+    mininum_mel = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
+    maximum_mel = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
+
+    # Derive the width of the half-overlapping filters in the mel scale (constant)
+    filter_width = 2 * (maximum_mel - mininum_mel) / (number_filters + 1)
+
+    # Compute the start and end indices of the filters in the mel scale (linearly spaced)
+    filter_indices = np.arange(mininum_mel, maximum_mel + 1, filter_width / 2)
+
+    # Derive the indices of the filters in the linear frequency scale (log spaced)
+    filter_indices = np.round(
+        700
+        * (np.power(10, filter_indices / 2595) - 1)
+        * window_length
+        / sampling_frequency
+    ).astype(int)
+
+    # Initialize the mel filterbank
+    mel_filterbank = np.zeros((number_filters, int(window_length / 2)))
+
+    # Loop over the filters
+    for i in range(number_filters):
+
+        # Compute the left and right sides of the triangular filters
+        # (this is more accurate than creating triangular filters directly)
+        mel_filterbank[i, filter_indices[i] - 1 : filter_indices[i + 1]] = np.linspace(
+            0,
+            1,
+            num=filter_indices[i + 1] - filter_indices[i] + 1,
+        )
+        mel_filterbank[
+            i, filter_indices[i + 1] - 1 : filter_indices[i + 2]
+        ] = np.linspace(
+            1,
+            0,
+            num=filter_indices[i + 2] - filter_indices[i + 1] + 1,
+        )
+
+    # Make the mel filterbank sparse by saving it as a compressed sparse row matrix
+    mel_filterbank = scipy.sparse.csr_matrix(mel_filterbank)
+
+    return mel_filterbank
+
+
+def melspectrogram(audio_signal, window_function, step_length, mel_filterbank):
+    """
+    Compute the mel spectrogram using a mel filterbank.
+
+    Inputs:
+        audio_signal: audio signal (number_samples,)
+        window_function: window function (window_length,)
+        step_length: step length in samples
+        mel_filterbank: mel filterbank (number_mels, number_frequencies)
+    Output:
+        mel_spectrogram: mel spectrogram (number_mels, number_times)
+
+    Example: Compute and display the mel spectrogram.
+        # Import the needed modules
+        import numpy as np
+        import scipy.signal
+        import zaf
+        import matplotlib.pyplot as plt
+
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+        audio_signal = np.mean(audio_signal, 1)
+
+        # Set the parameters for the Fourier analysis
+        window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
+        window_function = scipy.signal.hamming(window_length, sym=False)
+        step_length = int(window_length/2)
+
+        # Compute the mel filterbank
+        number_mels = 128
+        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+        # Compute the mel spectrogram using the filterbank
+        mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
+
+        # Display the mel spectrogram in in dB, seconds, and Hz
+        plt.figure(figsize=(17, 10))
+        zaf.melspecshow(mel_spectrogram, len(audio_signal), sampling_frequency, window_length, xtick_step=1)
+        plt.title("Mel spectrogram (dB)")
+        plt.show()
+    """
+
+    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
+    audio_stft = stft(audio_signal, window_function, step_length)
+    audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
+
+    # Compute the mel spectrogram by using the filterbank
+    mel_spectrogram = np.matmul(mel_filterbank.toarray(), audio_spectrogram)
+
+    return mel_spectrogram
+
+
+def mfcc(
+    audio_signal, window_function, step_length, mel_filterbank, number_coefficients
+):
+    """
+    Compute the mel frequency cepstrum coefficients (MFFCs) using a mel filterbank.
+
+    Inputs:
+        audio_signal: audio signal (number_samples,)
+        window_function: window function (window_length,)
+        step_length: step length in samples
+        mel_filterbank: mel filterbank (number_mels, number_frequencies)
+        number_coefficients: number of coefficients (without the 0th coefficient)
+    Output:
+        audio_mfcc: audio MFCCs (number_coefficients, number_times)
+
+    Example: Compute and display the MFCCs, delta MFCCs, and delta-delta MFCCs.
+        # Import the needed modules
+        import numpy as np
+        import scipy.signal
+        import zaf
+        import matplotlib.pyplot as plt
+
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+        audio_signal = np.mean(audio_signal, 1)
+
+        # Set the parameters for the Fourier analysis
+        window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
+        window_function = scipy.signal.hamming(window_length, sym=False)
+        step_length = int(window_length/2)
+
+        # Compute the mel filterbank
+        number_mels = 40
+        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+        # Compute the MFCCs using the filterbank
+        number_coefficients = 20
+        audio_mfcc = zaf.mfcc(audio_signal, window_function, step_length, mel_filterbank, number_coefficients)
+
+        # Compute the delta and delta-delta MFCCs
+        audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
+        audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
+
+        # Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
+        time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
+
+        # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
+        plt.figure(figsize=(17, 10))
+        plt.subplot(3, 1, 1)
+        zaf.mfccshow(audio_mfcc, time_resolution, xtick_step=1), plt.title("MFCCs")
+        plt.subplot(3, 1, 2)
+        zaf.mfccshow(audio_dmfcc, time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+        plt.subplot(3, 1, 3)
+        zaf.mfccshow(audio_ddmfcc, time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
+        plt.show()
+    """
+
+    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
+    audio_stft = stft(audio_signal, window_function, step_length)
+    audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
+
+    # Compute the discrete cosine transform of the log magnitude spectrogram mapped onto the mel scale using the filter bank
+    audio_mfcc = scipy.fftpack.dct(
+        np.log(
+            np.matmul(mel_filterbank.toarray(), audio_spectrogram) + np.finfo(float).eps
+        ),
+        axis=0,
+        norm="ortho",
+    )
+
+    # Keep only the first coefficients (without the 0th)
+    audio_mfcc = audio_mfcc[1 : number_coefficients + 1, :]
+
+    return audio_mfcc
 
 
 def cqtkernel(
@@ -488,245 +697,6 @@ def cqtchromagram(
         )
 
     return cqt_chromagram
-
-
-def melfilterbank(sampling_frequency, window_length, number_filters):
-    """
-    Compute the mel filterbank.
-
-    Inputs:
-        sampling_frequency: sampling frequency in Hz
-        window_length: window length for the Fourier analysis in samples
-        number_mels: number of mel filters
-    Output:
-        mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
-
-    Example: Compute and display the mel filterbank.
-        # Import the needed modules
-        import numpy as np
-        import zaf
-        import matplotlib.pyplot as plt
-
-        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
-        audio_signal = np.mean(audio_signal, 1)
-
-        # Compute the mel filterbank using some parameters
-        window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
-        number_mels = 128
-        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
-
-        # Display the mel filterbank
-        plt.figure(figsize=(17, 5))
-        plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
-        plt.title("Mel filterbank")
-        plt.xlabel("Number of frequencies")
-        plt.ylabel("Number of mels")
-        plt.show()
-    """
-
-    # Compute the minimum and maximum frequencies in mels
-    mininum_frequency = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
-    maximum_frequency = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
-
-    # Derive the width of the (overlapping) filters in the mel scale (constant)
-    filter_width = 2 * (maximum_frequency - mininum_frequency) / (number_filters + 1)
-
-    # Compute the start and end indices of the filters in the mel scale (linearly spaced)
-    filter_indices = np.arange(
-        mininum_frequency, maximum_frequency + 1, filter_width / 2
-    )
-
-    # Derive the indices of the overlapping filters in the linear frequency scale (log spaced)
-    filter_indices = np.round(
-        700
-        * (np.power(10, filter_indices / 2595) - 1)
-        * window_length
-        / sampling_frequency
-    ).astype(int)
-
-    # Initialize the mel filterbank
-    mel_filterbank = np.zeros((number_filters, int(window_length / 2)))
-
-    # Loop over the filters
-    for i in range(number_filters):
-
-        # Compute the left and right sides of the triangular filters (linspace is more accurate than triang or bartlett!)
-        mel_filterbank[i, filter_indices[i] - 1 : filter_indices[i + 1]] = np.linspace(
-            0,
-            1,
-            num=filter_indices[i + 1] - filter_indices[i] + 1,
-        )
-        mel_filterbank[
-            i, filter_indices[i + 1] - 1 : filter_indices[i + 2]
-        ] = np.linspace(
-            1,
-            0,
-            num=filter_indices[i + 2] - filter_indices[i + 1] + 1,
-        )
-
-    # Make the mel filterbank sparse by saving it as a compressed sparse row matrix
-    mel_filterbank = scipy.sparse.csr_matrix(mel_filterbank)
-
-    return mel_filterbank
-
-
-def melspectrogram(audio_signal, window_function, step_length, mel_filterbank):
-    """
-    Compute the mel spectrogram using a mel filterbank.
-
-    Inputs:
-        audio_signal: audio signal (number_samples,)
-        window_function: window function (window_length,)
-        step_length: step length in samples
-        mel_filterbank: mel filterbank (number_mels, number_frequencies)
-    Output:
-        mel_spectrogram: mel spectrogram (number_mels, number_times)
-
-    Example: Compute and display the mel spectrogram.
-        # Import the needed modules
-        import numpy as np
-        import scipy.signal
-        import zaf
-        import matplotlib.pyplot as plt
-
-        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
-        audio_signal = np.mean(audio_signal, 1)
-
-        # Set the parameters for the Fourier analysis
-        window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
-        window_function = scipy.signal.hamming(window_length, sym=False)
-        step_length = int(window_length/2)
-
-        # Compute the mel filterbank
-        number_mels = 128
-        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
-
-        # Compute the mel spectrogram using the filterbank
-        mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
-
-        # Display the mel spectrogram in in dB, seconds, and Hz
-        plt.figure(figsize=(17, 10))
-        zaf.melspecshow(mel_spectrogram, len(audio_signal), sampling_frequency, window_length, xtick_step=1)
-        plt.title("Mel spectrogram (dB)")
-        plt.show()
-    """
-
-    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
-    audio_stft = stft(audio_signal, window_function, step_length)
-    audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
-
-    # Compute the mel spectrogram by using the filterbank
-    mel_spectrogram = np.matmul(mel_filterbank.toarray(), audio_spectrogram)
-
-    return mel_spectrogram
-
-
-def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
-    """
-    Compute the mel frequency cepstrum coefficients (MFFCs) using a mel filterbank.
-
-    Inputs:
-        audio_signal: audio signal (number_samples,)
-        window_function: window function (window_length,)
-        step_length: step length in samples
-        mel_filterbank: mel filterbank (number_mels, number_frequencies)
-        number_coefficients: number of coefficients (without the 0th coefficient)
-    Output:
-        audio_mfcc: audio MFCCs (number_coefficients, number_times)
-
-    Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
-        # Import the needed modules
-        import numpy as np
-        import zaf
-        import matplotlib.pyplot as plt
-
-        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
-        audio_signal = np.mean(audio_signal, 1)
-
-        # Compute the MFCCs with a given number of filters and coefficients
-        number_filters = 40
-        number_coefficients = 20
-        audio_mfcc = zaf.mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients)
-
-        # Compute the delta and delta-delta MFCCs
-        audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
-        audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
-
-        # Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
-        time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
-
-        # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
-        plt.figure(figsize=(17, 10))
-        plt.subplot(3, 1, 1),
-        zaf.sigplot(np.transpose(audio_mfcc), time_resolution, xtick_step=1), plt.title("MFCCs")
-        plt.subplot(3, 1, 2)
-        zaf.sigplot(np.transpose(audio_dmfcc), time_resolution, xtick_step=1), plt.title("Delta MFCCs")
-        plt.subplot(3, 1, 3)
-        zaf.sigplot(np.transpose(audio_ddmfcc), time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
-        plt.show()
-    """
-
-    # Set the paramters for the STFT
-    window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
-    window_function = scipy.signal.hamming(window_length, False)
-    step_length = int(window_length / 2)
-
-    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
-    audio_stft = stft(audio_signal, window_function, step_length)
-    audio_spectrogram = abs(audio_stft[1 : int(window_length / 2) + 1, :])
-
-    # Compute the minimum and maximum frequencies in mels
-    mininum_frequency = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
-    maximum_frequency = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
-
-    # Derive the width of the overlapping filters in the mel scale (constant)
-    filter_width = 2 * (maximum_frequency - mininum_frequency) / (number_filters + 1)
-
-    # Compute the indices of the overlapping filters in the mel scale (linearly spaced)
-    filter_indices = np.arange(
-        mininum_frequency, maximum_frequency + 1, filter_width / 2
-    )
-
-    # Derive the indices of the overlapping filters in the linear frequency scale (log spaced)
-    filter_indices = np.round(
-        700
-        * (np.power(10, filter_indices / 2595) - 1)
-        * window_length
-        / sampling_frequency
-    ).astype(int)
-
-    # Initialize the filter bank
-    filter_bank = np.zeros((number_filters, int(window_length / 2)))
-
-    # Loop over the filters
-    for i in range(number_filters):
-
-        # Compute the left and right sides of the triangular filters (linspace is more accurate than triang or bartlett!)
-        filter_bank[i, filter_indices[i] - 1 : filter_indices[i + 1]] = np.linspace(
-            0,
-            1,
-            num=filter_indices[i + 1] - filter_indices[i] + 1,
-        )
-        filter_bank[i, filter_indices[i + 1] - 1 : filter_indices[i + 2]] = np.linspace(
-            1,
-            0,
-            num=filter_indices[i + 2] - filter_indices[i + 1] + 1,
-        )
-
-    # Compute the discrete cosine transform of the log magnitude spectrogram mapped onto the mel scale using the filter bank
-    audio_mfcc = scipy.fftpack.dct(
-        np.log(np.dot(filter_bank, audio_spectrogram) + np.finfo(float).eps),
-        axis=0,
-        norm="ortho",
-    )
-
-    # Keep only the first coefficients (without the 0th)
-    audio_mfcc = audio_mfcc[1 : number_coefficients + 1, :]
-
-    return audio_mfcc
 
 
 def dct(audio_signal, dct_type):
@@ -1384,8 +1354,42 @@ def melspecshow(
     plt.ylabel("Frequency (Hz)")
 
 
+def mfccshow(
+    audio_mfcc,
+    time_resolution,
+    xtick_step=1,
+):
+    """
+    Display MFCCs in seconds.
+
+    Inputs:
+        audio_mfcc: audio MFCCs (number_coefficients, number_times)
+        time_resolution: time resolution in number of time frames per second
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
+    """
+
+    # Get the number of time frames
+    number_times = np.shape(audio_mfcc)[1]
+
+    # Prepare the tick locations and labels for the x-axis
+    xtick_locations = np.arange(
+        xtick_step * time_resolution,
+        number_times,
+        xtick_step * time_resolution,
+    )
+    xtick_labels = np.arange(
+        xtick_step, number_times / time_resolution, xtick_step
+    ).astype(int)
+
+    # Display the chromagram in seconds
+    plt.imshow(audio_mfcc, aspect="auto", cmap="jet", origin="lower")
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Coefficients")
+
+
 def cqtspecshow(
-    audio_spectrogram,
+    cqt_spectrogram,
     time_resolution,
     frequency_resolution,
     minimum_frequency,
@@ -1395,7 +1399,7 @@ def cqtspecshow(
     Display a CQT spectrogram in dB, seconds, and Hz.
 
     Inputs:
-        audio_spectrogram: CQT audio spectrogram (number_frequencies, number_times)
+        cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
         time_resolution: time resolution in number of time frames per second
         frequency_resolution: frequency resolution in number of frequency channels per semitone
         minimum_frequency: minimum frequency in Hz
@@ -1403,7 +1407,7 @@ def cqtspecshow(
     """
 
     # Get the number of frequency channels and time frames
-    number_frequencies, number_times = np.shape(audio_spectrogram)
+    number_frequencies, number_times = np.shape(cqt_spectrogram)
 
     # Derive the octave resolution
     octave_resolution = 12 * frequency_resolution
@@ -1424,9 +1428,9 @@ def cqtspecshow(
         minimum_frequency * pow(2, ytick_locations / octave_resolution)
     ).astype(int)
 
-    # Display the spectrogram in dB and seconds, and Hz
+    # Display the CQT spectrogram in dB and seconds, and Hz
     plt.imshow(
-        20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
+        20 * np.log10(cqt_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
     plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.yticks(ticks=ytick_locations, labels=ytick_labels)
@@ -1435,7 +1439,7 @@ def cqtspecshow(
 
 
 def cqtchromshow(
-    audio_chromagram,
+    cqt_chromagram,
     time_resolution,
     xtick_step=1,
 ):
@@ -1443,13 +1447,13 @@ def cqtchromshow(
     Display a CQT chromagram in seconds.
 
     Inputs:
-        audio_chromagram: CQT audio chromagram (number_chromas, number_times)
+        audio_chromagram: CQT chromagram (number_chromas, number_times)
         time_resolution: time resolution in number of time frames per second
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of time frames
-    number_times = np.shape(audio_chromagram)[1]
+    number_times = np.shape(cqt_chromagram)[1]
 
     # Prepare the tick locations and labels for the x-axis
     xtick_locations = np.arange(
@@ -1461,8 +1465,8 @@ def cqtchromshow(
         xtick_step, number_times / time_resolution, xtick_step
     ).astype(int)
 
-    # Display the chromagram in seconds
-    plt.imshow(audio_chromagram, aspect="auto", cmap="jet", origin="lower")
+    # Display the CQT chromagram in seconds
+    plt.imshow(cqt_chromagram, aspect="auto", cmap="jet", origin="lower")
     plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.xlabel("Time (s)")
     plt.ylabel("Chroma")
