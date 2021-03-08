@@ -20,6 +20,7 @@ Other:
     wavwrite - Write a WAVE file (using SciPy).
     sigplot - Plot a signal in seconds.
     specshow - Display an spectrogram in dB, seconds, and Hz.
+    melspecshow - Display a mel spectrogram in dB, seconds, and Hz.
     cqtspecshow - Display a CQT spectrogram in dB, seconds, and Hz.
     cqtchromshow - Display a CQT chromagram in seconds.
 
@@ -583,6 +584,33 @@ def melspectrogram(audio_signal, window_function, step_length, mel_filterbank):
         mel_spectrogram: mel spectrogram (number_mels, number_times)
 
     Example: Compute and display the mel spectrogram.
+        # Import the needed modules
+        import numpy as np
+        import scipy.signal
+        import zaf
+        import matplotlib.pyplot as plt
+
+        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+        audio_signal = np.mean(audio_signal, 1)
+
+        # Set the parameters for the Fourier analysis
+        window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
+        window_function = scipy.signal.hamming(window_length, sym=False)
+        step_length = int(window_length/2)
+
+        # Compute the mel filterbank
+        number_mels = 128
+        mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+        # Compute the mel spectrogram using the filterbank
+        mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
+
+        # Display the mel spectrogram in in dB, seconds, and Hz
+        plt.figure(figsize=(17, 10))
+        zaf.melspecshow(mel_spectrogram, len(audio_signal), sampling_frequency, window_length, xtick_step=1)
+        plt.title("Mel spectrogram (dB)")
+        plt.show()
     """
 
     # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
@@ -1291,6 +1319,63 @@ def specshow(
     # Display the spectrogram in dB, seconds, and Hz
     plt.imshow(
         20 * np.log10(audio_spectrogram), aspect="auto", cmap="jet", origin="lower"
+    )
+    plt.xticks(ticks=xtick_locations, labels=xtick_labels)
+    plt.yticks(ticks=ytick_locations, labels=ytick_labels)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Frequency (Hz)")
+
+
+def melspecshow(
+    mel_spectrogram,
+    number_samples,
+    sampling_frequency,
+    window_length,
+    xtick_step=1,
+    ytick_step=1000,
+):
+    """
+    Display a mel spectrogram in dB, seconds, and Hz.
+
+    Inputs:
+        mel_spectrogram: mel spectrogram (number_mels, number_times)
+        sampling_frequency: sampling frequency from the original signal in Hz
+        xtick_step: step for the x-axis ticks in seconds (default: 1 second)
+        ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
+    """
+
+    # Get the number of mels and time frames
+    number_mels, number_times = np.shape(mel_spectrogram)
+
+    # Derive the number of seconds and the number of time frames per second
+    number_seconds = number_samples / sampling_frequency
+    time_resolution = number_times / number_seconds
+
+    # Derive the minimum and maximum mel
+    minimum_mel = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
+    maximum_mel = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
+
+    # Compute the mel scale (linearly spaced)
+    mel_scale = np.linspace(minimum_mel, maximum_mel, number_mels)
+
+    # Derive the Hertz scale (log spaced)
+    hertz_scale = 700 * (np.power(10, mel_scale / 2595) - 1)
+
+    # Prepare the tick locations and labels for the x-axis
+    xtick_locations = np.arange(
+        xtick_step * time_resolution,
+        number_times,
+        xtick_step * time_resolution,
+    )
+    xtick_labels = np.arange(xtick_step, number_seconds, xtick_step).astype(int)
+
+    # Prepare the tick locations and labels for the y-axis
+    ytick_locations = np.arange(0, number_mels, 8)
+    ytick_labels = hertz_scale[::8].astype(int)
+
+    # Display the spectrogram in dB, seconds, and Hz
+    plt.imshow(
+        20 * np.log10(mel_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
     plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.yticks(ticks=ytick_locations, labels=ytick_labels)
