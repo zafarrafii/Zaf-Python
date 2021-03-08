@@ -349,7 +349,7 @@ def cqtkernel(
 
 def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel):
     """
-    Compute the constant-Q transform (CQT) spectrogram using a kernel.
+    Compute the constant-Q transform (CQT) spectrogram using a CQT kernel.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -426,7 +426,7 @@ def cqtchromagram(
     audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel
 ):
     """
-    Compute the constant-Q transform (CQT) chromagram using a kernel.
+    Compute the constant-Q transform (CQT) chromagram using a CQT kernel.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -568,6 +568,31 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
     mel_filterbank = scipy.sparse.csr_matrix(mel_filterbank)
 
     return mel_filterbank
+
+
+def melspectrogram(audio_signal, window_function, step_length, mel_filterbank):
+    """
+    Compute the mel spectrogram using a mel filterbank.
+
+    Inputs:
+        audio_signal: audio signal (number_samples,)
+        window_function: window function (window_length,)
+        step_length: step length in samples
+        mel_filterbank: mel filterbank (number_mels, number_frequencies)
+    Output:
+        mel_spectrogram: mel spectrogram (number_mels, number_times)
+
+    Example: Compute and display the mel spectrogram.
+    """
+
+    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
+    audio_stft = stft(audio_signal, window_function, step_length)
+    audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
+
+    # Compute the mel spectrogram by using the filterbank
+    mel_spectrogram = np.matmul(mel_filterbank.toarray(), audio_spectrogram)
+
+    return mel_spectrogram
 
 
 def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
