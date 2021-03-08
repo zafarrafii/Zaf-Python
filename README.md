@@ -358,6 +358,9 @@ plt.ylabel("Number of mels")
 plt.show()
 ```
 
+<img src="images/melfilterbank.png" width="1000">
+
+
 ### melspectrogram
 
 Compute the mel spectrogram using a mel filterbank.
