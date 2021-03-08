@@ -289,10 +289,48 @@ Output:
     audio_mfcc: audio MFCCs (number_times, number_coefficients)
 ```
 
-#### Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
+#### Example: Compute and display the MFCCs, delta MFCCs, and delta-delta MFCCs.
 
 ```
+# Import the needed modules
+import numpy as np
+import scipy.signal
+import zaf
+import matplotlib.pyplot as plt
 
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+audio_signal = np.mean(audio_signal, 1)
+
+# Set the parameters for the Fourier analysis
+window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
+window_function = scipy.signal.hamming(window_length, sym=False)
+step_length = int(window_length/2)
+
+# Compute the mel filterbank
+number_mels = 40
+mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+# Compute the MFCCs using the filterbank
+number_coefficients = 20
+audio_mfcc = zaf.mfcc(audio_signal, window_function, step_length, mel_filterbank, number_coefficients)
+
+# Compute the delta and delta-delta MFCCs
+audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
+audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
+
+# Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
+time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
+
+# Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
+plt.figure(figsize=(17, 10))
+plt.subplot(3, 1, 1)
+zaf.mfccshow(audio_mfcc, time_resolution, xtick_step=1), plt.title("MFCCs")
+plt.subplot(3, 1, 2)
+zaf.mfccshow(audio_dmfcc, time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+plt.subplot(3, 1, 3)
+zaf.mfccshow(audio_ddmfcc, time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
+plt.show()
 ```
 
 <img src="images/mfcc.png" width="1000">
