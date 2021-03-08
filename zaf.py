@@ -629,11 +629,12 @@ def mfcc(audio_signal, sampling_frequency, number_filters, number_coefficients):
 
     Inputs:
         audio_signal: audio signal (number_samples,)
-        sampling_frequency: sampling frequency in Hz
-        number_filters: number of filters
+        window_function: window function (window_length,)
+        step_length: step length in samples
+        mel_filterbank: mel filterbank (number_mels, number_frequencies)
         number_coefficients: number of coefficients (without the 0th coefficient)
     Output:
-        audio_mfcc: audio MFCCs (number_times, number_coefficients)
+        audio_mfcc: audio MFCCs (number_coefficients, number_times)
 
     Example: Compute and display the MFCCs, delta MFCCs, and delta-detla MFCCs.
         # Import the needed modules
