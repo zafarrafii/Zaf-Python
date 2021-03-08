@@ -36,6 +36,7 @@ Other:
 - `wavwrite` - Write a WAVE file (using SciPy).
 - `sigplot` - Plot a signal in seconds.
 - `specshow` - Display a spectrogram in dB, seconds, and Hz.
+- `melspecshow` - Display a mel spectrogram in dB, seconds, and Hz.
 - `cqtspecshow` - Display a CQT spectrogram in dB, seconds, and Hz.
 - `cqtchromshow` - Display a CQT chromagram in seconds.
 
