@@ -222,7 +222,7 @@ plt.show()
 
 ### cqtspectrogram
 
-Compute the constant-Q transform (CQT) spectrogram.
+Compute the constant-Q transform (CQT) spectrogram using a CQT kernel.
 
 ```
 cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
@@ -270,7 +270,7 @@ plt.show()
 
 ### cqtchromagram
 
-Compute the constant-Q transform (CQT) chromagram using a kernel.
+Compute the constant-Q transform (CQT) chromagram using a CQT kernel.
 
 ```
 cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
@@ -364,6 +364,7 @@ plt.show()
 ### melspectrogram
 
 Compute the mel spectrogram using a mel filterbank.
+
 
 
 ### mfcc
