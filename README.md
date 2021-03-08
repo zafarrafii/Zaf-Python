@@ -289,7 +289,6 @@ Output:
 
 ```
 # Import the modules
-# Import the modules
 import numpy as np
 import zaf
 import matplotlib.pyplot as plt
@@ -317,10 +316,29 @@ plt.show()
 
 <img src="images/cqtchromagram.png" width="1000">
 
+
 ### melfilterbank
 
 Compute the mel filterbank.
 
+```
+mel_filterbank = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+
+Inputs:
+    sampling_frequency: sampling frequency in Hz
+    window_length: window length for the Fourier analysis in samples
+    number_mels: number of mel filters
+Output:
+    mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
+```
+
+#### Example: Compute and display the mel filterbank.
+
+```
+# Import the modules
+...
+
+```
 
 ### melspectrogram
 
