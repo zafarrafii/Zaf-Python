@@ -323,14 +323,15 @@ plt.show()
 Compute the mel filterbank.
 
 ```
-mel_filterbank = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+mel_filterbank = zaf.melfilterbank(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
 Inputs:
-    sampling_frequency: sampling frequency in Hz
-    window_length: window length for the Fourier analysis in samples
-    number_mels: number of mel filters
+    audio_signal: audio signal (number_samples,)
+    window_function: window function (window_length,)
+    step_length: step length in samples
+    mel_filterbank: mel filterbank (number_mels, number_frequencies)
 Output:
-    mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
+    mel_spectrogram: mel spectrogram (number_mels, number_times)
 ```
 
 #### Example: Compute and display the mel filterbank.
@@ -366,6 +367,50 @@ plt.show()
 
 Compute the mel spectrogram using a mel filterbank.
 
+```
+mel_filterbank = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
+
+Inputs:
+    sampling_frequency: sampling frequency in Hz
+    window_length: window length for the Fourier analysis in samples
+    number_mels: number of mel filters
+Output:
+    mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
+```
+
+#### Example: Compute and display the mel spectrogram.
+
+```
+# Import the needed modules
+import numpy as np
+import scipy.signal
+import zaf
+import matplotlib.pyplot as plt
+
+# Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
+audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
+audio_signal = np.mean(audio_signal, 1)
+
+# Set the parameters for the Fourier analysis
+window_length = pow(2, int(np.ceil(np.log2(0.04*sampling_frequency))))
+window_function = scipy.signal.hamming(window_length, sym=False)
+step_length = int(window_length/2)
+
+# Compute the mel filterbank
+number_mels = 128
+mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
+
+# Compute the mel spectrogram using the filterbank
+mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
+
+# Display the mel spectrogram in in dB, seconds, and Hz
+plt.figure(figsize=(17, 10))
+zaf.melspecshow(mel_spectrogram, len(audio_signal), sampling_frequency, window_length, xtick_step=1)
+plt.title("Mel spectrogram (dB)")
+plt.show()
+```
+
+<img src="images/melspectrogram.png" width="1000">
 
 
 ### mfcc
