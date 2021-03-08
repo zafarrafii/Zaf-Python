@@ -371,11 +371,12 @@ Compute the mel spectrogram using a mel filterbank.
 mel_filterbank = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
 
 Inputs:
-    sampling_frequency: sampling frequency in Hz
-    window_length: window length for the Fourier analysis in samples
-    number_mels: number of mel filters
+    audio_signal: audio signal (number_samples,)
+    window_function: window function (window_length,)
+    step_length: step length in samples
+    mel_filterbank: mel filterbank (number_mels, number_frequencies)
 Output:
-    mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
+    mel_spectrogram: mel spectrogram (number_mels, number_times)
 ```
 
 #### Example: Compute and display the mel spectrogram.
