@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/08/21
+    03/09/21
 """
 
 import numpy as np
@@ -616,7 +616,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         constant_values=(0, 0),
     )
 
-    # Initialize the spectrogram
+    # Initialize the CQT spectrogram
     cqt_spectrogram = np.zeros((number_frequencies, number_times))
 
     # Loop over the time frames
@@ -685,7 +685,7 @@ def cqtchromagram(
     # Derive the number of chroma channels
     number_chromas = 12 * frequency_resolution
 
-    # Initialize the chromagram
+    # Initialize the CQT chromagram
     cqt_chromagram = np.zeros((number_chromas, number_times))
 
     # Loop over the chroma channels
