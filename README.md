@@ -37,7 +37,7 @@ Other:
 - `sigplot` - Plot a signal in seconds.
 - `specshow` - Display a spectrogram in dB, seconds, and Hz.
 - `melspecshow` - Display a mel spectrogram in dB, seconds, and Hz.
-- `mffcshow` - Display MFCCs in seconds.
+- `mfccshow` - Display MFCCs in seconds.
 - `cqtspecshow` - Display a CQT spectrogram in dB, seconds, and Hz.
 - `cqtchromshow` - Display a CQT chromagram in seconds.
 
