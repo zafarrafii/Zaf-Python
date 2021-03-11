@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/09/21
+    03/10/21
 """
 
 import numpy as np
@@ -585,7 +585,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         maximum_frequency = 3520
         cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-        # Compute the (magnitude) CQT spectrogram using the kernel
+        # Compute the CQT spectrogram using the kernel
         time_resolution = 25
         cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
@@ -663,7 +663,7 @@ def cqtchromagram(
         maximum_frequency = 3520
         cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
 
-        # Compute the CQT chromagram
+        # Compute the CQT chromagram using the kernel
         time_resolution = 25
         cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
 
