@@ -561,7 +561,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
     Inputs:
         audio_signal: audio signal (number_samples,)
         sampling_frequency: sampling frequency in Hz
-        time_resolution: time resolution in number of time frames per second
+        time_resolution: number of time frames per second
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
         cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
@@ -638,7 +638,7 @@ def cqtchromagram(
     Inputs:
         audio_signal: audio signal (number_samples,)
         sampling_frequency: sampling frequency in Hz
-        time_resolution: time resolution in number of time frames per second
+        time_resolution: number of time frames per second
         octave_resolution: number of frequency channels per octave
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
@@ -1358,7 +1358,7 @@ def mfccshow(
 
     Inputs:
         audio_mfcc: audio MFCCs (number_coefficients, number_times)
-        time_resolution: time resolution in number of time frames per second
+        time_resolution: number of time frames per second
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
@@ -1394,7 +1394,7 @@ def cqtspecshow(
 
     Inputs:
         cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
-        time_resolution: time resolution in number of time frames per second
+        time_resolution: number of time frames per second
         octave_resolution: number of frequency channels per octave
         minimum_frequency: minimum frequency in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
@@ -1439,7 +1439,7 @@ def cqtchromshow(
 
     Inputs:
         audio_chromagram: CQT chromagram (number_chromas, number_times)
-        time_resolution: time resolution in number of time frames per second
+        time_resolution: number of time frames per second
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
