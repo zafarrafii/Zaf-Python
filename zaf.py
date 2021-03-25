@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/10/21
+    03/24/21
 """
 
 import numpy as np
@@ -451,14 +451,14 @@ def mfcc(
 
 
 def cqtkernel(
-    sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency
+    sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency
 ):
     """
     Compute the constant-Q transform (CQT) kernel.
 
     Inputs:
         sampling_frequency: sampling frequency in Hz
-        frequency_resolution: frequency resolution in number of frequency channels per semitone
+        octave_resolution: number of frequency channels per octave
         minimum_frequency: minimum frequency in Hz
         maximum_frequency: maximum frequency in Hz
     Output:
@@ -472,12 +472,12 @@ def cqtkernel(
 
         # Set the parameters for the CQT kernel
         sampling_frequency = 44100
-        frequency_resolution = 2
+        octave_resolution = 24
         minimum_frequency = 55
         maximum_frequency = sampling_frequency/2
 
         # Compute the CQT kernel
-        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
         # Display the magnitude CQT kernel
         plt.figure(figsize=(17, 5))
@@ -487,9 +487,6 @@ def cqtkernel(
         plt.ylabel("CQT frequency")
         plt.show()
     """
-
-    # Derive the number of frequency channels per octave
-    octave_resolution = 12 * frequency_resolution
 
     # Compute the constant ratio of frequency to resolution (= fk/(fk+1-fk))
     quality_factor = 1 / (pow(2, 1 / octave_resolution) - 1)
@@ -580,10 +577,10 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         audio_signal = np.mean(audio_signal, 1)
 
         # Compute the CQT kernel using some parameters
-        frequency_resolution = 2
+        octave_resolution = 24
         minimum_frequency = 55
         maximum_frequency = 3520
-        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
         # Compute the CQT spectrogram using the kernel
         time_resolution = 25
@@ -591,7 +588,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
         # Display the CQT spectrogram in dB, seconds, and Hz
         plt.figure(figsize=(17, 10))
-        zaf.cqtspecshow(cqt_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
+        zaf.cqtspecshow(cqt_spectrogram, time_resolution, octave_resolution, minimum_frequency, xtick_step=1)
         plt.title("CQT spectrogram (dB)")
         plt.show()
     """
@@ -633,7 +630,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
 
 
 def cqtchromagram(
-    audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel
+    audio_signal, sampling_frequency, time_resolution, octave_resolution, cqt_kernel
 ):
     """
     Compute the constant-Q transform (CQT) chromagram using a CQT kernel.
@@ -642,10 +639,10 @@ def cqtchromagram(
         audio_signal: audio signal (number_samples,)
         sampling_frequency: sampling frequency in Hz
         time_resolution: time resolution in number of time frames per second
-        frequency_resolution: frequency resolution in number of frequency channels per semitones
+        octave_resolution: number of frequency channels per octave
         cqt_kernel: CQT kernel (number_frequencies, fft_length)
     Output:
-        cqt_chromagram: CQT chromagram (number_chromas, number_times)
+        cqt_chromagram: CQT chromagram (octave_resolution, number_times)
 
     Example: Compute and display the CQT chromagram.
         # Import the needed modules
@@ -658,14 +655,14 @@ def cqtchromagram(
         audio_signal = np.mean(audio_signal, 1)
 
         # Compute the CQT kernel using some parameters
-        frequency_resolution = 2
+        octave_resolution = 24
         minimum_frequency = 55
         maximum_frequency = 3520
-        cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+        cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
         # Compute the CQT chromagram using the kernel
         time_resolution = 25
-        cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+        cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, octave_resolution, cqt_kernel)
 
         # Display the CQT chromagram in seconds
         plt.figure(figsize=(17, 5))
@@ -682,18 +679,15 @@ def cqtchromagram(
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(cqt_spectrogram)
 
-    # Derive the number of chroma channels
-    number_chromas = 12 * frequency_resolution
-
     # Initialize the CQT chromagram
-    cqt_chromagram = np.zeros((number_chromas, number_times))
+    cqt_chromagram = np.zeros((octave_resolution, number_times))
 
     # Loop over the chroma channels
-    for i in range(number_chromas):
+    for i in range(octave_resolution):
 
         # Sum the energy of the frequency channels for every chroma
         cqt_chromagram[i, :] = np.sum(
-            cqt_spectrogram[i:number_frequencies:number_chromas, :], axis=0
+            cqt_spectrogram[i:number_frequencies:octave_resolution, :], axis=0
         )
 
     return cqt_chromagram
@@ -1391,7 +1385,7 @@ def mfccshow(
 def cqtspecshow(
     cqt_spectrogram,
     time_resolution,
-    frequency_resolution,
+    octave_resolution,
     minimum_frequency,
     xtick_step=1,
 ):
@@ -1401,16 +1395,13 @@ def cqtspecshow(
     Inputs:
         cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
         time_resolution: time resolution in number of time frames per second
-        frequency_resolution: frequency resolution in number of frequency channels per semitone
+        octave_resolution: number of frequency channels per octave
         minimum_frequency: minimum frequency in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(cqt_spectrogram)
-
-    # Derive the octave resolution
-    octave_resolution = 12 * frequency_resolution
 
     # Prepare the tick locations and labels for the x-axis
     xtick_locations = np.arange(
