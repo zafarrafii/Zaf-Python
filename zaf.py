@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/24/21
+    03/25/21
 """
 
 import numpy as np
@@ -259,11 +259,8 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
         import zaf
         import matplotlib.pyplot as plt
 
-        # Read the audio signal (normalized) with its sampling frequency in Hz, and average it over its channels
-        audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
-        audio_signal = np.mean(audio_signal, 1)
-
         # Compute the mel filterbank using some parameters
+        sampling_frequency = 44100
         window_length = pow(2, int(np.ceil(np.log2(0.04 * sampling_frequency))))
         number_mels = 128
         mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
