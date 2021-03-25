@@ -345,7 +345,7 @@ cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_fre
 
 Inputs:
     sampling_frequency: sampling frequency in Hz
-    frequency_resolution: frequency resolution in number of frequency channels per semitone
+    octave_resolution: number of frequency channels per octave
     minimum_frequency: minimum frequency in Hz
     maximum_frequency: maximum frequency in Hz
 Output:
@@ -362,12 +362,12 @@ import matplotlib.pyplot as plt
 
 # Set the parameters for the CQT kernel
 sampling_frequency = 44100
-frequency_resolution = 2
+octave_resolution = 24
 minimum_frequency = 55
 maximum_frequency = sampling_frequency/2
 
 # Compute the CQT kernel
-cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
 # Display the magnitude CQT kernel
 plt.figure(figsize=(17, 5))
@@ -391,7 +391,7 @@ cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution,
 Inputs:
     audio_signal: audio signal (number_samples,)
     sampling_frequency: sampling frequency in Hz
-    time_resolution: time resolution in number of time frames per second
+    time_resolution: number of time frames per second
     cqt_kernel: CQT kernel (number_frequencies, fft_length)
 Output:
     cqt_spectrogram: CQT spectrogram (number_frequencies, number_times)
@@ -410,10 +410,10 @@ audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Compute the CQT kernel using some parameters
-frequency_resolution = 2
+octave_resolution = 24
 minimum_frequency = 55
 maximum_frequency = 3520
-cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
 # Compute the CQT spectrogram using the kernel
 time_resolution = 25
@@ -421,7 +421,7 @@ cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_reso
 
 # Display the CQT spectrogram in dB, seconds, and Hz
 plt.figure(figsize=(17, 10))
-zaf.cqtspecshow(cqt_spectrogram, time_resolution, frequency_resolution, minimum_frequency, xtick_step=1)
+zaf.cqtspecshow(cqt_spectrogram, time_resolution, octave_resolution, minimum_frequency, xtick_step=1)
 plt.title("CQT spectrogram (dB)")
 plt.show()
 ```
@@ -439,8 +439,8 @@ cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolu
 Inputs:
     audio_signal: audio signal (number_samples,)
     sampling_frequency: sampling frequency in Hz
-    time_resolution: time resolution in number of time frames per second
-    frequency_resolution: frequency resolution in number of frequency channels per semitones
+    time_resolution: number of time frames per second
+    octave_resolution: number of frequency channels per octave
     cqt_kernel: CQT kernel (number_frequencies, fft_length)
 Output:
     cqt_chromagram: CQT chromagram (number_chromas, number_times)
@@ -459,14 +459,14 @@ audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
 # Compute the CQT kernel using some parameters
-frequency_resolution = 2
+octave_resolution = 24
 minimum_frequency = 55
 maximum_frequency = 3520
-cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
 # Compute the CQT chromagram using the kernel
 time_resolution = 25
-cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, octave_resolution, cqt_kernel)
 
 # Display the CQT chromagram in seconds
 plt.figure(figsize=(17, 5))
