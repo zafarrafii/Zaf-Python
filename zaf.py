@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/25/21
+    03/26/21
 """
 
 import numpy as np
@@ -1235,8 +1235,8 @@ def sigplot(
 
 def specshow(
     audio_spectrogram,
-    number_samples,
     sampling_frequency,
+    number_samples,
     xtick_step=1,
     ytick_step=1000,
 ):
@@ -1245,8 +1245,8 @@ def specshow(
 
     Inputs:
         audio_spectrogram: audio spectrogram (without DC and mirrored frequencies) (number_frequencies, number_times)
-        number_samples: number of samples from the original signal
-        sampling_frequency: sampling frequency from the original signal in Hz
+        sampling_frequency: sampling frequency in the original signal in Hz
+        number_samples: number of samples in the original signal
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
         ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
@@ -1254,9 +1254,9 @@ def specshow(
     # Get the number of frequency channels and time frames
     number_frequencies, number_times = np.shape(audio_spectrogram)
 
-    # Derive the number of Hertz and seconds
-    number_hertz = sampling_frequency / 2
+    # Derive the number of seconds and Hertz
     number_seconds = number_samples / sampling_frequency
+    number_hertz = sampling_frequency / 2
 
     # Derive the number of time frames per second and the number of frequency channels per Hz
     time_resolution = number_times / number_seconds
@@ -1301,7 +1301,9 @@ def melspecshow(
 
     Inputs:
         mel_spectrogram: mel spectrogram (number_mels, number_times)
+        number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
+        window_length: window length for the Fourier analysis in number of samples
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
         ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
