@@ -316,17 +316,14 @@ audio_mfcc = zaf.mfcc(audio_signal, window_function, step_length, mel_filterbank
 audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
 audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
-# Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
-time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
-
 # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
 plt.figure(figsize=(17, 10))
 plt.subplot(3, 1, 1)
-zaf.mfccshow(audio_mfcc, time_resolution, xtick_step=1), plt.title("MFCCs")
+zaf.mfccshow(audio_mfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("MFCCs")
 plt.subplot(3, 1, 2)
-zaf.mfccshow(audio_dmfcc, time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+zaf.mfccshow(audio_dmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
 plt.subplot(3, 1, 3)
-zaf.mfccshow(audio_ddmfcc, time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
+zaf.mfccshow(audio_ddmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
 plt.show()
 ```
 
