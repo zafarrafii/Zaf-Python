@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    03/26/21
+    03/30/21
 """
 
 import numpy as np
@@ -1235,8 +1235,8 @@ def sigplot(
 
 def specshow(
     audio_spectrogram,
-    sampling_frequency,
     number_samples,
+    sampling_frequency,
     xtick_step=1,
     ytick_step=1000,
 ):
@@ -1245,8 +1245,8 @@ def specshow(
 
     Inputs:
         audio_spectrogram: audio spectrogram (without DC and mirrored frequencies) (number_frequencies, number_times)
-        sampling_frequency: sampling frequency in the original signal in Hz
         number_samples: number of samples in the original signal
+        sampling_frequency: sampling frequency in the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
         ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
@@ -1294,7 +1294,6 @@ def melspecshow(
     sampling_frequency,
     window_length,
     xtick_step=1,
-    ytick_step=1000,
 ):
     """
     Display a mel spectrogram in dB, seconds, and Hz.
@@ -1303,9 +1302,8 @@ def melspecshow(
         mel_spectrogram: mel spectrogram (number_mels, number_times)
         number_samples: number of samples from the original signal
         sampling_frequency: sampling frequency from the original signal in Hz
-        window_length: window length for the Fourier analysis in number of samples
+        window_length: window length from the Fourier analysis in number of samples
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
-        ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
 
     # Get the number of mels and time frames
