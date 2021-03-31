@@ -375,7 +375,7 @@ def mfcc(
     audio_signal, window_function, step_length, mel_filterbank, number_coefficients
 ):
     """
-    Compute the mel frequency cepstrum coefficients (MFFCs) using a mel filterbank.
+    Compute the mel frequency cepstrum coefficients (MFCCs) using a mel filterbank.
 
     Inputs:
         audio_signal: audio signal (number_samples,)
@@ -414,17 +414,14 @@ def mfcc(
         audio_dmfcc = np.diff(audio_mfcc, n=1, axis=1)
         audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
-        # Compute the time resolution for the MFCCs in number of time frames per second (~ sampling frequency for the MFCCs)
-        time_resolution = sampling_frequency*np.shape(audio_mfcc)[1]/len(audio_signal)
-
         # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1)
-        zaf.mfccshow(audio_mfcc, time_resolution, xtick_step=1), plt.title("MFCCs")
+        zaf.mfccshow(audio_mfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("MFCCs")
         plt.subplot(3, 1, 2)
-        zaf.mfccshow(audio_dmfcc, time_resolution, xtick_step=1), plt.title("Delta MFCCs")
+        zaf.mfccshow(audio_dmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
         plt.subplot(3, 1, 3)
-        zaf.mfccshow(audio_ddmfcc, time_resolution, xtick_step=1), plt.title("Delta-delta MFCCs")
+        zaf.mfccshow(audio_ddmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
         plt.show()
     """
 
@@ -1347,7 +1344,8 @@ def melspecshow(
 
 def mfccshow(
     audio_mfcc,
-    time_resolution,
+    number_samples,
+    sampling_frequency,
     xtick_step=1,
 ):
     """
@@ -1355,12 +1353,17 @@ def mfccshow(
 
     Inputs:
         audio_mfcc: audio MFCCs (number_coefficients, number_times)
-        time_resolution: number of time frames per second
+        number_samples: number of samples in the original signal
+        sampling_frequency: sampling frequency in the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
     # Get the number of time frames
     number_times = np.shape(audio_mfcc)[1]
+
+    # Derive the number of seconds and the number of time frames per second
+    number_seconds = number_samples / sampling_frequency
+    time_resolution = number_times / number_seconds
 
     # Prepare the tick locations and labels for the x-axis
     xtick_locations = np.arange(
@@ -1368,11 +1371,9 @@ def mfccshow(
         number_times,
         xtick_step * time_resolution,
     )
-    xtick_labels = np.arange(
-        xtick_step, number_times / time_resolution, xtick_step
-    ).astype(int)
+    xtick_labels = np.arange(xtick_step, number_seconds, xtick_step).astype(int)
 
-    # Display the chromagram in seconds
+    # Display the MFCCs in seconds
     plt.imshow(audio_mfcc, aspect="auto", cmap="jet", origin="lower")
     plt.xticks(ticks=xtick_locations, labels=xtick_labels)
     plt.xlabel("Time (s)")
