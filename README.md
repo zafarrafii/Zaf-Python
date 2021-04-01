@@ -275,7 +275,7 @@ plt.show()
 Compute the mel frequency cepstrum coefficients (MFCCs) using a mel filterbank.
 
 ```
-audio_mfcc = zaf.mfcc(audio_signal, sample_rate, number_filters, number_coefficients)
+audio_mfcc = zaf.mfcc(audio_signal, sample_frequency, number_filters, number_coefficients)
 
 Inputs:
     audio_signal: audio signal (number_samples,)
@@ -380,7 +380,7 @@ plt.show()
 Compute the constant-Q transform (CQT) spectrogram using a CQT kernel.
 
 ```
-cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sample_rate, time_resolution, cqt_kernel)
+cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sample_frequency, time_resolution, cqt_kernel)
 
 Inputs:
     audio_signal: audio signal (number_samples,)
