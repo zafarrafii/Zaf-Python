@@ -22,7 +22,7 @@ Functions:
 - [`istft`](#istft) - Compute the inverse STFT.
 - [`melfilterbank`](#melfilterbank) - Compute the mel filterbank.
 - [`melspectrogram`](#melspectrogram) - Compute the mel spectrogram using a mel filterbank.
-- [`mfcc`](#mfcc) - Compute the mel frequency cepstral coefficients (MFCCs) using a mel filterbank.
+- [`mfcc`](#mfcc) - Compute the mel-frequency cepstral coefficients (MFCCs) using a mel filterbank.
 - [`cqtkernel`](#cqtkernel) - Compute the constant-Q transform (CQT) kernel.
 - [`cqtspectrogram`](#cqtspectrogram) - Compute the CQT spectrogram using a CQT kernel.
 - [`cqtchromagram`](#cqtchromagram) - Compute the CQT chromagram using a CQT kernel.
@@ -272,7 +272,7 @@ plt.show()
 
 ### mfcc
 
-Compute the mel frequency cepstral coefficients (MFCCs) using a mel filterbank.
+Compute the mel-frequency cepstral coefficients (MFCCs) using a mel filterbank.
 
 ```
 audio_mfcc = zaf.mfcc(audio_signal, sample_frequency, number_filters, number_coefficients)
