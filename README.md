@@ -182,15 +182,15 @@ plt.show()
 Compute the mel filterbank.
 
 ```
-mel_filterbank = zaf.melfilterbank(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+mel_filterbank = zaf.melfilterbank(sampling_frequency, )
 
 Inputs:
-    audio_signal: audio signal (number_samples,)
-    window_function: window function (window_length,)
-    step_length: step length in samples
-    mel_filterbank: mel filterbank (number_mels, number_frequencies)
+    sampling_frequency: sampling frequency in Hz
+    window_length: window length for the Fourier analysis in samples
+    number_mels: number of mel filters
+    
 Output:
-    mel_spectrogram: mel spectrogram (number_mels, number_times)
+    mel_filterbank: mel filterbank (sparse) (number_mels, number_frequencies)
 ```
 
 #### Example: Compute and display the mel filterbank.
