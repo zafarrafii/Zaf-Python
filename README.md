@@ -182,7 +182,7 @@ plt.show()
 Compute the mel filterbank.
 
 ```
-mel_filterbank = zaf.melfilterbank(sampling_frequency, )
+mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
 
 Inputs:
     sampling_frequency: sampling frequency in Hz
