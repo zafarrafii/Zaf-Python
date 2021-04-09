@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    04/06/21
+    04/09/21
 """
 
 import numpy as np
@@ -275,14 +275,14 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
     """
 
     # Compute the minimum and maximum mels
-    mininum_mel = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
+    minimum_mel = 2595 * np.log10(1 + (sampling_frequency / window_length) / 700)
     maximum_mel = 2595 * np.log10(1 + (sampling_frequency / 2) / 700)
 
     # Derive the width of the half-overlapping filters in the mel scale (constant)
-    filter_width = 2 * (maximum_mel - mininum_mel) / (number_filters + 1)
+    filter_width = 2 * (maximum_mel - minimum_mel) / (number_filters + 1)
 
     # Compute the start and end indices of the filters in the mel scale (linearly spaced)
-    filter_indices = np.arange(mininum_mel, maximum_mel + 1, filter_width / 2)
+    filter_indices = np.arange(minimum_mel, maximum_mel + 1, filter_width / 2)
 
     # Derive the indices of the filters in the linear frequency scale (log spaced)
     filter_indices = np.round(
@@ -1332,7 +1332,7 @@ def melspecshow(
     ytick_locations = np.arange(0, number_mels, 8)
     ytick_labels = hertz_scale[::8].astype(int)
 
-    # Display the spectrogram in dB, seconds, and Hz
+    # Display the mel spectrogram in dB, seconds, and Hz
     plt.imshow(
         20 * np.log10(mel_spectrogram), aspect="auto", cmap="jet", origin="lower"
     )
