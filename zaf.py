@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    04/09/21
+    04/12/21
 """
 
 import numpy as np
@@ -415,13 +415,14 @@ def mfcc(
         audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
         # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
+        number_samples = len(audio_signal)
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1)
-        zaf.mfccshow(audio_mfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("MFCCs")
+        zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("MFCCs")
         plt.subplot(3, 1, 2)
-        zaf.mfccshow(audio_dmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
+        zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
         plt.subplot(3, 1, 3)
-        zaf.mfccshow(audio_ddmfcc, len(audio_signal), sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
+        zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
         plt.show()
     """
 
@@ -429,7 +430,8 @@ def mfcc(
     audio_stft = stft(audio_signal, window_function, step_length)
     audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
 
-    # Compute the discrete cosine transform of the log magnitude spectrogram mapped onto the mel scale using the filter bank
+    # Compute the discrete cosine transform of the log magnitude spectrogram
+    # mapped onto the mel scale using the filter bank
     audio_mfcc = scipy.fftpack.dct(
         np.log(
             np.matmul(mel_filterbank.toarray(), audio_spectrogram) + np.finfo(float).eps
@@ -1353,8 +1355,8 @@ def mfccshow(
 
     Inputs:
         audio_mfcc: audio MFCCs (number_coefficients, number_times)
-        number_samples: number of samples in the original signal
-        sampling_frequency: sampling frequency in the original signal in Hz
+        number_samples: number of samples from the original signal
+        sampling_frequency: sampling frequency from the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
     """
 
