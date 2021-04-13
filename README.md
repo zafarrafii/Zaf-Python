@@ -338,7 +338,7 @@ plt.show()
 Compute the constant-Q transform (CQT) kernel.
 
 ```
-cqt_kernel = zaf.cqtkernel(sampling_frequency, frequency_resolution, minimum_frequency, maximum_frequency)
+cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
 Inputs:
     sampling_frequency: sampling frequency in Hz
@@ -431,7 +431,7 @@ plt.show()
 Compute the constant-Q transform (CQT) chromagram using a CQT kernel.
 
 ```
-cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, frequency_resolution, cqt_kernel)
+cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, octave_resolution, cqt_kernel)
 
 Inputs:
     audio_signal: audio signal (number_samples,)
