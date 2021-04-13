@@ -161,15 +161,16 @@ zaf.wavwrite(center_signal, sampling_frequency, "center_file.wav")
 zaf.wavwrite(sides_signal, sampling_frequency, "sides_file.wav")
 
 # Display the original, center, and sides signals in seconds
+xtick_step = 1
 plt.figure(figsize=(17, 10))
 plt.subplot(3, 1, 1),
-zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1)
+zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
 plt.ylim(-1, 1), plt.title("Original signal")
 plt.subplot(3, 1, 2)
-zaf.sigplot(center_signal, sampling_frequency, xtick_step=1)
+zaf.sigplot(center_signal, sampling_frequency, xtick_step)
 plt.ylim(-1, 1), plt.title("Center signal")
 plt.subplot(3, 1, 3)
-zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1)
+zaf.sigplot(sides_signal, sampling_frequency, xtick_step)
 plt.ylim(-1, 1), plt.title("Sides signal")
 plt.show()
 ```
