@@ -319,13 +319,14 @@ audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 
 # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
 number_samples = len(audio_signal)
+xtick_step = 1
 plt.figure(figsize=(17, 10))
 plt.subplot(3, 1, 1)
-zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("MFCCs")
+zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
 plt.subplot(3, 1, 2)
-zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
+zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
 plt.subplot(3, 1, 3)
-zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
+zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
 plt.show()
 ```
 
