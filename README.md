@@ -89,8 +89,9 @@ audio_stft = zaf.stft(audio_signal, window_function, step_length)
 audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2)+1, :])
 
 # Display the spectrogram in dB, seconds, and Hz
+number_samples = len(audio_signal)
 plt.figure(figsize=(17, 10))
-zaf.specshow(audio_spectrogram, len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
+zaf.specshow(audio_spectrogram, number_samples, sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("Spectrogram (dB)")
 plt.show()
 ```
@@ -262,8 +263,9 @@ mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mel
 mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
 
 # Display the mel spectrogram in in dB, seconds, and Hz
+number_samples = len(audio_signal)
 plt.figure(figsize=(17, 10))
-zaf.melspecshow(mel_spectrogram, len(audio_signal), sampling_frequency, window_length, xtick_step=1)
+zaf.melspecshow(mel_spectrogram, number_samples, sampling_frequency, window_length, xtick_step=1)
 plt.title("Mel spectrogram (dB)")
 plt.show()
 ```
@@ -638,8 +640,9 @@ window_function = np.sqrt(np.concatenate((window_function2, window_function2[int
 audio_mdct = zaf.mdct(audio_signal, window_function)
 
 # Display the MDCT in dB, seconds, and Hz
+number_samples = len(audio_signal)
 plt.figure(figsize=(17, 10))
-zaf.specshow(np.absolute(audio_mdct), len(audio_signal), sampling_frequency, xtick_step=1, ytick_step=1000)
+zaf.specshow(np.absolute(audio_mdct), number_samples, sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("MDCT (dB)")
 plt.show()
 ```
