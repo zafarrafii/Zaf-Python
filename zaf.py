@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    04/12/21
+    04/13/21
 """
 
 import numpy as np
@@ -196,15 +196,16 @@ def istft(audio_stft, window_function, step_length):
         zaf.wavwrite(sides_signal, sampling_frequency, "sides_file.wav")
 
         # Display the original, center, and sides signals in seconds
+        xtick_step = 1
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1)
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
         plt.ylim(-1, 1), plt.title("Original signal")
         plt.subplot(3, 1, 2)
-        zaf.sigplot(center_signal, sampling_frequency, xtick_step=1)
+        zaf.sigplot(center_signal, sampling_frequency, xtick_step)
         plt.ylim(-1, 1), plt.title("Center signal")
         plt.subplot(3, 1, 3)
-        zaf.sigplot(sides_signal, sampling_frequency, xtick_step=1)
+        zaf.sigplot(sides_signal, sampling_frequency, xtick_step)
         plt.ylim(-1, 1), plt.title("Sides signal")
         plt.show()
     """
@@ -416,13 +417,14 @@ def mfcc(
 
         # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
         number_samples = len(audio_signal)
+        xtick_step = 1
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1)
-        zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("MFCCs")
+        zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
         plt.subplot(3, 1, 2)
-        zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta MFCCs")
+        zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
         plt.subplot(3, 1, 3)
-        zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step=1), plt.title("Delta-delta MFCCs")
+        zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
         plt.show()
     """
 
@@ -1090,13 +1092,14 @@ def imdct(audio_mdct, window_function):
         y_max = np.max(np.absolute(audio_differences))
 
         # Display the original and resynthesized signals, and their differences in seconds
+        xtick_step = 1
         plt.figure(figsize=(17, 10))
         plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Original signal")
+        zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
         plt.subplot(3, 1, 2)
-        zaf.sigplot(audio_signal2, sampling_frequency, xtick_step=1), plt.ylim(-1, 1), plt.title("Resyntesized signal")
+        zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
         plt.subplot(3, 1, 3)
-        zaf.sigplot(audio_differences, sampling_frequency, xtick_step=1), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
+        zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
         plt.show()
     """
 
@@ -1244,8 +1247,8 @@ def specshow(
 
     Inputs:
         audio_spectrogram: audio spectrogram (without DC and mirrored frequencies) (number_frequencies, number_times)
-        number_samples: number of samples in the original signal
-        sampling_frequency: sampling frequency in the original signal in Hz
+        number_samples: number of samples from the original signal
+        sampling_frequency: sampling frequency from the original signal in Hz
         xtick_step: step for the x-axis ticks in seconds (default: 1 second)
         ytick_step: step for the y-axis ticks in Hz (default: 1000 Hz)
     """
