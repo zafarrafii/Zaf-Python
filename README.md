@@ -259,7 +259,7 @@ mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mel
 # Compute the mel spectrogram using the filterbank
 mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
 
-# Display the mel spectrogram in in dB, seconds, and Hz
+# Display the mel spectrogram in dB, seconds, and Hz
 number_samples = len(audio_signal)
 plt.figure(figsize=(17, 10))
 zaf.melspecshow(mel_spectrogram, number_samples, sampling_frequency, window_length, xtick_step=1)
