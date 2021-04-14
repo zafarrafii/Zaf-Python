@@ -164,12 +164,9 @@ zaf.wavwrite(sides_signal, sampling_frequency, "sides_file.wav")
 # Display the original, center, and sides signals in seconds
 xtick_step = 1
 plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
-plt.ylim(-1, 1), plt.title("Original signal")
-plt.subplot(3, 1, 2), zaf.sigplot(center_signal, sampling_frequency, xtick_step)
-plt.ylim(-1, 1), plt.title("Center signal")
-plt.subplot(3, 1, 3), zaf.sigplot(sides_signal, sampling_frequency, xtick_step)
-plt.ylim(-1, 1), plt.title("Sides signal")
+plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
+plt.subplot(3, 1, 2), zaf.sigplot(center_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Center signal")
+plt.subplot(3, 1, 3), zaf.sigplot(sides_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Sides signal")
 plt.show()
 ```
 
@@ -320,12 +317,9 @@ audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 number_samples = len(audio_signal)
 xtick_step = 1
 plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1)
-zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
-plt.subplot(3, 1, 2)
-zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
-plt.subplot(3, 1, 3)
-zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
+plt.subplot(3, 1, 1), zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
+plt.subplot(3, 1, 2), zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
+plt.subplot(3, 1, 3), zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
 plt.show()
 ```
 
@@ -405,7 +399,7 @@ import matplotlib.pyplot as plt
 audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
-# Compute the CQT kernel using some parameters
+# Compute the CQT kernel
 octave_resolution = 24
 minimum_frequency = 55
 maximum_frequency = 3520
@@ -454,7 +448,7 @@ import matplotlib.pyplot as plt
 audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
 audio_signal = np.mean(audio_signal, 1)
 
-# Compute the CQT kernel using some parameters
+# Compute the CQT kernel
 octave_resolution = 24
 minimum_frequency = 55
 maximum_frequency = 3520
@@ -689,12 +683,9 @@ y_max = np.max(np.absolute(audio_differences))
 # Display the original and resynthesized signals, and their differences in seconds
 xtick_step = 1
 plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1),
-zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
-plt.subplot(3, 1, 2)
-zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
-plt.subplot(3, 1, 3)
-zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
+plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
+plt.subplot(3, 1, 2), zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
+plt.subplot(3, 1, 3), zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
 plt.show()
 ```
 
