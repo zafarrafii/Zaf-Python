@@ -207,8 +207,8 @@ mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mel
 plt.figure(figsize=(17, 5))
 plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
 plt.title("Mel filterbank")
-plt.xlabel("Number of frequencies")
-plt.ylabel("Number of mels")
+plt.xlabel("Frequency index")
+plt.ylabel("Mel index")
 plt.show()
 ```
 
