@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    04/13/21
+    04/14/21
 """
 
 import numpy as np
@@ -199,15 +199,9 @@ def istft(audio_stft, window_function, step_length):
         # Display the original, center, and sides signals in seconds
         xtick_step = 1
         plt.figure(figsize=(17, 10))
-        plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
-        plt.ylim(-1, 1), plt.title("Original signal")
-        plt.subplot(3, 1, 2)
-        zaf.sigplot(center_signal, sampling_frequency, xtick_step)
-        plt.ylim(-1, 1), plt.title("Center signal")
-        plt.subplot(3, 1, 3)
-        zaf.sigplot(sides_signal, sampling_frequency, xtick_step)
-        plt.ylim(-1, 1), plt.title("Sides signal")
+        plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
+        plt.subplot(3, 1, 2), zaf.sigplot(center_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Center signal")
+        plt.subplot(3, 1, 3), zaf.sigplot(sides_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Sides signal")
         plt.show()
     """
 
@@ -271,8 +265,8 @@ def melfilterbank(sampling_frequency, window_length, number_filters):
         plt.figure(figsize=(17, 5))
         plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
         plt.title("Mel filterbank")
-        plt.xlabel("Number of frequencies")
-        plt.ylabel("Number of mels")
+        plt.xlabel("Frequency index")
+        plt.ylabel("Mel index")
         plt.show()
     """
 
@@ -356,7 +350,7 @@ def melspectrogram(audio_signal, window_function, step_length, mel_filterbank):
         # Compute the mel spectrogram using the filterbank
         mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length, mel_filterbank)
 
-        # Display the mel spectrogram in in dB, seconds, and Hz
+        # Display the mel spectrogram in dB, seconds, and Hz
         number_samples = len(audio_signal)
         plt.figure(figsize=(17, 10))
         zaf.melspecshow(mel_spectrogram, number_samples, sampling_frequency, window_length, xtick_step=1)
@@ -421,12 +415,9 @@ def mfcc(
         number_samples = len(audio_signal)
         xtick_step = 1
         plt.figure(figsize=(17, 10))
-        plt.subplot(3, 1, 1)
-        zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
-        plt.subplot(3, 1, 2)
-        zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
-        plt.subplot(3, 1, 3)
-        zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
+        plt.subplot(3, 1, 1), zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
+        plt.subplot(3, 1, 2), zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
+        plt.subplot(3, 1, 3), zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
         plt.show()
     """
 
@@ -483,8 +474,8 @@ def cqtkernel(
         plt.figure(figsize=(17, 5))
         plt.imshow(np.absolute(cqt_kernel).toarray(), aspect="auto", cmap="jet", origin="lower")
         plt.title("Magnitude CQT kernel")
-        plt.xlabel("FFT length")
-        plt.ylabel("CQT frequency")
+        plt.xlabel("FFT index")
+        plt.ylabel("CQT index")
         plt.show()
     """
 
@@ -576,7 +567,7 @@ def cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel
         audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
         audio_signal = np.mean(audio_signal, 1)
 
-        # Compute the CQT kernel using some parameters
+        # Compute the CQT kernel
         octave_resolution = 24
         minimum_frequency = 55
         maximum_frequency = 3520
@@ -654,7 +645,7 @@ def cqtchromagram(
         audio_signal, sampling_frequency = zaf.wavread("audio_file.wav")
         audio_signal = np.mean(audio_signal, 1)
 
-        # Compute the CQT kernel using some parameters
+        # Compute the CQT kernel
         octave_resolution = 24
         minimum_frequency = 55
         maximum_frequency = 3520
@@ -1097,12 +1088,9 @@ def imdct(audio_mdct, window_function):
         # Display the original and resynthesized signals, and their differences in seconds
         xtick_step = 1
         plt.figure(figsize=(17, 10))
-        plt.subplot(3, 1, 1),
-        zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
-        plt.subplot(3, 1, 2)
-        zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
-        plt.subplot(3, 1, 3)
-        zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
+        plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
+        plt.subplot(3, 1, 2), zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
+        plt.subplot(3, 1, 3), zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
         plt.show()
     """
 
