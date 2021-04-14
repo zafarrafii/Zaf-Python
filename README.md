@@ -363,8 +363,8 @@ cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_freque
 plt.figure(figsize=(17, 5))
 plt.imshow(np.absolute(cqt_kernel).toarray(), aspect="auto", cmap="jet", origin="lower")
 plt.title("Magnitude CQT kernel")
-plt.xlabel("FFT length")
-plt.ylabel("CQT frequency")
+plt.xlabel("FFT index")
+plt.ylabel("CQT index")
 plt.show()
 ```
 
