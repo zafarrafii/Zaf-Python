@@ -31,7 +31,7 @@ Author:
     http://zafarrafii.com
     https://github.com/zafarrafii
     https://www.linkedin.com/in/zafarrafii/
-    04/14/21
+    05/11/21
 """
 
 import numpy as np
@@ -421,9 +421,11 @@ def mfcc(
         plt.show()
     """
 
-    # Compute the magnitude spectrogram (without the DC component and the mirrored frequencies)
+    # Compute the power spectrogram (without the DC component and the mirrored frequencies)
     audio_stft = stft(audio_signal, window_function, step_length)
-    audio_spectrogram = abs(audio_stft[1 : int(len(window_function) / 2) + 1, :])
+    audio_spectrogram = np.power(
+        abs(audio_stft[1 : int(len(window_function) / 2) + 1, :]), 2
+    )
 
     # Compute the discrete cosine transform of the log magnitude spectrogram
     # mapped onto the mel scale using the filter bank
