@@ -90,9 +90,10 @@ audio_spectrogram = np.absolute(audio_stft[1:int(window_length/2)+1, :])
 
 # Display the spectrogram in dB, seconds, and Hz
 number_samples = len(audio_signal)
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(14, 7))
 zaf.specshow(audio_spectrogram, number_samples, sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("Spectrogram (dB)")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -163,10 +164,14 @@ zaf.wavwrite(sides_signal, sampling_frequency, "sides_file.wav")
 
 # Display the original, center, and sides signals in seconds
 xtick_step = 1
-plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
-plt.subplot(3, 1, 2), zaf.sigplot(center_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Center signal")
-plt.subplot(3, 1, 3), zaf.sigplot(sides_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Sides signal")
+plt.figure(figsize=(14, 7))
+plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
+plt.ylim(-1, 1), plt.title("Original signal")
+plt.subplot(3, 1, 2), zaf.sigplot(center_signal, sampling_frequency, xtick_step)
+plt.ylim(-1, 1), plt.title("Center signal")
+plt.subplot(3, 1, 3), zaf.sigplot(sides_signal, sampling_frequency, xtick_step)
+plt.ylim(-1, 1), plt.title("Sides signal")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -204,11 +209,12 @@ number_mels = 128
 mel_filterbank = zaf.melfilterbank(sampling_frequency, window_length, number_mels)
 
 # Display the mel filterbank
-plt.figure(figsize=(17, 5))
+plt.figure(figsize=(14, 5))
 plt.imshow(mel_filterbank.toarray(), aspect="auto", cmap="jet", origin="lower")
 plt.title("Mel filterbank")
 plt.xlabel("Frequency index")
 plt.ylabel("Mel index")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -258,9 +264,10 @@ mel_spectrogram = zaf.melspectrogram(audio_signal, window_function, step_length,
 
 # Display the mel spectrogram in dB, seconds, and Hz
 number_samples = len(audio_signal)
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(14, 5))
 zaf.melspecshow(mel_spectrogram, number_samples, sampling_frequency, window_length, xtick_step=1)
 plt.title("Mel spectrogram (dB)")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -316,10 +323,14 @@ audio_ddmfcc = np.diff(audio_dmfcc, n=1, axis=1)
 # Display the MFCCs, delta MFCCs, and delta-delta MFCCs in seconds
 number_samples = len(audio_signal)
 xtick_step = 1
-plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1), zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
-plt.subplot(3, 1, 2), zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
-plt.subplot(3, 1, 3), zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
+plt.figure(figsize=(14, 7))
+plt.subplot(3, 1, 1)
+zaf.mfccshow(audio_mfcc, number_samples, sampling_frequency, xtick_step), plt.title("MFCCs")
+plt.subplot(3, 1, 2)
+zaf.mfccshow(audio_dmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta MFCCs")
+plt.subplot(3, 1, 3)
+zaf.mfccshow(audio_ddmfcc, number_samples, sampling_frequency, xtick_step), plt.title("Delta-delta MFCCs")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -360,11 +371,12 @@ maximum_frequency = sampling_frequency/2
 cqt_kernel = zaf.cqtkernel(sampling_frequency, octave_resolution, minimum_frequency, maximum_frequency)
 
 # Display the magnitude CQT kernel
-plt.figure(figsize=(17, 5))
+plt.figure(figsize=(14, 5))
 plt.imshow(np.absolute(cqt_kernel).toarray(), aspect="auto", cmap="jet", origin="lower")
 plt.title("Magnitude CQT kernel")
 plt.xlabel("FFT index")
 plt.ylabel("CQT index")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -410,9 +422,10 @@ time_resolution = 25
 cqt_spectrogram = zaf.cqtspectrogram(audio_signal, sampling_frequency, time_resolution, cqt_kernel)
 
 # Display the CQT spectrogram in dB, seconds, and Hz
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(14, 5))
 zaf.cqtspecshow(cqt_spectrogram, time_resolution, octave_resolution, minimum_frequency, xtick_step=1)
 plt.title("CQT spectrogram (dB)")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -459,9 +472,10 @@ time_resolution = 25
 cqt_chromagram = zaf.cqtchromagram(audio_signal, sampling_frequency, time_resolution, octave_resolution, cqt_kernel)
 
 # Display the CQT chromagram in seconds
-plt.figure(figsize=(17, 5))
+plt.figure(figsize=(14, 3))
 zaf.cqtchromshow(cqt_chromagram, time_resolution, xtick_step=1)
 plt.title("CQT chromagram")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -512,7 +526,7 @@ scipy_dct3 = scipy.fftpack.dct(audio_segment, type=3, norm="ortho")
 scipy_dct4 = scipy.fftpack.dct(audio_segment, type=4, norm="ortho")
 
 # Plot the DCT-I, II, III, and IV, SciPy's versions, and their differences
-plt.figure(figsize=(17,10))
+plt.figure(figsize=(14, 7))
 plt.subplot(3, 4, 1), plt.plot(audio_dct1), plt.autoscale(tight=True), plt.title("DCT-I")
 plt.subplot(3, 4, 2), plt.plot(audio_dct2), plt.autoscale(tight=True), plt.title("DCT-II")
 plt.subplot(3, 4, 3), plt.plot(audio_dct3), plt.autoscale(tight=True), plt.title("DCT-III")
@@ -525,6 +539,7 @@ plt.subplot(3, 4, 9), plt.plot(audio_dct1-scipy_dct1), plt.autoscale(tight=True)
 plt.subplot(3, 4, 10), plt.plot(audio_dct2-scipy_dct2), plt.autoscale(tight=True), plt.title("DCT-II - SciPy's DCT-II")
 plt.subplot(3, 4, 11), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("DCT-III - SciPy's DCT-III")
 plt.subplot(3, 4, 12), plt.plot(audio_dct3-scipy_dct3), plt.autoscale(tight=True), plt.title("DCT-IV - SciPy's DCT-IV")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -574,7 +589,7 @@ audio_idst3 = zaf.dst(audio_dst3, 2)
 audio_idst4 = zaf.dst(audio_dst4, 4)
 
 # Plot the DST-I, II, III, and IV, their respective inverses, and their differences with the original audio segment
-plt.figure(figsize=(17,10))
+plt.figure(figsize=(14, 7))
 plt.subplot(3, 4, 1), plt.plot(audio_dst1), plt.autoscale(tight=True), plt.title("DCT-I")
 plt.subplot(3, 4, 2), plt.plot(audio_dst2), plt.autoscale(tight=True), plt.title("DST-II")
 plt.subplot(3, 4, 3), plt.plot(audio_dst3), plt.autoscale(tight=True), plt.title("DST-III")
@@ -583,10 +598,15 @@ plt.subplot(3, 4, 5), plt.plot(audio_idst1), plt.autoscale(tight=True), plt.titl
 plt.subplot(3, 4, 6), plt.plot(audio_idst2), plt.autoscale(tight=True), plt.title("Inverse DST-II (DST-III)")
 plt.subplot(3, 4, 7), plt.plot(audio_idst3), plt.autoscale(tight=True), plt.title("Inverse DST-III (DST-II)")
 plt.subplot(3, 4, 8), plt.plot(audio_idst4), plt.autoscale(tight=True), plt.title("Inverse DST-IV (DST-IV)")
-plt.subplot(3, 4, 9), plt.plot(audio_idst1-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-I - audio segment")
-plt.subplot(3, 4, 10), plt.plot(audio_idst2-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-II - audio segment")
-plt.subplot(3, 4, 11), plt.plot(audio_idst3-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-III - audio segment")
-plt.subplot(3, 4, 12), plt.plot(audio_idst4-audio_segment), plt.autoscale(tight=True), plt.title("Inverse DST-IV - audio segment")
+plt.subplot(3, 4, 9), plt.plot(audio_idst1-audio_segment), plt.autoscale(tight=True)
+plt.title("Inverse DST-I - audio segment")
+plt.subplot(3, 4, 10), plt.plot(audio_idst2-audio_segment), plt.autoscale(tight=True)
+plt.title("Inverse DST-II - audio segment")
+plt.subplot(3, 4, 11), plt.plot(audio_idst3-audio_segment), plt.autoscale(tight=True)
+plt.title("Inverse DST-III - audio segment")
+plt.subplot(3, 4, 12), plt.plot(audio_idst4-audio_segment), plt.autoscale(tight=True)
+plt.title("Inverse DST-IV - audio segment")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -632,9 +652,10 @@ audio_mdct = zaf.mdct(audio_signal, window_function)
 
 # Display the MDCT in dB, seconds, and Hz
 number_samples = len(audio_signal)
-plt.figure(figsize=(17, 10))
+plt.figure(figsize=(14, 7))
 zaf.specshow(np.absolute(audio_mdct), number_samples, sampling_frequency, xtick_step=1, ytick_step=1000)
 plt.title("MDCT (dB)")
+plt.tight_layout()
 plt.show()
 ```
 
@@ -682,10 +703,14 @@ y_max = np.max(np.absolute(audio_differences))
 
 # Display the original and resynthesized signals, and their differences in seconds
 xtick_step = 1
-plt.figure(figsize=(17, 10))
-plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Original signal")
-plt.subplot(3, 1, 2), zaf.sigplot(audio_signal2, sampling_frequency, xtick_step), plt.ylim(-1, 1), plt.title("Resyntesized signal")
-plt.subplot(3, 1, 3), zaf.sigplot(audio_differences, sampling_frequency, xtick_step), plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
+plt.figure(figsize=(14, 7))
+plt.subplot(3, 1, 1), zaf.sigplot(audio_signal, sampling_frequency, xtick_step)
+plt.ylim(-1, 1), plt.title("Original signal")
+plt.subplot(3, 1, 2), zaf.sigplot(audio_signal2, sampling_frequency, xtick_step)
+plt.ylim(-1, 1), plt.title("Resyntesized signal")
+plt.subplot(3, 1, 3), zaf.sigplot(audio_differences, sampling_frequency, xtick_step)
+plt.ylim(-y_max, y_max), plt.title("Original - resyntesized signal")
+plt.tight_layout()
 plt.show()
 ```
 
